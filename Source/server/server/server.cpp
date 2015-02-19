@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
 
 	if (inst == NULL)
 		exit(0);
-	m = libvlc_media_new_location(inst, "http://incompetech.com/music/royalty-free/mp3-royaltyfree/Who%20Likes%20to%20Party.mp3");
+	m = libvlc_media_new_path(inst, "dingdong.mp3");
 
 	if (m == NULL)
 		exit(0);
@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
 	libvlc_media_release(m);
 	libvlc_media_player_play(mp);
 
-	Sleep(5000);
+	Sleep(500000);
 
 	return 0;
 }
