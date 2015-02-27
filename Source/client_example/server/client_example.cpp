@@ -1,13 +1,9 @@
 //#include <Windows.h> //Who needs header guards anyway?
 #include <WinSock2.h>
 #include <WS2tcpip.h>
-#include <vlc/vlc.h>
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
-
-#pragma comment(lib, "libvlc.lib")
-#pragma comment(lib, "libvlccore.lib")
 
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "winmm.lib")
@@ -23,6 +19,7 @@
 #define CIRC_BUFF_SIZE 40960
 
 DWORD WINAPI ThreadRoutine(LPVOID lpParam);
+void CALLBACK WaveCallback(HWAVEOUT hWave, UINT uMsg, DWORD dwUser, DWORD dw1, DWORD dw2);
 
 // Networking globals
 WSADATA stWSAData;
@@ -33,9 +30,10 @@ BOOL fFlag = true;
 
 // Audio globals
 HWAVEOUT wo;
+LPWAVEHDR whdr1, whdr2, whdr3;
 
 // Circular Buffer
-void *circ_buff;
+char *circ_buff;
 
 int main(int argc, char* argv[])
 {
@@ -46,7 +44,8 @@ int main(int argc, char* argv[])
 	int nret;
 
 	/* Allocate the circular buffer */
-	circ_buff = malloc(CIRC_BUFF_SIZE);
+	circ_buff = (char*)malloc(CIRC_BUFF_SIZE);
+	ZeroMemory(circ_buff, CIRC_BUFF_SIZE);
 
 	/* Setup the desired waveout settings */
 	WAVEFORMATEX wfx;
@@ -56,14 +55,38 @@ int main(int argc, char* argv[])
 	wfx.wBitsPerSample = BITS_PER_SAMPLE;
 	wfx.cbSize = 0;
 	wfx.nBlockAlign = wfx.nChannels * wfx.wBitsPerSample / 8;
-	wfx.nAvgBytesPerSec = wfx.nSamplesPerSec * wfx.nBlockAlign;
+	wfx.nAvgBytesPerSec = wfx.nSamplesPerSec * wfx.wBitsPerSample / 8;
 
 	/* Open a waveout device */
-	MMRESULT mmr = waveOutOpen(&wo, WAVE_MAPPER, &wfx, NULL, NULL, CALLBACK_NULL);
+	MMRESULT mmr = waveOutOpen(&wo, WAVE_MAPPER, &wfx, (DWORD)WaveCallback, NULL, CALLBACK_FUNCTION);
 	if (wo == NULL || mmr != MMSYSERR_NOERROR)
 		std::cout << "Error: Unable to open waveout device!" << std::endl;
 	else
 		std::cout << "Successfully opened waveout device!" << std::endl;
+
+	/* Prepare the wave header for the circular buffer */
+	whdr1 = (LPWAVEHDR)malloc(sizeof(WAVEHDR));
+	ZeroMemory(whdr1, sizeof(WAVEHDR));
+	whdr1->lpData = circ_buff;
+	whdr1->dwBufferLength = CIRC_BUFF_SIZE;
+	whdr2 = (LPWAVEHDR)malloc(sizeof(WAVEHDR));
+	whdr3 = (LPWAVEHDR)malloc(sizeof(WAVEHDR));
+	memcpy(whdr2, whdr1, sizeof(WAVEHDR));
+	memcpy(whdr3, whdr1, sizeof(WAVEHDR));
+
+	//3 wave headers for triple buffering
+	mmr = waveOutPrepareHeader(wo, whdr1, sizeof(WAVEHDR));
+	mmr = waveOutPrepareHeader(wo, whdr2, sizeof(WAVEHDR));
+	mmr = waveOutPrepareHeader(wo, whdr3, sizeof(WAVEHDR));
+	if (mmr != MMSYSERR_NOERROR)
+		std::cout << "Error preparing wave header, Error #:" << mmr << std::endl;
+
+	/* Begin playing the circular buffer */
+	mmr = waveOutWrite(wo, whdr1, sizeof(WAVEHDR));
+	mmr = waveOutWrite(wo, whdr2, sizeof(WAVEHDR));
+	mmr = waveOutWrite(wo, whdr3, sizeof(WAVEHDR));
+	if (mmr != MMSYSERR_NOERROR)
+		std::cout << "Error playing buffer, Error #: " << mmr << std::endl;
 
 	/* Open a UDP socket */
 	SOCKET hSocket = socket(AF_INET, SOCK_DGRAM, 0);
@@ -111,44 +134,14 @@ int main(int argc, char* argv[])
 	/* Cleanup */
 	closesocket(hSocket);
 	WSACleanup();
+	waveOutUnprepareHeader(wo, whdr1, sizeof(WAVEHDR));
+	waveOutUnprepareHeader(wo, whdr2, sizeof(WAVEHDR));
+	waveOutUnprepareHeader(wo, whdr3, sizeof(WAVEHDR));
 	waveOutClose(wo);
-
-	/*
-	libvlc_instance_t *inst;
-	libvlc_media_player_t *mp;
-	libvlc_media_t *m;
-
-	inst = libvlc_new(0, NULL);
-
-	if (inst == NULL)
-		exit(0);
-	
-	m = libvlc_media_new_location(inst, message);
-	if (m == NULL)
-	{
-		MessageBox(NULL, "Unable to load media.", "Error", MB_OK | MB_ICONERROR);
-		exit(0);
-	}
-
-	mp = libvlc_media_player_new_from_media(m);
-	libvlc_media_release(m);
-	libvlc_media_player_play(mp);
-
-	//Wait for open media
-	Sleep(3000);
-
-	//Wait until the file is finished
-	libvlc_time_t time;
-	while (libvlc_media_player_is_playing(mp))
-	{
-		//Print elapsed time
-		time = libvlc_media_player_get_time(mp);
-		printf("|---%d ms elapsed---|\r", time);
-		Sleep(1);
-	}
-
-	libvlc_media_player_release(mp);
-	*/
+	free(whdr1);
+	free(whdr2);
+	free(whdr3);
+	free(circ_buff);
 
 	return 0;
 }
@@ -160,6 +153,7 @@ DWORD WINAPI ThreadRoutine(LPVOID lpParam)
 	int addr_size = sizeof(struct sockaddr_in);
 	int nret;
 	unsigned int numpack = 0;
+	unsigned int position = 0;
 
 	for (;;)
 	{
@@ -172,21 +166,31 @@ DWORD WINAPI ThreadRoutine(LPVOID lpParam)
 		}
 		numpack++;
 
-		/* Setup the wave buffer header*/
-		LPWAVEHDR whdr = (LPWAVEHDR)malloc(sizeof(WAVEHDR));
-		ZeroMemory(whdr, sizeof(WAVEHDR));
-		whdr->lpData = message;
-		whdr->dwBufferLength = nret;
+		/* Copy the message to the circular buffer */
+		int space = (CIRC_BUFF_SIZE - position);
+		if (nret > space) //Wrap-around
+		{
+			memcpy(circ_buff + position, message, space);
+			position = 0;
+			nret -= space;
+			message += space;
+		}
+		memcpy(circ_buff + position, message, nret);
+		position += nret;
 
-		MMRESULT mmr = waveOutPrepareHeader(wo, whdr, sizeof(WAVEHDR));
-		if (mmr != MMSYSERR_NOERROR)
-			std::cout << "Error preparing wave header, Error #:" << mmr << std::endl;
+		printf("Played %d %d byte packets\r", numpack, nret);
+	}
 
-		/* Play the buffer */
-		mmr = waveOutWrite(wo, whdr, sizeof(WAVEHDR));
+	free(message);
+}
+
+void CALLBACK WaveCallback(HWAVEOUT hWave, UINT uMsg, DWORD dwUser, DWORD dw1, DWORD dw2)
+{
+	if (uMsg == WOM_DONE)
+	{
+		MMRESULT mmr = waveOutWrite(wo, (LPWAVEHDR)dw1, sizeof(WAVEHDR));
 		if (mmr != MMSYSERR_NOERROR)
 			std::cout << "Error playing buffer, Error #: " << mmr << std::endl;
-		else
-			printf("Played %d %d byte packets\r", numpack, nret);
 	}
 }
+

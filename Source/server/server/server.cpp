@@ -19,6 +19,7 @@
 
 void preRender(void *p_audio_data, uint8_t **pp_pcm_buffer, size_t size);
 void postRender(void *p_audio_data, uint8_t *p_pcm_buffer, unsigned int channels, unsigned int rate, unsigned int nb_samples, unsigned int bits_per_sample, size_t size, int64_t pts);
+void CALLBACK sendComplete(DWORD, DWORD, LPWSAOVERLAPPED, DWORD);
 
 WSADATA stWSAData;
 char achMCAddr[1024] = MULTICAST_ADDR;
@@ -146,25 +147,10 @@ void postRender(void *p_audio_data, uint8_t *p_pcm_buffer, unsigned int channels
 		sendto(hSocket, buff, pack, 0, (struct sockaddr*)&stDstAddr, sizeof(stDstAddr));
 		remaining -= pack;
 		buffpos += pack;
+		free(buff);
 	}
-
-
-
-
-
-	/* Send and reset if we have reached the buffer size */
-	/*if ((buffpos + size) > PACKET_SIZE)
-	{
-		sendto(hSocket, buff, buffpos, 0, (struct sockaddr*)&stDstAddr, sizeof(stDstAddr));
-		buff = (char*)malloc(PACKET_SIZE);
-		buffpos = 0;
-	}
-
-	/* Add to the buffer and continue */
-	//memcpy(buff + buffpos, p_pcm_buffer, size);
-	//buffpos += size;
 
 	free(p_pcm_buffer);
-
 	first = false;
 }
+
