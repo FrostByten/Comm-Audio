@@ -1,4 +1,4 @@
-//#include <Windows.h>
+//#include <Windows.h> //Who needs header guards anyway?
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 #include <vlc/vlc.h>
@@ -10,17 +10,32 @@
 #pragma comment(lib, "libvlccore.lib")
 
 #pragma comment(lib, "ws2_32.lib")
+#pragma comment(lib, "winmm.lib")
 
 #define MULTICAST_ADDR "234.5.6.7"
 #define MULTICAST_PORT 8910
+#define RECV_SIZE 4096
+
+#define BITS_PER_SAMPLE 16
+#define CHANNELS 2
+#define SAMPLES_PER_SECOND 44100
+
+#define CIRC_BUFF_SIZE 40960
 
 DWORD WINAPI ThreadRoutine(LPVOID lpParam);
 
+// Networking globals
 WSADATA stWSAData;
 char achMCAddr[1024] = MULTICAST_ADDR;
 struct ip_mreq stMreq;
 SOCKADDR_IN stLclAddr, stSrcAddr;
 BOOL fFlag = true;
+
+// Audio globals
+HWAVEOUT wo;
+
+// Circular Buffer
+void *circ_buff;
 
 int main(int argc, char* argv[])
 {
@@ -29,6 +44,26 @@ int main(int argc, char* argv[])
 
 	WSAStartup(0x0202, &stWSAData);
 	int nret;
+
+	/* Allocate the circular buffer */
+	circ_buff = malloc(CIRC_BUFF_SIZE);
+
+	/* Setup the desired waveout settings */
+	WAVEFORMATEX wfx;
+	wfx.nChannels = CHANNELS;
+	wfx.nSamplesPerSec = SAMPLES_PER_SECOND;
+	wfx.wFormatTag = WAVE_FORMAT_PCM;
+	wfx.wBitsPerSample = BITS_PER_SAMPLE;
+	wfx.cbSize = 0;
+	wfx.nBlockAlign = wfx.nChannels * wfx.wBitsPerSample / 8;
+	wfx.nAvgBytesPerSec = wfx.nSamplesPerSec * wfx.nBlockAlign;
+
+	/* Open a waveout device */
+	MMRESULT mmr = waveOutOpen(&wo, WAVE_MAPPER, &wfx, NULL, NULL, CALLBACK_NULL);
+	if (wo == NULL || mmr != MMSYSERR_NOERROR)
+		std::cout << "Error: Unable to open waveout device!" << std::endl;
+	else
+		std::cout << "Successfully opened waveout device!" << std::endl;
 
 	/* Open a UDP socket */
 	SOCKET hSocket = socket(AF_INET, SOCK_DGRAM, 0);
@@ -65,16 +100,18 @@ int main(int argc, char* argv[])
 	}
 
 	/* Wait for user input */
-	std::cout << "Press any key to quit..." << std::endl;
+	std::cout << "Press any key to quit..." << std::endl << std::endl;
 	std::cin.get();
 
 	/* Drop the multicast membership */
 	nret = setsockopt(hSocket, IPPROTO_IP, IP_DROP_MEMBERSHIP, (char*)&stMreq, sizeof(stMreq));
 	if (nret == SOCKET_ERROR)
+		MessageBox(NULL, "Unable to drop multicast membership!", "Error", MB_OK | MB_ICONERROR);
 
 	/* Cleanup */
 	closesocket(hSocket);
 	WSACleanup();
+	waveOutClose(wo);
 
 	/*
 	libvlc_instance_t *inst;
@@ -119,19 +156,37 @@ int main(int argc, char* argv[])
 DWORD WINAPI ThreadRoutine(LPVOID lpParam)
 {
 	SOCKET *hSocket = (SOCKET*)lpParam;
-	char *message = (char*)malloc(1024);
+	char *message = (char*)malloc(RECV_SIZE);
 	int addr_size = sizeof(struct sockaddr_in);
 	int nret;
+	unsigned int numpack = 0;
 
 	for (;;)
 	{
-		nret = recvfrom(*hSocket, message, 1024, 0, (struct sockaddr*)&stSrcAddr, &addr_size);
-
+		/* Receive from the multicast UDP port */
+		nret = recvfrom(*hSocket, message, RECV_SIZE, 0, (struct sockaddr*)&stSrcAddr, &addr_size);
 		if (nret < 0)
-			MessageBox(NULL, "Failed to receive!", "Error", MB_OK | MB_ICONERROR);
-		else
-			message[nret] = '\0';
+		{
+			std::cout << "Failed to receive!" << std::endl;
+			continue;
+		}
+		numpack++;
 
-		std::cout << message << std::endl;
+		/* Setup the wave buffer header*/
+		LPWAVEHDR whdr = (LPWAVEHDR)malloc(sizeof(WAVEHDR));
+		ZeroMemory(whdr, sizeof(WAVEHDR));
+		whdr->lpData = message;
+		whdr->dwBufferLength = nret;
+
+		MMRESULT mmr = waveOutPrepareHeader(wo, whdr, sizeof(WAVEHDR));
+		if (mmr != MMSYSERR_NOERROR)
+			std::cout << "Error preparing wave header, Error #:" << mmr << std::endl;
+
+		/* Play the buffer */
+		mmr = waveOutWrite(wo, whdr, sizeof(WAVEHDR));
+		if (mmr != MMSYSERR_NOERROR)
+			std::cout << "Error playing buffer, Error #: " << mmr << std::endl;
+		else
+			printf("Played %d %d byte packets\r", numpack, nret);
 	}
 }

@@ -15,9 +15,10 @@
 
 #define MULTICAST_ADDR "234.5.6.7"
 #define MULTICAST_PORT 8910
+#define PACKET_SIZE 512
 
 void preRender(void *p_audio_data, uint8_t **pp_pcm_buffer, size_t size);
-void postRender(void *p_audio_data, uint8_t *p_pcm_buffer, unsigned int channels, unsigned int rate, unsigned int nb_samples, size_t size, int64_t pts);
+void postRender(void *p_audio_data, uint8_t *p_pcm_buffer, unsigned int channels, unsigned int rate, unsigned int nb_samples, unsigned int bits_per_sample, size_t size, int64_t pts);
 
 WSADATA stWSAData;
 char achMCAddr[1024] = MULTICAST_ADDR;
@@ -100,9 +101,9 @@ int main(int argc, char* argv[])
 	std::cout << "Loaded media!" << std::endl;
 
 	//Wait until end of media
-	while (libvlc_media_player_is_playing(mp))
-		if (libvlc_media_player_get_position(mp) > 0.0f)
-			printf("\rSent: %%%.2f", (libvlc_media_player_get_position(mp) * 100));
+	while (libvlc_media_player_is_playing(mp));
+		//if (libvlc_media_player_get_position(mp) > 0.0f)
+			//printf("\rSent: %%%.2f", (libvlc_media_player_get_position(mp) * 100));
 
 	std::cout << std::endl << "Finished sending media... Exiting" << std::endl;
 
@@ -120,15 +121,50 @@ void preRender(void *p_audio_data, uint8_t **pp_pcm_buffer, size_t size)
 	SecureZeroMemory(*pp_pcm_buffer, size);
 }
 
-void postRender(void *p_audio_data, uint8_t *p_pcm_buffer, unsigned int channels, unsigned int rate, unsigned int nb_samples, size_t size, int64_t pts)
+void postRender(void *p_audio_data, uint8_t *p_pcm_buffer, unsigned int channels, unsigned int rate, unsigned int nb_samples, unsigned int bits_per_sample, size_t size, int64_t pts)
 {
 	static bool first = true;
+	char *buff;
+	unsigned int buffpos = 0;
+
+	/* Setup the buffer initially */
 	if (first)
-		std::cout << std::endl << "-----------------------" << std::endl << "Loaded stream..." << std::endl << "Channels: " << channels << std::endl << "Rate: " << rate << std::endl << "Bps: " << nb_samples << std::endl << "Pts: " << pts << std::endl << "-----------------------" << std::endl;
-	//std::cout << p_pcm_buffer << std::endl;
+	{
+		std::cout << std::endl << "---------------------------" << std::endl << "Loaded stream..." << std::endl << "Channels: " << channels << std::endl << "Rate: " << rate << "kHz" << std::endl << "Bps: " << bits_per_sample << std::endl << "Packet size: " << PACKET_SIZE << std::endl << "Samples per packet: " << PACKET_SIZE / (bits_per_sample/8) << std::endl << "Chunk size: " << size << std::endl;
+		printf("Media start pos: 0x%X\n", p_pcm_buffer);
+		std::cout << "---------------------------" << std::endl;
+	}
 
-	sendto(hSocket, (char*)p_pcm_buffer, size, 0, (struct sockaddr*)&stDstAddr, sizeof(stDstAddr));
+	unsigned int remaining = size;
+	unsigned int pack;
+	while (remaining > 0)
+	{
+		pack = remaining % PACKET_SIZE;
+		pack = pack ? pack : PACKET_SIZE;
+		buff = (char*)malloc(pack);
+		memcpy(buff, p_pcm_buffer + buffpos, pack);
+		sendto(hSocket, buff, pack, 0, (struct sockaddr*)&stDstAddr, sizeof(stDstAddr));
+		remaining -= pack;
+		buffpos += pack;
+	}
 
-	//free(p_pcm_buffer);
+
+
+
+
+	/* Send and reset if we have reached the buffer size */
+	/*if ((buffpos + size) > PACKET_SIZE)
+	{
+		sendto(hSocket, buff, buffpos, 0, (struct sockaddr*)&stDstAddr, sizeof(stDstAddr));
+		buff = (char*)malloc(PACKET_SIZE);
+		buffpos = 0;
+	}
+
+	/* Add to the buffer and continue */
+	//memcpy(buff + buffpos, p_pcm_buffer, size);
+	//buffpos += size;
+
+	free(p_pcm_buffer);
+
 	first = false;
 }
