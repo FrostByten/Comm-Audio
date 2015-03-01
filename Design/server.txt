@@ -1,0 +1,86 @@
+main
+{
+	startup WSA
+	create a list of all available files
+	
+	create a udp multicast socket and bind it
+	create a tcp control socket and bind it
+	create a udp microphone socket
+	
+	start the music thread
+	
+	listen on the control socket
+	wait for user to press enter
+	
+	cleanup
+	exit
+}
+
+cleanup
+{
+	set vlc instance to stop and wait for it to stop
+	de-allocate media buffers
+	close sockets
+	de-allocate file and user lists
+}
+
+music thread
+{
+	for ever
+	{
+		if music list is not empty
+			select next track
+		otherwise
+			select random track
+		
+		load media in vlc
+		create new vlc instance from media
+		
+		apply vlc callback functions
+		play the vlc instance
+		
+		while vlc instance not finished do nothing
+		
+		send a buffers worth of silence
+	}
+}
+
+vlc pre render callback
+{
+	allocate memory chunk for rendering
+}
+
+vlc post render callback
+{
+	while chunk remaining is not zero
+		if chunk remaining is greater than or equal to the size of a packet
+			create a full packet from the chunk and send it
+		otherwise
+			create a partial packet from the chunk and send it
+}
+
+control socket accept
+{
+	create a new user list entry for the client
+	send the file list to socket
+}
+
+send file completion
+{
+	receive commands from control socket
+	receive from microphone socket
+}
+
+command receive
+{
+	if partial packet
+		receive until all data got
+		execute command
+	otherwise
+		receive until got command code and size
+}
+
+mic receive
+{
+	
+}

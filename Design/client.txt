@@ -1,0 +1,43 @@
+main
+{
+	startup WSA
+	create the gui
+	
+	create a socket to receive UDP multicast
+	create a TCP socket for control connection
+	
+	create a play thread
+	connect to the server via TCP
+}
+
+play thread
+{
+	open the wave device using the wave callback
+	allocate and zero a circular buffer
+	create and prepare 3 wave headers for the circular buffer
+	queue and play the 3 buffers
+}
+
+control connect completion
+{
+	receive commands
+}
+
+command receive
+{
+	if partial packet
+		receive until all data got
+		execute command
+	otherwise
+		receive until got command code and size
+}
+
+wave callback
+{
+	re-queue the finished buffer
+}
+
+mic send
+{
+
+}
