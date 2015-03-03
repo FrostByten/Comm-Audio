@@ -1,0 +1,28 @@
+Connect function
+{
+	if there is no server saved in settings.
+		open up server setting dialog
+	else
+		connect to configured server
+		if connection fails
+			pop up error.
+		else
+			load sound chat playlist and sound visualisations
+			if IP is on admin list
+				load song bank tab, enable play/pause functionality
+}
+
+onPlayPressed
+{
+	if playing music
+		send server message to pause music
+	else
+		send server message to start playing music where it left off.
+}
+
+onMicrophoneUsed
+{
+	while microphone is being used.
+		use microphone connection to send raw pcm to server.
+}
+
