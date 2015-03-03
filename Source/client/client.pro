@@ -26,3 +26,13 @@ FORMS    += mainwindow.ui
 INSTALLS += install_it
 
 INCLUDEPATH += $$PWD/../include/
+
+
+
+unix|win32: LIBS += -L$$PWD/../libs/ -llibvlc
+
+INCLUDEPATH += $$PWD/../include/vlc
+DEPENDPATH += $$PWD/../include/vlc
+
+win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../libs/libvlc.lib
+else:unix|win32-g++: PRE_TARGETDEPS += $$PWD/../libs/liblibvlc.a
