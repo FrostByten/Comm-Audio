@@ -41,3 +41,11 @@ mic send
 {
 
 }
+
+sound bar graph
+{
+	clear space
+	read sound frequencies
+	set bar heights
+	draw space
+}
