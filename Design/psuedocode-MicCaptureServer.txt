@@ -1,0 +1,21 @@
+initMicCapture()
+{
+    initialize connection from client to get mic data.
+}
+
+getMicData()
+{
+    read Mic Data from client and put to buffer.
+    When buffer is full, pass data to addPCMToBroadcast to add the data to
+    the music stream
+}
+
+addPCMToBroadcast()
+{
+    add PCM data to the music stream
+}
+
+broadcast()
+{
+    use base broadcast function to broadcast music stream with the mic data
+}

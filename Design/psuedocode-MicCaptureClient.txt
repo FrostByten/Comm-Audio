@@ -1,0 +1,18 @@
+Mic Capture Client
+
+initMicCapture()
+{
+    Initialize connection to server.
+    Initialize mic to be ready for capturing PCM data.
+}
+
+getInput()
+{
+    Get mic input as PCM and put it into send buffer.
+    When buffer is ready for sending call sendToServer().
+}
+
+sendToServer()
+{
+    send data from buffer to server.
+}
