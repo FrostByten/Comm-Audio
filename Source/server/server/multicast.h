@@ -1,0 +1,10 @@
+#ifndef MULTICAST_H
+#define MULTICAST_H
+
+#define MULTICAST_ADDR "234.5.6.7"
+#define MULTICAST_PORT 8910
+#define CONTROL_PORT 8911
+#define PACKET_SIZE 512
+#define MAX_BACKLOG 5
+
+#endif
