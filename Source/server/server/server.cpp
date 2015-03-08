@@ -1,44 +1,36 @@
-//#include <Windows.h> Because header guards are for chumps...
-#include "multicast.h"
-#include "session.h"
-
-//Link vlc
-#pragma comment(lib, "libvlc.lib")
-#pragma comment(lib, "libvlccore.lib")
-
-//Link winsock
-#pragma comment(lib, "ws2_32.lib")
-
-void getFileList(char *path = "\0");
-void openMulticastSocket();
-void setupMulticast();
-void setupListenSocket();
-void print(char *m);
-void cleanup(int ret);
-
-const char *file_types[TYPES_LENGTH] = { "wav", "mp3", "ogg", "pcm", "aac", "flac", "m4a" };
+#include "server.h"
 
 WSADATA stWSAData;
-char achMCAddr[1024] = MULTICAST_ADDR;
+char achMCAddr[MAX_ADDR_SIZE] = MULTICAST_ADDR;
 SOCKADDR_IN stLclAddr, stDstAddr;
 SOCKET hMulticast_Socket, hListen_Socket;
+HANDLE hAccept_Thread = INVALID_HANDLE_VALUE;
 
 std::vector<media> queue;
 std::vector<user> clients;
 std::vector<char *> files;
 
+WSAEVENT event_accept, event_close;
+
 int main(int argc, char* argv[])
 {
 	WSAStartup(0x0202, &stWSAData);
 
-	print("Initializing server...");
+	print("Initializing server...\n");
 	getFileList();
+	print("Finished searching\n");
 
+	if (files.empty())
+	{
+		printf("\nNo files available, exiting...");
+		cleanup(0);
+	}
 	openMulticastSocket();
 	setupMulticast();
 
 	setupListenSocket();
 
+	print("\nServer running, press enter to terminate");
 	cleanup(0);
 }
 
@@ -50,8 +42,7 @@ void lel()
 
 	/* Setup streaming to memory */
 	char smem_options[256];
-	sprintf(smem_options, "#transcode{acodec=s16l,samplerate=44100,ab=705600,channels=2}:smem{audio-postrender-callback=%lld,audio-prerender-callback=%lld}",
-		(long long int)(intptr_t)(void*)&postRender, (long long int)(intptr_t)(void*)&preRender);
+	sprintf(smem_options, STREAM_OPTIONS, (long long int)(intptr_t)(void*)&postRender, (long long int)(intptr_t)(void*)&preRender);
 	std::cout << std::endl << "Transcoding options: " << smem_options << std::endl << std::endl;
 	const char* const vlc_args[] = { "-I", "dummy", "--verbose=2", "--sout", smem_options };
 
@@ -151,11 +142,19 @@ void openMulticastSocket()
 void setupListenSocket()
 {
 	struct sockaddr_in server;
+	u_long mode = 1;
 
 	/* Open a TCP socket */
-	if ((hListen_Socket = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
+	if ((hListen_Socket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED)) == INVALID_SOCKET)
 	{
 		perror("Unable to create control socket");
+		cleanup(1);
+	}
+
+	/* Set socket to non-blocking */
+	if (ioctlsocket(hListen_Socket, FIONBIO, &mode) != NO_ERROR)
+	{
+		perror("Unable to set control socket to non-blocking mode");
 		cleanup(1);
 	}
 
@@ -166,7 +165,7 @@ void setupListenSocket()
 	server.sin_addr.s_addr = htonl(INADDR_ANY);
 
 	/* Bind the TCP socket */
-	if(bind(hListen_Socket, (struct sockaddr*)&server, sizeof(server)) == SOCKET_ERROR)
+	if (bind(hListen_Socket, (struct sockaddr*)&server, sizeof(server)) == SOCKET_ERROR)
 	{
 		perror("Unable to bind control socket");
 		cleanup(1);
@@ -174,6 +173,41 @@ void setupListenSocket()
 
 	/* Listen for new clients */
 	listen(hListen_Socket, MAX_BACKLOG);
+
+	/* Accept new clients */
+	struct sockaddr *addr = (struct sockaddr*)malloc(sizeof(struct sockaddr));
+	int addrlen = sizeof(struct sockaddr);
+
+	/* Create accept event */
+	if ((event_accept = WSACreateEvent()) == WSA_INVALID_EVENT)
+	{
+		perror("Unable to create accept event");
+		cleanup(1);
+	}
+
+	/* Create close event */
+	if ((event_close = WSACreateEvent()) == WSA_INVALID_EVENT)
+	{
+		perror("Unable to create close event");
+		cleanup(1);
+	}
+
+	/* Post to the event when triggered */
+	if (WSAEventSelect(hListen_Socket, event_accept, FD_ACCEPT))
+	{
+		perror("Unable to listen for clients, event failed");
+		cleanup(1);
+	}
+
+	/* Create a thread to accept connection */
+	DWORD thread_id;
+	if ((hAccept_Thread = CreateThread(NULL, 0, acceptRoutine, NULL, 0, &thread_id)) == NULL)
+	{
+		perror("Unable to create accept thread");
+		cleanup(1);
+	}
+
+	print("Control connection ready");
 }
 
 void getFileList(char *path)
@@ -181,6 +215,7 @@ void getFileList(char *path)
 	WIN32_FIND_DATA ffd;
 	HANDLE hFind;
 
+	/* This is for the first iteration */
 	if (path[0] == '\0')
 	{
 		path = (char*)malloc(FILE_BUFF_LENGTH);
@@ -189,11 +224,13 @@ void getFileList(char *path)
 		strcat(path, "\\*");
 	}
 
+	/* Traverse the current directory */
 	hFind = FindFirstFile(path, &ffd);
 	if (hFind != INVALID_HANDLE_VALUE)
 	{
 		do
 		{
+			/* Call recersively on directories */
 			if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY && ffd.cFileName[0] != '.')
 			{
 				char *subpath = (char*)malloc(FILE_BUFF_LENGTH);
@@ -205,11 +242,13 @@ void getFileList(char *path)
 			}
 			else
 			{
+				/* Check file-type against valid types */
 				char *place = strrchr(ffd.cFileName, '.') + 1;
 				for (int i = 0; i < TYPES_LENGTH; ++i)
 				{
 					if (!strcmp(file_types[i], place))
 					{
+						/* Note file in file list */
 						std::cout << "\tFound: " << ffd.cFileName << std::endl;
 
 						char *filepath = (char*)malloc(FILE_BUFF_LENGTH);
@@ -229,6 +268,69 @@ void getFileList(char *path)
 	free(path);
 }
 
+DWORD WINAPI acceptRoutine(LPVOID lpArg)
+{
+	HANDLE events[2] = { event_accept, event_close };
+
+	for (;;)
+	{
+		/* Wait for an event */
+		if (WaitForMultipleObjects(2, events, FALSE, INFINITE) - WAIT_OBJECT_0 == 0) //Accept event (index 0)
+		{
+			int client_len = sizeof(sockaddr_in);
+			sockaddr_in *client_addr = (sockaddr_in*)malloc(client_len);
+
+			/* Accept the connection */
+			SOCKET client_sock = accept(hListen_Socket, (sockaddr*)client_addr, &client_len);
+			std::cout << "\tClient[" << inet_ntoa(client_addr->sin_addr) << "] connected" << std::endl;
+
+			/* Add the client to the listen group for disconnecting */
+			if (WSAEventSelect(client_sock, event_close, FD_CLOSE))
+			{
+				perror("Unable to listen for disconnection from this client, event failed");
+				cleanup(1);
+			}
+
+			/* Construct the client struct*/
+			user client;
+			client.socket = client_sock;
+			client.address = client_addr;
+			client.name = NULL;
+
+			/* Note the client in the client list */
+			clients.push_back(client);
+
+			/* Reset to event ready to be triggered again */
+			WSAResetEvent(event_accept);
+		}
+		else //Close event (index 1)
+		{
+			WSANETWORKEVENTS events;
+			/* Search through clients to see which one disconnected */
+			for (unsigned int i = 0; i < clients.size(); ++i)
+			{
+				/* Check for disconnection */
+				WSAEnumNetworkEvents(clients[i].socket, NULL, &events);
+				if (events.lNetworkEvents == FD_CLOSE)
+				{
+					std::cout << "\tClient[" << inet_ntoa(clients[i].address->sin_addr) << "] disconnected" << std::endl;
+
+					/* Remove the client from the list and de-allocate */
+					free(clients[i].address);
+					closesocket(clients[i].socket);
+					clients.erase(clients.begin() + (i * sizeof(user)));
+					break;
+				}
+			}
+			
+			/* Reset to event ready to be triggered again */
+			WSAResetEvent(event_close);
+		}
+	}
+
+	return 0;
+}
+
 void print(char *m)
 {
 	std::cout << m << std::endl;
@@ -237,13 +339,32 @@ void print(char *m)
 void cleanup(int ret)
 {
 	std::cin.get();
+	print("\nServer closing...");
 
-	for (int i = 0; i < files.size(); ++i)
+	/* Kill the accept thread */
+	if (hAccept_Thread != INVALID_HANDLE_VALUE)
+		TerminateThread(hAccept_Thread, 0);
+
+	/* De-allocate memory and disconnect from clients before we die */
+	for (unsigned int i = 0; i < files.size(); ++i)
 		free(files[i]);
 
+	for (unsigned int i = 0; i < clients.size(); ++i)
+	{
+		free(clients[i].address);
+		shutdown(clients[i].socket, SD_BOTH);
+		closesocket(clients[i].socket);
+	}
+
+	/* Network cleanup */
+	WSACloseEvent(event_accept);
+	WSACloseEvent(event_close);
+	shutdown(hListen_Socket, SD_BOTH);
+	shutdown(hMulticast_Socket, SD_BOTH);
 	closesocket(hListen_Socket);
 	closesocket(hMulticast_Socket);
 	WSACleanup();
 
 	exit(ret);
 }
+

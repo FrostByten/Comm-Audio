@@ -11,9 +11,6 @@
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 
-#define FILE 0
-#define URL 1
-
 #define FILE_BUFF_LENGTH 1024
 #define TYPES_LENGTH 7
 
@@ -23,17 +20,25 @@ extern SOCKADDR_IN stDstAddr;
 void preRender(void *p_audio_data, uint8_t **pp_pcm_buffer, size_t size);
 void postRender(void *p_audio_data, uint8_t *p_pcm_buffer, unsigned int channels, unsigned int rate, unsigned int nb_samples, unsigned int bits_per_sample, size_t size, int64_t pts);
 
+DWORD WINAPI mediaRoutine(LPVOID lpArg);
+
+typedef enum media_type
+{
+	TYPE_FILE,
+	TYPE_URL
+} media_type;
+
 typedef struct media
 {
-	bool type;
+	media_type type;
 	char location[FILE_BUFF_LENGTH];
 } media;
 
 typedef struct user
 {
-	SOCKET *socket;
+	SOCKET socket;
 	char *name;
-	struct sockaddr *address;
+	struct sockaddr_in *address;
 } user;
 
 #endif
