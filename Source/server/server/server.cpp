@@ -5,16 +5,21 @@ char achMCAddr[MAX_ADDR_SIZE] = MULTICAST_ADDR;
 SOCKADDR_IN stLclAddr, stDstAddr;
 SOCKET hMulticast_Socket, hListen_Socket;
 HANDLE hAccept_Thread = INVALID_HANDLE_VALUE;
+HANDLE hMedia_Thread = INVALID_HANDLE_VALUE;
 
-std::vector<media> queue;
+std::list<media> queue;
 std::vector<user> clients;
 std::vector<char *> files;
 
 WSAEVENT event_accept, event_close;
+bool redraw_prog_bar = false;
+const std::string blank(PROG_BAR_WIDTH + strlen("Progress: "), ' ');
 
 int main(int argc, char* argv[])
 {
 	WSAStartup(0x0202, &stWSAData);
+
+	disable_cursor();
 
 	print("Initializing server...\n");
 	getFileList();
@@ -30,53 +35,18 @@ int main(int argc, char* argv[])
 
 	setupListenSocket();
 
-	print("\nServer running, press enter to terminate");
-	cleanup(0);
-}
+	std::pair<std::vector<char *>*, std::list<media>*> list(&files, &queue);
 
-void lel()
-{
-	libvlc_instance_t *inst;
-	libvlc_media_player_t *mp;
-	libvlc_media_t *m;
-
-	/* Setup streaming to memory */
-	char smem_options[256];
-	sprintf(smem_options, STREAM_OPTIONS, (long long int)(intptr_t)(void*)&postRender, (long long int)(intptr_t)(void*)&preRender);
-	std::cout << std::endl << "Transcoding options: " << smem_options << std::endl << std::endl;
-	const char* const vlc_args[] = { "-I", "dummy", "--verbose=2", "--sout", smem_options };
-
-	/* Create a new vlc instance */
-	inst = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
-	if (inst == NULL)
-		exit(0);
-
-	/* Open the media */
-	//m = libvlc_media_new_path(inst, "C:\\Users\\Lewis\\Documents\\Comm-Audio\\Source\\server\\server\\dingdong.mp3");
-	m = libvlc_media_new_location(inst, "http://incompetech.com/music/royalty-free/mp3-royaltyfree/Who%20Likes%20to%20Party.mp3");
-	if (m == NULL)
+	/* Create a thread to play media */
+	DWORD thread_id;
+	if ((hMedia_Thread = CreateThread(NULL, 0, mediaRoutine, &list, 0, &thread_id)) == NULL)
 	{
-		MessageBox(NULL, "Unable to load media.", "Error", MB_OK | MB_ICONERROR);
-		exit(0);
+		perror("Unable to create media thread");
+		cleanup(1);
 	}
+	print("Media thread ready");
 
-	mp = libvlc_media_player_new_from_media(m);
-	libvlc_media_release(m);
-	libvlc_media_player_play(mp);
-
-	//Wait for player to load the media
-	while (!libvlc_media_player_is_playing(mp));
-
-	//Wait until end of media
-	while (libvlc_media_player_is_playing(mp));
-
-		//if (libvlc_media_player_get_position(mp) > 0.0f)
-			//printf("\rSent: %%%.2f", (libvlc_media_player_get_position(mp) * 100));
-
-	/* Cleanup */
-	libvlc_media_player_release(mp);
-
-	print("Server running, press enter to stop...");
+	print("\nServer running, press <Enter> to terminate\n");
 	cleanup(0);
 }
 
@@ -270,7 +240,7 @@ void getFileList(char *path)
 
 DWORD WINAPI acceptRoutine(LPVOID lpArg)
 {
-	HANDLE events[2] = { event_accept, event_close };
+	HANDLE events[2] = { event_accept, event_close};
 
 	for (;;)
 	{
@@ -282,7 +252,9 @@ DWORD WINAPI acceptRoutine(LPVOID lpArg)
 
 			/* Accept the connection */
 			SOCKET client_sock = accept(hListen_Socket, (sockaddr*)client_addr, &client_len);
-			std::cout << "\tClient[" << inet_ntoa(client_addr->sin_addr) << "] connected" << std::endl;
+			blank_line();
+			std::cout << "\r\tClient[" << inet_ntoa(client_addr->sin_addr) << "] connected" << std::endl;
+			redraw_prog_bar = true;
 
 			/* Add the client to the listen group for disconnecting */
 			if (WSAEventSelect(client_sock, event_close, FD_CLOSE))
@@ -313,7 +285,9 @@ DWORD WINAPI acceptRoutine(LPVOID lpArg)
 				WSAEnumNetworkEvents(clients[i].socket, NULL, &events);
 				if (events.lNetworkEvents == FD_CLOSE)
 				{
-					std::cout << "\tClient[" << inet_ntoa(clients[i].address->sin_addr) << "] disconnected" << std::endl;
+					blank_line();
+					std::cout << "\r\tClient[" << inet_ntoa(clients[i].address->sin_addr) << "] disconnected" << std::endl;
+					redraw_prog_bar = true;
 
 					/* Remove the client from the list and de-allocate */
 					free(clients[i].address);
@@ -345,6 +319,10 @@ void cleanup(int ret)
 	if (hAccept_Thread != INVALID_HANDLE_VALUE)
 		TerminateThread(hAccept_Thread, 0);
 
+	/* Kill the media thread */
+	if (hMedia_Thread != INVALID_HANDLE_VALUE)
+		TerminateThread(hMedia_Thread, 0);
+
 	/* De-allocate memory and disconnect from clients before we die */
 	for (unsigned int i = 0; i < files.size(); ++i)
 		free(files[i]);
@@ -368,3 +346,17 @@ void cleanup(int ret)
 	exit(ret);
 }
 
+void inline disable_cursor()
+{
+	CONSOLE_CURSOR_INFO info;
+	HANDLE hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+	info.bVisible = false;
+	info.dwSize = 1;
+
+	SetConsoleCursorInfo(hOutput, &info);
+}
+
+void inline blank_line()
+{
+	std::cout << '\r' << blank.c_str();
+}

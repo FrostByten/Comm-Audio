@@ -12,8 +12,6 @@
 //Link winsock
 #pragma comment(lib, "ws2_32.lib")
 
-#define STREAM_OPTIONS "#transcode{acodec=s16l,samplerate=44100,ab=705600,channels=2}:smem{audio-postrender-callback=%lld,audio-prerender-callback=%lld}"
-
 void getFileList(char *path = "\0");
 void openMulticastSocket();
 void setupMulticast();
@@ -21,6 +19,8 @@ void setupListenSocket();
 void print(char *m);
 void cleanup(int ret);
 DWORD WINAPI acceptRoutine(LPVOID lpArg);
+void inline disable_cursor();
+void inline blank_line();
 
 const char *file_types[TYPES_LENGTH] = { "wav", "mp3", "ogg", "pcm", "aac", "flac", "m4a" };
 
