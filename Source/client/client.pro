@@ -4,7 +4,8 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui \
+            multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -17,22 +18,24 @@ TARGET = client
 TEMPLATE = app
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+        processmic.cpp
 
-HEADERS  += mainwindow.h
+HEADERS += mainwindow.h \
+        processmic.h
 
 FORMS    += mainwindow.ui
 
 INSTALLS += install_it
 
-INCLUDEPATH += $$PWD/../include/
+#INCLUDEPATH += $$PWD/../include/
 
 
 
-unix|win32: LIBS += -L$$PWD/../libs/ -llibvlc
+#unix|win32: LIBS += -L$$PWD/../libs/ -llibvlc
 
-INCLUDEPATH += $$PWD/../include/vlc
-DEPENDPATH += $$PWD/../include/vlc
+#INCLUDEPATH += $$PWD/../include/vlc
+#DEPENDPATH += $$PWD/../include/vlc
 
-win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../libs/libvlc.lib
-else:unix|win32-g++: PRE_TARGETDEPS += $$PWD/../libs/liblibvlc.a
+#win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../libs/libvlc.lib
+#else:unix|win32-g++: PRE_TARGETDEPS += $$PWD/../libs/liblibvlc.a

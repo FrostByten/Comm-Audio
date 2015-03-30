@@ -1,18 +1,19 @@
 #include "mainwindow.h"
 #include <QApplication>
 #include <Windows.h>
-#include <libvlc.h>
-#include <vlc/vlc.h>
+// commenting out libvlc for testing purposes
+//#include <libvlc.h>
+//#include <vlc/vlc.h>
 
-#pragma comment(lib, "libvlc.lib")
-#pragma comment(lib, "libvlccore.lib")
+//#pragma comment(lib, "libvlc.lib")
+//#pragma comment(lib, "libvlccore.lib")
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
-
+    /*
 	libvlc_instance_t *inst;
 	libvlc_media_player_t *mp;
 	libvlc_media_t *m;
@@ -28,7 +29,7 @@ int main(int argc, char *argv[])
 	mp = libvlc_media_player_new_from_media(m);
 
 	libvlc_media_release(m);
-	libvlc_media_player_play(mp);
+    libvlc_media_player_play(mp);*/
 
     return a.exec();
 }
