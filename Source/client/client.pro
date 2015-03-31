@@ -45,3 +45,6 @@ INSTALLS += install_it
 
 #win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../libs/libvlc.lib
 #else:unix|win32-g++: PRE_TARGETDEPS += $$PWD/../libs/liblibvlc.a
+
+RESOURCES += \
+    client.qrc

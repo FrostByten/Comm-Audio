@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/images">
+        <file alias="mic-running.png">images/mic-running.png</file>
+        <file alias="mic-stopped.png">images/mic-stopped.png</file>
+    </qresource>
+</RCC>
