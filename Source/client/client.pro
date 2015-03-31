@@ -5,7 +5,9 @@
 #-------------------------------------------------
 
 QT       += core gui \
-            multimedia
+            multimedia \
+            network \
+            opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -19,10 +21,14 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-        processmic.cpp
+        processmic.cpp \
+    audiothread.cpp \
+    audioreceive.cpp
 
 HEADERS += mainwindow.h \
-        processmic.h
+        processmic.h \
+    audiothread.h \
+    audioreceive.h
 
 FORMS    += mainwindow.ui
 
