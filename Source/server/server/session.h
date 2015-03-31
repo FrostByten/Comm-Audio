@@ -38,10 +38,13 @@ void postRender(void *p_audio_data, uint8_t *p_pcm_buffer, unsigned int channels
 DWORD WINAPI mediaRoutine(LPVOID lpArg);
 void CALLBACK client_read(DWORD dwError, DWORD cbTransferred, LPWSAOVERLAPPED lpOverlapped, DWORD dwFlags);
 void media_error(const struct libvlc_event_t* event, void *userData);
+void sendMessage(int, char*, int);
+void sendMessageToAll(char*, int , int = -1);
 void handleRequest(int);
 void handlePlayback(int);
 void handleName(int c);
 void handleSelect(int c);
+void handleUserList(int c);
 
 void inline blank_line();
 void inline printPercent(float through);
@@ -51,6 +54,11 @@ typedef enum media_type
 	TYPE_FILE,
 	TYPE_URL
 } media_type;
+
+typedef enum user_list
+{
+	EXIST, CONNECT, DISCONNECT
+} user_list;
 
 typedef struct media
 {
@@ -64,6 +72,7 @@ typedef struct user
 	char *name;
 	struct sockaddr_in *address;
 	DWORD bytes_recvd;
+	bool muted;
 	WSABUF buffer;
 	WSAOVERLAPPED wol;
 } user;

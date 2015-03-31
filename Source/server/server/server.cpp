@@ -275,6 +275,15 @@ DWORD WINAPI acceptRoutine(LPVOID lpArg)
 			client.buffer.len = CLIENT_BUFFER_SIZE;
 			ZeroMemory(&client.wol, sizeof(WSAOVERLAPPED));
 
+			int len = strlen(client.name);
+			char *mes = (char*)malloc(len + 6);
+			mes[0] = SET_NAME;
+			memcpy(mes + 1, &len, sizeof(int));
+			mes[5] = CONNECT;
+			memcpy(mes + 5, client.name, len);
+			sendMessageToAll(mes, len + 5);
+			free(mes);
+
 			/* Note the client in the client list */
 			clients.push_back(client);
 
@@ -298,6 +307,15 @@ DWORD WINAPI acceptRoutine(LPVOID lpArg)
 					blank_line();
 					std::cout << "\r\tClient[" << clients[i].name << "] disconnected" << std::endl;
 					redraw_prog_bar = true;
+
+					int len = strlen(clients[i].name);
+					char *mes = (char*)malloc(len + 6);
+					mes[0] = SET_NAME;
+					memcpy(mes + 1, &len, sizeof(int));
+					mes[5] = DISCONNECT;
+					memcpy(mes + 5, clients[i].name, len);
+					sendMessageToAll(mes, len + 5);
+					free(mes);
 
 					/* Remove the client from the list and de-allocate */
 					free(clients[i].address);

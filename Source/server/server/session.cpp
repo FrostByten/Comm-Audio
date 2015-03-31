@@ -202,6 +202,9 @@ void handleRequest(int c)
 		case FILE_SELECT:
 			handleSelect(c);
 			break;
+		case USER_LIST:
+			handleUserList(c);
+			break;
 	}
 }
 
@@ -269,6 +272,37 @@ void handleSelect(int c)
 	m.location = loc;
 
 	queue.push_back(m);
+}
+
+void handleUserList(int c)
+{
+	printf("\nClient[%s] is requesting user list, sending...\n", clients[c].name);
+
+	for (unsigned int i = 0; i < clients.size(); ++i)
+		if (i != c)
+		{
+			int len = strlen(clients[i].name);
+			char *mes = (char*)malloc(len + 6);
+			mes[0] = SET_NAME;
+			memcpy(mes + 1, &len, sizeof(int));
+			mes[5] = EXIST;
+			memcpy(mes + 5, clients[i].name, len);
+			sendMessage(c, mes, len + 5);
+			free(mes);
+		}
+
+}
+
+void sendMessage(int c, char *mes, int len)
+{
+	send(clients[c].socket, mes, len, NULL);
+}
+
+void sendMessageToAll(char *mes, int len, int except)
+{
+	for (unsigned int i = 0; i < clients.size(); ++i)
+		if (i != except)
+			sendMessage(i, mes, len);
 }
 
 void inline blank_line()
