@@ -339,6 +339,12 @@ void cleanup(int ret)
 	for (unsigned int i = 0; i < files.size(); ++i)
 		free(files[i]);
 
+	while (!queue.empty())
+	{
+		free(queue.front().location);
+		queue.pop_front();
+	}
+
 	for (unsigned int i = 0; i < clients.size(); ++i)
 	{
 		free(clients[i].address);

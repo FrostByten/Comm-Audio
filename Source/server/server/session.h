@@ -13,6 +13,10 @@
 #include <WS2tcpip.h>
 #include "multicast.h"
 
+#pragma warning (disable : 4996)
+#pragma warning (disable : 4244)
+#pragma warning (disable : 4018)
+
 #define FILE_BUFF_LENGTH 1024
 #define TYPES_LENGTH 7
 #define PROG_BAR_WIDTH 60
@@ -33,9 +37,11 @@ void postRender(void *p_audio_data, uint8_t *p_pcm_buffer, unsigned int channels
 
 DWORD WINAPI mediaRoutine(LPVOID lpArg);
 void CALLBACK client_read(DWORD dwError, DWORD cbTransferred, LPWSAOVERLAPPED lpOverlapped, DWORD dwFlags);
+void media_error(const struct libvlc_event_t* event, void *userData);
 void handleRequest(int);
 void handlePlayback(int);
 void handleName(int c);
+void handleSelect(int c);
 
 void inline blank_line();
 void inline printPercent(float through);
@@ -49,7 +55,7 @@ typedef enum media_type
 typedef struct media
 {
 	media_type type;
-	char location[FILE_BUFF_LENGTH];
+	char *location;
 } media;
 
 typedef struct user
@@ -63,5 +69,6 @@ typedef struct user
 } user;
 
 extern std::vector<user> clients;
+extern std::list<media> queue;
 
 #endif

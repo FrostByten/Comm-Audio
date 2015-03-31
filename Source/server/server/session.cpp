@@ -51,6 +51,7 @@ DWORD WINAPI mediaRoutine(LPVOID lpArg)
 {
 	libvlc_instance_t *inst;
 	libvlc_media_t *m;
+	libvlc_event_manager_t *em;
 
 	std::pair<std::vector<char *>*, std::list<media>*> *list = (std::pair<std::vector<char *>*, std::list<media>*>*)lpArg;
 
@@ -79,6 +80,7 @@ DWORD WINAPI mediaRoutine(LPVOID lpArg)
 				m = libvlc_media_new_location(inst, list->second->front().location);
 
 			//Pop the front element
+			free(list->second->front().location);
 			list->second->pop_front();
 		}
 		else
@@ -97,11 +99,14 @@ DWORD WINAPI mediaRoutine(LPVOID lpArg)
 
 		//Load media into player
 		mp = libvlc_media_player_new_from_media(m);
+		em = libvlc_media_player_event_manager(mp);
 		libvlc_media_release(m);
 		libvlc_media_player_play(mp);
 
+		libvlc_event_attach(em, libvlc_MediaPlayerEncounteredError, media_error, NULL);
+
 		//Wait for player to load the media
-		while (!libvlc_media_player_is_playing(mp));
+		while (!libvlc_media_player_is_playing(mp) && !skip);
 
 		//Wait until end of media
 		std::cout << std::endl;
@@ -194,6 +199,9 @@ void handleRequest(int c)
 		case SET_NAME:
 			handleName(c);
 			break;
+		case FILE_SELECT:
+			handleSelect(c);
+			break;
 	}
 }
 
@@ -240,7 +248,37 @@ void handleName(int c)
 	printf("%s\n", clients[c].name);
 }
 
+void handleSelect(int c)
+{
+	int size = *((int*)&clients[c].buffer.buf[1]);
+
+	printf("\nQueue add/File select command ");
+	if (size < 2)
+	{
+		printf("Not enough arguments\n");
+		return;
+	}
+
+	char *loc = (char*)malloc(size);
+	memcpy(loc, clients[c].buffer.buf + 6, size-1);
+	loc[size-1] = '\0';
+
+	printf("type: %s, location: %s\n", clients[c].buffer.buf[5] ? "URL" : "File", loc);
+	media m;
+	m.type = clients[c].buffer.buf[5] ? TYPE_FILE:TYPE_URL;
+	m.location = loc;
+
+	queue.push_back(m);
+}
+
 void inline blank_line()
 {
 	std::cout << '\r' << blank.c_str() << '\r';
+}
+
+void media_error(const struct libvlc_event_t* event, void *userData)
+{
+	blank_line();
+	printf("Error occured while playing media, skipping...\n");
+	skip = true;
 }

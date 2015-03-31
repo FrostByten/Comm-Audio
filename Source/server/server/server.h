@@ -1,6 +1,8 @@
 #ifndef SERVER_H
 #define SERVER_H
 
+#pragma warning (disable : 4996)
+
 //#include <Windows.h> Because header guards are for chumps...
 #include "multicast.h"
 #include "session.h"
