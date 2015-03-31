@@ -35,6 +35,7 @@ DWORD WINAPI mediaRoutine(LPVOID lpArg);
 void CALLBACK client_read(DWORD dwError, DWORD cbTransferred, LPWSAOVERLAPPED lpOverlapped, DWORD dwFlags);
 void handleRequest(int);
 void handlePlayback(int);
+void handleName(int c);
 
 void inline blank_line();
 void inline printPercent(float through);

@@ -267,7 +267,9 @@ DWORD WINAPI acceptRoutine(LPVOID lpArg)
 			user client;
 			client.socket = client_sock;
 			client.address = client_addr;
-			client.name = NULL;
+			client.name = (char*)malloc(strlen(inet_ntoa(client.address->sin_addr))+1);
+			memcpy(client.name, inet_ntoa(client.address->sin_addr), strlen(inet_ntoa(client.address->sin_addr)));
+			client.name[strlen(inet_ntoa(client.address->sin_addr))] = '\0';
 			client.bytes_recvd = 0;
 			client.buffer.buf = (char*)malloc(CLIENT_BUFFER_SIZE);
 			client.buffer.len = CLIENT_BUFFER_SIZE;
@@ -294,14 +296,12 @@ DWORD WINAPI acceptRoutine(LPVOID lpArg)
 				if (events.lNetworkEvents == FD_CLOSE)
 				{
 					blank_line();
-					std::cout << "\r\t" << ((clients[i].name == NULL) ? "Client" : clients[i].name);
-					std::cout << "[" << inet_ntoa(clients[i].address->sin_addr) << "] disconnected" << std::endl;
+					std::cout << "\r\tClient[" << clients[i].name << "] disconnected" << std::endl;
 					redraw_prog_bar = true;
 
 					/* Remove the client from the list and de-allocate */
 					free(clients[i].address);
-					if (clients[i].name != NULL)
-						free(clients[i].name);
+					free(clients[i].name);
 					closesocket(clients[i].socket);
 					free(clients[i].buffer.buf);
 					clients.erase(clients.begin() + (i * sizeof(user)));
@@ -342,8 +342,7 @@ void cleanup(int ret)
 	for (unsigned int i = 0; i < clients.size(); ++i)
 	{
 		free(clients[i].address);
-		if (clients[i].name != NULL)
-			free(clients[i].name);
+		free(clients[i].name);
 		shutdown(clients[i].socket, SD_BOTH);
 		closesocket(clients[i].socket);
 		free(clients[i].buffer.buf);

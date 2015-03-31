@@ -111,6 +111,7 @@ DWORD WINAPI mediaRoutine(LPVOID lpArg)
 			if (skip)
 			{
 				paused = false;
+				blank_line();
 				break;
 			}
 			printPercent(libvlc_media_player_get_position(mp));
@@ -167,8 +168,7 @@ void handleRequest(int c)
 {
 	int data_length = *((int*)&clients[c].buffer.buf[1]);
 	blank_line();
-	redraw_prog_bar = true;
-	printf("\nRequest from %s, command code: %d, received %d bytes\n", inet_ntoa(clients[c].address->sin_addr), (byte)clients[c].buffer.buf[0], clients[c].bytes_recvd);
+	printf("\nRequest from client[%s], command code: %d, received %d bytes\n", clients[c].name, (byte)clients[c].buffer.buf[0], clients[c].bytes_recvd);
 
 	if (clients[c].bytes_recvd < 5 || (clients[c].bytes_recvd - 5) < data_length) //Packet too small, discard
 	{
@@ -182,12 +182,17 @@ void handleRequest(int c)
 		return;
 	}
 
+	blank_line();
 	printf("Request valid, command: %d, continuing...\n", clients[c].buffer.buf[0]);
+	redraw_prog_bar = true;
 
 	switch (clients[c].buffer.buf[0])
 	{
 		case PLAYBACK:
 			handlePlayback(c);
+			break;
+		case SET_NAME:
+			handleName(c);
 			break;
 	}
 }
@@ -224,7 +229,18 @@ void handlePlayback(int c)
 	}
 }
 
+void handleName(int c)
+{
+	printf("\nName change command: %s changed name to ", clients[c].name);
+	int size = *((int*)&clients[c].buffer.buf[1]);
+	free(clients[c].name);
+	clients[c].name = (char*)malloc(size+1);
+	memcpy(clients[c].name, clients[c].buffer.buf + 5, size);
+	clients[c].name[size] = '\0';
+	printf("%s\n", clients[c].name);
+}
+
 void inline blank_line()
 {
-	std::cout << '\r' << blank.c_str();
+	std::cout << '\r' << blank.c_str() << '\r';
 }
