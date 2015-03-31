@@ -22,7 +22,6 @@ void print(char *m);
 void cleanup(int ret);
 DWORD WINAPI acceptRoutine(LPVOID lpArg);
 void inline disable_cursor();
-void inline blank_line();
 
 const char *file_types[TYPES_LENGTH] = { "wav", "mp3", "ogg", "pcm", "aac", "flac", "m4a" };
 

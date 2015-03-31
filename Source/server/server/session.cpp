@@ -2,6 +2,9 @@
 #include "session.h"
 
 DWORD empty;
+const std::string blank(PROG_BAR_WIDTH + strlen(PROG_STRING), ' ');
+bool paused, skip;
+libvlc_media_player_t *mp;
 
 void preRender(void *p_audio_data, uint8_t **pp_pcm_buffer, size_t size)
 {
@@ -47,7 +50,6 @@ void postRender(void *p_audio_data, uint8_t *p_pcm_buffer, unsigned int channels
 DWORD WINAPI mediaRoutine(LPVOID lpArg)
 {
 	libvlc_instance_t *inst;
-	libvlc_media_player_t *mp;
 	libvlc_media_t *m;
 
 	std::pair<std::vector<char *>*, std::list<media>*> *list = (std::pair<std::vector<char *>*, std::list<media>*>*)lpArg;
@@ -103,11 +105,20 @@ DWORD WINAPI mediaRoutine(LPVOID lpArg)
 
 		//Wait until end of media
 		std::cout << std::endl;
-		while (libvlc_media_player_is_playing(mp))
+		while (libvlc_media_player_is_playing(mp) || paused)
+		{
+			libvlc_media_player_set_pause(mp, paused?1:0);
+			if (skip)
+			{
+				paused = false;
+				break;
+			}
 			printPercent(libvlc_media_player_get_position(mp));
+		}
 
 		libvlc_media_player_release(mp);
-		std::cout << std::endl << "Finished media, loading next" << std::endl;
+		std::cout << std::endl << (skip?"Skipped":"Finished") << " media, loading next" << std::endl;
+		skip = false;
 	}
 
 	return 0;
@@ -121,7 +132,7 @@ void inline printPercent(float through)
 	{
 		redraw_prog_bar = false;
 		bars = through * PROG_BAR_WIDTH;
-		printf("\r%s%s%s", PROG_STRING, std::string(bars, '#').c_str(), std::string(PROG_BAR_WIDTH - bars, '-').c_str());
+		printf("\r%s%s%s", paused?PAUSE_STRING:PROG_STRING, std::string(bars, '#').c_str(), std::string(PROG_BAR_WIDTH - bars, '-').c_str());
 	}
 }
 
@@ -136,7 +147,7 @@ void CALLBACK client_read(DWORD dwError, DWORD cbTransferred, LPWSAOVERLAPPED lp
 
 	if (i >= clients.size())
 	{
-		perror("Data available, but client unknown...");
+		perror("\nData available, but client unknown...");
 		return;
 	}
 
@@ -155,7 +166,9 @@ void CALLBACK client_read(DWORD dwError, DWORD cbTransferred, LPWSAOVERLAPPED lp
 void handleRequest(int c)
 {
 	int data_length = *((int*)&clients[c].buffer.buf[1]);
-	printf("Request from %s, command code: %d, received %d bytes\n", inet_ntoa(clients[c].address->sin_addr), (byte)clients[c].buffer.buf[0], clients[c].bytes_recvd);
+	blank_line();
+	redraw_prog_bar = true;
+	printf("\nRequest from %s, command code: %d, received %d bytes\n", inet_ntoa(clients[c].address->sin_addr), (byte)clients[c].buffer.buf[0], clients[c].bytes_recvd);
 
 	if (clients[c].bytes_recvd < 5 || (clients[c].bytes_recvd - 5) < data_length) //Packet too small, discard
 	{
@@ -170,4 +183,48 @@ void handleRequest(int c)
 	}
 
 	printf("Request valid, command: %d, continuing...\n", clients[c].buffer.buf[0]);
+
+	switch (clients[c].buffer.buf[0])
+	{
+		case PLAYBACK:
+			handlePlayback(c);
+			break;
+	}
+}
+
+void handlePlayback(int c)
+{
+	printf("\nPlayback command: ");
+	if (*((int*)&clients[c].buffer.buf[1]) < 1)
+	{
+		printf("Not enough arguments\n");
+		return;
+	}
+
+	switch (clients[c].buffer.buf[5])
+	{
+		case PLAY:
+			printf("Play\n");
+			libvlc_media_player_set_pause(mp, 0);
+			redraw_prog_bar = true;
+			paused = false;
+			break;
+		case PAUSE:
+			printf("Pause\n");
+			redraw_prog_bar = true;
+			libvlc_media_player_set_pause(mp, 1);
+			paused = true;
+			break;
+		case SKIP:
+			printf("Skip\n");
+			skip = true;
+			blank_line();
+			redraw_prog_bar = true;
+			break;
+	}
+}
+
+void inline blank_line()
+{
+	std::cout << '\r' << blank.c_str();
 }

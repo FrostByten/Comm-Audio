@@ -12,7 +12,6 @@ std::vector<user> clients;
 std::vector<char *> files;
 
 WSAEVENT event_accept, event_close;
-const std::string blank(PROG_BAR_WIDTH + strlen(PROG_STRING), ' ');
 DWORD read_flags = 0;
 
 int main(int argc, char* argv[])
@@ -370,9 +369,4 @@ void inline disable_cursor()
 	info.dwSize = 1;
 
 	SetConsoleCursorInfo(hOutput, &info);
-}
-
-void inline blank_line()
-{
-	std::cout << '\r' << blank.c_str();
 }

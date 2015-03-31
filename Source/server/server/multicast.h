@@ -14,4 +14,9 @@ typedef enum command
 	FILE_LIST, USER_LIST, MESSAGE, FILE_SELECT, MUTE, PLAYBACK, FILE_REQUEST, SET_NAME
 } command;
 
+typedef enum playback
+{
+	PLAY, PAUSE, SKIP
+} playback;
+
 #endif

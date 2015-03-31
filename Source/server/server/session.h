@@ -17,6 +17,7 @@
 #define TYPES_LENGTH 7
 #define PROG_BAR_WIDTH 60
 #define PROG_STRING "Progress: "
+#define PAUSE_STRING "Paused:   "
 
 //#define DEBUG
 
@@ -33,7 +34,9 @@ void postRender(void *p_audio_data, uint8_t *p_pcm_buffer, unsigned int channels
 DWORD WINAPI mediaRoutine(LPVOID lpArg);
 void CALLBACK client_read(DWORD dwError, DWORD cbTransferred, LPWSAOVERLAPPED lpOverlapped, DWORD dwFlags);
 void handleRequest(int);
+void handlePlayback(int);
 
+void inline blank_line();
 void inline printPercent(float through);
 
 typedef enum media_type
