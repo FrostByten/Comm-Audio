@@ -9,4 +9,9 @@
 #define MAX_BACKLOG 5
 #define MAX_ADDR_SIZE 16
 
+typedef enum command
+{
+	FILE_LIST, USER_LIST, MESSAGE, FILE_SELECT, MUTE, PLAYBACK, FILE_REQUEST, SET_NAME
+} command;
+
 #endif

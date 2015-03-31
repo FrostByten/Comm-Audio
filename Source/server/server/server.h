@@ -12,6 +12,8 @@
 //Link winsock
 #pragma comment(lib, "ws2_32.lib")
 
+#define CLIENT_BUFFER_SIZE 1024
+
 void getFileList(char *path = "\0");
 void openMulticastSocket();
 void setupMulticast();
@@ -23,5 +25,7 @@ void inline disable_cursor();
 void inline blank_line();
 
 const char *file_types[TYPES_LENGTH] = { "wav", "mp3", "ogg", "pcm", "aac", "flac", "m4a" };
+
+bool redraw_prog_bar = false;
 
 #endif

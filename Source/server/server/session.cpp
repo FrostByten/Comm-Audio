@@ -1,6 +1,8 @@
 #include "multicast.h"
 #include "session.h"
 
+DWORD empty;
+
 void preRender(void *p_audio_data, uint8_t **pp_pcm_buffer, size_t size)
 {
 	*pp_pcm_buffer = (uint8_t*)malloc(size);
@@ -119,6 +121,53 @@ void inline printPercent(float through)
 	{
 		redraw_prog_bar = false;
 		bars = through * PROG_BAR_WIDTH;
-		printf("\rProgress: %s%s", std::string(bars, '#').c_str(), std::string(PROG_BAR_WIDTH - bars, '-').c_str());
+		printf("\r%s%s%s", PROG_STRING, std::string(bars, '#').c_str(), std::string(PROG_BAR_WIDTH - bars, '-').c_str());
 	}
+}
+
+void CALLBACK client_read(DWORD dwError, DWORD cbTransferred, LPWSAOVERLAPPED lpOverlapped, DWORD dwFlags)
+{
+	unsigned int i;
+	for (i = 0; i <= clients.size(); ++i)
+	{
+		if (clients[i].wol.Internal == lpOverlapped->Internal)
+			break;
+	}
+
+	if (i >= clients.size())
+	{
+		perror("Data available, but client unknown...");
+		return;
+	}
+
+	if (cbTransferred == 0) //Client disconnected
+		return;
+
+	clients[i].bytes_recvd = cbTransferred;
+	clients[i].buffer.buf[cbTransferred] = '\0';
+
+	handleRequest(i);
+
+	if (WSARecv(clients[i].socket, &clients[i].buffer, 1, &clients[i].bytes_recvd, &empty, &clients[i].wol, client_read) == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
+		perror("Error reading from client");
+}
+
+void handleRequest(int c)
+{
+	int data_length = *((int*)&clients[c].buffer.buf[1]);
+	printf("Request from %s, command code: %d, received %d bytes\n", inet_ntoa(clients[c].address->sin_addr), (byte)clients[c].buffer.buf[0], clients[c].bytes_recvd);
+
+	if (clients[c].bytes_recvd < 5 || (clients[c].bytes_recvd - 5) < data_length) //Packet too small, discard
+	{
+		printf("Corrupt packet, expecting %s%d bytes, only got %d! Discarding...\n", clients[c].bytes_recvd<5?"atleast ":"", data_length+5, (byte)clients[c].bytes_recvd);
+		return;
+	}
+
+	if ((byte)clients[c].buffer.buf[0] > SET_NAME) //Max allowed command code
+	{
+		printf("Invalid command code: %d, discarding...\n", clients[c].buffer.buf[0]);
+		return;
+	}
+
+	printf("Request valid, command: %d, continuing...\n", clients[c].buffer.buf[0]);
 }

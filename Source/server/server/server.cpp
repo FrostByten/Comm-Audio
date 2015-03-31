@@ -4,7 +4,7 @@ WSADATA stWSAData;
 char achMCAddr[MAX_ADDR_SIZE] = MULTICAST_ADDR;
 SOCKADDR_IN stLclAddr, stDstAddr;
 SOCKET hMulticast_Socket, hListen_Socket;
-HANDLE hAccept_Thread = INVALID_HANDLE_VALUE;
+HANDLE hControl_Thread = INVALID_HANDLE_VALUE;
 HANDLE hMedia_Thread = INVALID_HANDLE_VALUE;
 
 std::list<media> queue;
@@ -12,8 +12,8 @@ std::vector<user> clients;
 std::vector<char *> files;
 
 WSAEVENT event_accept, event_close;
-bool redraw_prog_bar = false;
-const std::string blank(PROG_BAR_WIDTH + strlen("Progress: "), ' ');
+const std::string blank(PROG_BAR_WIDTH + strlen(PROG_STRING), ' ');
+DWORD read_flags = 0;
 
 int main(int argc, char* argv[])
 {
@@ -171,7 +171,7 @@ void setupListenSocket()
 
 	/* Create a thread to accept connection */
 	DWORD thread_id;
-	if ((hAccept_Thread = CreateThread(NULL, 0, acceptRoutine, NULL, 0, &thread_id)) == NULL)
+	if ((hControl_Thread = CreateThread(NULL, 0, acceptRoutine, NULL, 0, &thread_id)) == NULL)
 	{
 		perror("Unable to create accept thread");
 		cleanup(1);
@@ -240,12 +240,13 @@ void getFileList(char *path)
 
 DWORD WINAPI acceptRoutine(LPVOID lpArg)
 {
-	HANDLE events[2] = { event_accept, event_close};
+	HANDLE events[2] = { event_accept, event_close };
 
 	for (;;)
 	{
-		/* Wait for an event */
-		if (WaitForMultipleObjects(2, events, FALSE, INFINITE) - WAIT_OBJECT_0 == 0) //Accept event (index 0)
+		/* Wait for an event or IOCR to be queued */
+		//The Ex in WaitForMultipleObjectsEx allows the thread to be awoken by queued IOCP requests
+		if (WaitForMultipleObjectsEx(2, events, FALSE, INFINITE, TRUE) - WAIT_OBJECT_0 == 0) //Accept event (index 0)
 		{
 			int client_len = sizeof(sockaddr_in);
 			sockaddr_in *client_addr = (sockaddr_in*)malloc(client_len);
@@ -268,9 +269,17 @@ DWORD WINAPI acceptRoutine(LPVOID lpArg)
 			client.socket = client_sock;
 			client.address = client_addr;
 			client.name = NULL;
+			client.bytes_recvd = 0;
+			client.buffer.buf = (char*)malloc(CLIENT_BUFFER_SIZE);
+			client.buffer.len = CLIENT_BUFFER_SIZE;
+			ZeroMemory(&client.wol, sizeof(WSAOVERLAPPED));
 
 			/* Note the client in the client list */
 			clients.push_back(client);
+
+			/* Setup the socket to receive */
+			if (WSARecv(client.socket, &client.buffer, 1, &client.bytes_recvd, &read_flags, &client.wol, client_read) == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
+				perror("Error reading from client");
 
 			/* Reset to event ready to be triggered again */
 			WSAResetEvent(event_accept);
@@ -286,12 +295,16 @@ DWORD WINAPI acceptRoutine(LPVOID lpArg)
 				if (events.lNetworkEvents == FD_CLOSE)
 				{
 					blank_line();
-					std::cout << "\r\tClient[" << inet_ntoa(clients[i].address->sin_addr) << "] disconnected" << std::endl;
+					std::cout << "\r\t" << ((clients[i].name == NULL) ? "Client" : clients[i].name);
+					std::cout << "[" << inet_ntoa(clients[i].address->sin_addr) << "] disconnected" << std::endl;
 					redraw_prog_bar = true;
 
 					/* Remove the client from the list and de-allocate */
 					free(clients[i].address);
+					if (clients[i].name != NULL)
+						free(clients[i].name);
 					closesocket(clients[i].socket);
+					free(clients[i].buffer.buf);
 					clients.erase(clients.begin() + (i * sizeof(user)));
 					break;
 				}
@@ -316,8 +329,8 @@ void cleanup(int ret)
 	print("\nServer closing...");
 
 	/* Kill the accept thread */
-	if (hAccept_Thread != INVALID_HANDLE_VALUE)
-		TerminateThread(hAccept_Thread, 0);
+	if (hControl_Thread != INVALID_HANDLE_VALUE)
+		TerminateThread(hControl_Thread, 0);
 
 	/* Kill the media thread */
 	if (hMedia_Thread != INVALID_HANDLE_VALUE)
@@ -330,8 +343,11 @@ void cleanup(int ret)
 	for (unsigned int i = 0; i < clients.size(); ++i)
 	{
 		free(clients[i].address);
+		if (clients[i].name != NULL)
+			free(clients[i].name);
 		shutdown(clients[i].socket, SD_BOTH);
 		closesocket(clients[i].socket);
+		free(clients[i].buffer.buf);
 	}
 
 	/* Network cleanup */
