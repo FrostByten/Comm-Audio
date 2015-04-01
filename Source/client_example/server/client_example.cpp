@@ -10,13 +10,13 @@
 
 #define MULTICAST_ADDR "234.5.6.7"
 #define MULTICAST_PORT 8910
-#define RECV_SIZE 4096
+#define RECV_SIZE 81920
 
 #define BITS_PER_SAMPLE 16
 #define CHANNELS 2
 #define SAMPLES_PER_SECOND 44100
 
-#define CIRC_BUFF_SIZE 40960
+#define CIRC_BUFF_SIZE 819200
 
 DWORD WINAPI ThreadRoutine(LPVOID lpParam);
 void CALLBACK WaveCallback(HWAVEOUT hWave, UINT uMsg, DWORD dwUser, DWORD dw1, DWORD dw2);
@@ -178,7 +178,7 @@ DWORD WINAPI ThreadRoutine(LPVOID lpParam)
 		memcpy(circ_buff + position, message, nret);
 		position += nret;
 
-		printf("Played %d %d byte packets\r", numpack, nret);
+		//printf("Played %d %d byte packets\r", numpack, nret);
 	}
 
 	free(message);

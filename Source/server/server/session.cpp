@@ -482,7 +482,7 @@ int findUser(char *c)
 
 void CALLBACK mic_read(DWORD dwError, DWORD cbTransferred, LPWSAOVERLAPPED lpOverlapped, DWORD dwFlags)
 {
-	printf("\n\tMic data from: %s: %.*s\n", inet_ntoa(mic_from->sin_addr), cbTransferred, mic_buffer.buf);
+	printf("\n\tMic data from address[%s]: %.*s\n", inet_ntoa(mic_from->sin_addr), cbTransferred, mic_buffer.buf);
 }
 
 void inline blank_line()

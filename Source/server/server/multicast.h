@@ -6,7 +6,7 @@
 #define CONTROL_PORT 8911
 #define MICROPHONE_PORT 8912
 
-#define PACKET_SIZE 512
+#define PACKET_SIZE 256
 #define MAX_BACKLOG 5
 #define MAX_ADDR_SIZE 16
 

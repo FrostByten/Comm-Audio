@@ -126,7 +126,7 @@ void setupMicrophoneSocket()
 	struct sockaddr_in server;
 	u_long mode = 1;
 
-	if ((hMicrophone_Socket = WSASocket(AF_INET, SOCK_DGRAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED)) == INVALID_SOCKET)
+	if ((hMicrophone_Socket = WSASocket(PF_INET, SOCK_DGRAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED)) == INVALID_SOCKET)
 	{
 		perror("Unable to create microphone socket");
 		cleanup(1);
@@ -151,15 +151,6 @@ void setupMicrophoneSocket()
 		perror("Unable to bind control socket");
 		cleanup(1);
 	}
-
-	mic_buffer.buf = (char*)malloc(MIC_BUFFER_SIZE);
-	mic_buffer.len = MIC_BUFFER_SIZE;
-	mic_bytes_recvd = 0;
-	int mic_len = sizeof(sockaddr_in);
-	mic_from = (sockaddr_in*)malloc(mic_len);
-
-	if (WSARecvFrom(hMicrophone_Socket, &mic_buffer, 1, &mic_bytes_recvd, &read_flags, (sockaddr*)mic_from, &mic_len, &mic_wol, mic_read) == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
-		perror("Error reading from microphone");
 
 	print("Microphone connection ready");
 }
@@ -296,6 +287,16 @@ void getFileList(char *path)
 DWORD WINAPI acceptRoutine(LPVOID lpArg)
 {
 	HANDLE events[2] = { event_accept, event_close };
+	mic_buffer.buf = (char*)malloc(MIC_BUFFER_SIZE);
+	mic_buffer.len = MIC_BUFFER_SIZE;
+	mic_bytes_recvd = 0;
+	int mic_len = sizeof(sockaddr_in);
+	mic_from = (sockaddr_in*)malloc(mic_len);
+	ZeroMemory(&mic_wol, sizeof(WSAOVERLAPPED));
+	read_flags = 0;
+
+	if (WSARecvFrom(hMicrophone_Socket, &mic_buffer, 1, &mic_bytes_recvd, &read_flags, (sockaddr*)mic_from, &mic_len, &mic_wol, mic_read) == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
+		perror("Error reading from microphone");
 
 	for (;;)
 	{
