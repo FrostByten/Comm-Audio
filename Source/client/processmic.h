@@ -1,8 +1,8 @@
 #ifndef PROCESSMIC
 #define PROCESSMIC
 
-#include <QAudioInput>
-#include <QUdpSocket>
+#include <QtMultimedia/QAudioInput>
+#include <QtNetwork/QUdpSocket>
 #include <QFile>
 #include <QDebug>
 #include <QTimer>

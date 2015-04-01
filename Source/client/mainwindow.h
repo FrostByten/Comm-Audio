@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QAudioInput>
+#include <QtMultimedia/QAudioInput>
 
 namespace Ui {
 class MainWindow;
