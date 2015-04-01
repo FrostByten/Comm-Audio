@@ -4,8 +4,8 @@
 #pragma warning (disable : 4996)
 
 //#include <Windows.h> Because header guards are for chumps...
-#include "multicast.h"
 #include "session.h"
+#include "multicast.h"
 
 //Link vlc
 #pragma comment(lib, "libvlc.lib")
@@ -26,8 +26,7 @@ void loadAdmins();
 DWORD WINAPI acceptRoutine(LPVOID lpArg);
 void inline disable_cursor();
 
-const char *file_types[TYPES_LENGTH] = { "wav", "mp3", "ogg", "pcm", "aac", "flac", "m4a" };
-
 bool redraw_prog_bar = false;
+const char *file_types[TYPES_LENGTH] = { "wav", "mp3", "ogg", "pcm", "aac", "flac", "m4a" };
 
 #endif

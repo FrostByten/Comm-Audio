@@ -226,6 +226,9 @@ void handleRequest(int c)
 		case FILE_LIST:
 			handleFileList(c);
 			break;
+		case FILE_REQUEST:
+			handleFileRequest(c);
+			break;
 	}
 }
 
@@ -333,7 +336,7 @@ void handleMessage(int c)
 	mes[strlen(clients[c].name) + 5] = ':';
 	mes[strlen(clients[c].name) + 6] = ' ';
 	memcpy(mes + strlen(clients[c].name) + 7, clients[c].buffer.buf + 5, *((int*)&clients[c].buffer.buf[1]));
-	sendMessageToAll(mes, len, c);
+	sendMessageToAll(mes, len + 5, c);
 	free(mes);
 }
 
@@ -363,7 +366,79 @@ void handleFileList(int c)
 		memcpy(mes + 1, &len, sizeof(int));
 		memcpy(mes + 5, files[i], len);
 		sendMessage(c, mes, len + 5);
+		free(mes);
 	}
+}
+
+void handleFileRequest(int c)
+{
+	printf("\nFile request command from client[%s] for: %s: ", clients[c].name, clients[c].buffer.buf + 5);
+	bool go = false;
+
+	for (unsigned int i = 0; i < TYPES_LENGTH; ++i)
+	{
+		if (strcmp(file_types[i], strrchr(clients[c].buffer.buf + 5, '.')) == 0)
+		{
+			go = true;
+			break;
+		}
+	}
+
+	char *path = (char*)malloc(FILE_BUFF_LENGTH);
+	GetCurrentDirectory(FILE_BUFF_LENGTH, path);
+	std::string s2(clients[c].buffer.buf + 5);
+	if (!go || s2.find(path) == std::string::npos)
+	{
+		printf("Denied");
+		int len = strlen(FILE_DENIED_MESSAGE);
+		char *mes = (char*)malloc(len + 5);
+		mes[0] = MESSAGE;
+		memcpy(mes + 1, &len, sizeof(len));
+		sprintf(mes + 5, FILE_DENIED_MESSAGE);
+		sendMessage(c, mes, len + 5);
+		free(mes);
+		free(path);
+		return;
+	}
+
+	free(path);
+	printf("Permitted");
+	OFSTRUCT of;
+	HFILE file = OpenFile(clients[c].buffer.buf + 5, &of, OF_READ);
+	if (file == HFILE_ERROR)
+	{
+		printf("\nCan't open file!");
+		int len = strlen(NO_OPEN_MESSAGE);
+		char *mes = (char*)malloc(len + 5);
+		mes[0] = MESSAGE;
+		memcpy(mes + 1, &len, sizeof(len));
+		sprintf(mes + 5, NO_OPEN_MESSAGE);
+		sendMessage(c, mes, len + 5);
+		free(mes);
+	}
+	else
+	{
+		char *mes = (char*)malloc(FILE_BUFF_LENGTH);
+		DWORD bread = 0;
+		int len = 0;
+		mes[0] = FILE_REQUEST;
+
+		do
+		{
+			ReadFile((HANDLE)file, mes + 5, FILE_BUFF_LENGTH, &bread, NULL);
+			len = bread;
+			memcpy(mes + 1, &len, sizeof(int));
+			sendMessage(c, mes, bread + 5);
+		} 
+		while (bread == FILE_BUFF_LENGTH);
+
+		len = 0;
+		memcpy(mes + 1, &len, sizeof(int));
+		mes[0] = FILE_EOF;
+		sendMessage(c, mes, 5);
+		free(mes);
+	}
+	CloseHandle((HANDLE)file);
 }
 
 void sendMessage(int c, char *mes, int len)

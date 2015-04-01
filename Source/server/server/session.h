@@ -25,6 +25,8 @@
 #define PROG_STRING "Progress: "
 #define PAUSE_STRING "Paused:   "
 #define UNAUTH_MESSAGE "You are no authorized to perform this function"
+#define FILE_DENIED_MESSAGE "Access to this file is denied"
+#define NO_OPEN_MESSAGE "This file cannot be opened for some reason..."
 
 //#define DEBUG
 
@@ -34,6 +36,8 @@ extern SOCKET hMulticast_Socket;
 extern SOCKADDR_IN stDstAddr;
 
 extern bool redraw_prog_bar;
+
+extern const char *file_types[TYPES_LENGTH];
 
 void preRender(void *p_audio_data, uint8_t **pp_pcm_buffer, size_t size);
 void postRender(void *p_audio_data, uint8_t *p_pcm_buffer, unsigned int channels, unsigned int rate, unsigned int nb_samples, unsigned int bits_per_sample, size_t size, int64_t pts);
@@ -53,6 +57,7 @@ void handleUserList(int);
 void handleMessage(int);
 void handleMute(int);
 void handleFileList(int);
+void handleFileRequest(int);
 
 void inline blank_line();
 void inline printPercent(float through);
