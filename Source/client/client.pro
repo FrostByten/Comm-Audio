@@ -37,6 +37,7 @@ INSTALLS += install_it
 
 #link windows lib
 LIBS += -lws2_32
+LIBS += -lwinmm
 
 INCLUDEPATH += $$PWD/../include/
 
