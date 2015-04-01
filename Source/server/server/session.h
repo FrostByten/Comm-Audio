@@ -43,6 +43,7 @@ void CALLBACK client_read(DWORD dwError, DWORD cbTransferred, LPWSAOVERLAPPED lp
 void media_error(const struct libvlc_event_t* event, void *userData);
 void sendMessage(int, char*, int);
 void sendMessageToAll(char*, int , int = -1);
+int findUser(char*);
 bool checkAdmin(int);
 void handleRequest(int);
 void handlePlayback(int);
@@ -50,6 +51,7 @@ void handleName(int);
 void handleSelect(int);
 void handleUserList(int);
 void handleMessage(int);
+void handleMute(int);
 
 void inline blank_line();
 void inline printPercent(float through);

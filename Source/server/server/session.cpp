@@ -208,6 +208,9 @@ void handleRequest(int c)
 		case MESSAGE:
 			handleMessage(c);
 			break;
+		case MUTE:
+			handleMute(c);
+			break;
 	}
 }
 
@@ -319,6 +322,20 @@ void handleMessage(int c)
 	free(mes);
 }
 
+void handleMute(int c)
+{
+	checkAdmin(c);
+
+	bool mute = clients[c].buffer.buf[5]==1?true:false;
+	int tomute = findUser(clients[c].buffer.buf + 6);
+
+	if (tomute != -1)
+	{
+		clients[tomute].muted = mute;
+		sendMessageToAll(clients[c].buffer.buf, clients[c].bytes_recvd);
+	}
+}
+
 void sendMessage(int c, char *mes, int len)
 {
 	send(clients[c].socket, mes, len, NULL);
@@ -345,6 +362,17 @@ bool checkAdmin(int c)
 	sendMessage(c, mes, len + 5);
 	free(mes);
 	return false;
+}
+
+int findUser(char *c)
+{
+	for (unsigned int i = 0; i < clients.size(); ++i)
+	{
+		if (strcmp(clients[i].name, c) == 0)
+			return i;
+	}
+
+	return -1;
 }
 
 void inline blank_line()
