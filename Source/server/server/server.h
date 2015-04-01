@@ -22,6 +22,7 @@ void setupMulticast();
 void setupListenSocket();
 void print(char *m);
 void cleanup(int ret);
+void loadAdmins();
 DWORD WINAPI acceptRoutine(LPVOID lpArg);
 void inline disable_cursor();
 

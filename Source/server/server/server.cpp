@@ -10,6 +10,7 @@ HANDLE hMedia_Thread = INVALID_HANDLE_VALUE;
 std::list<media> queue;
 std::vector<user> clients;
 std::vector<char *> files;
+std::vector<std::string> admins;
 
 WSAEVENT event_accept, event_close;
 DWORD read_flags = 0;
@@ -29,6 +30,11 @@ int main(int argc, char* argv[])
 		printf("\nNo files available, exiting...");
 		cleanup(0);
 	}
+
+	printf("Reading admins...\n");
+	loadAdmins();
+	printf("\nFinished reading admins\n");
+
 	openMulticastSocket();
 	setupMulticast();
 
@@ -382,6 +388,18 @@ void cleanup(int ret)
 	WSACleanup();
 
 	exit(ret);
+}
+
+void loadAdmins()
+{
+	std::ifstream in_stream("admin.cfg");
+	std::string line;
+
+	while (getline(in_stream, line))
+		admins.push_back(line);
+
+	for (unsigned int i = 0; i < admins.size(); ++i)
+		printf("\tLoaded admin: %s\n", admins[i].c_str());
 }
 
 void inline disable_cursor()

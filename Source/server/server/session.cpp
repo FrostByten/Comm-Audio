@@ -205,6 +205,9 @@ void handleRequest(int c)
 		case USER_LIST:
 			handleUserList(c);
 			break;
+		case MESSAGE:
+			handleMessage(c);
+			break;
 	}
 }
 
@@ -243,7 +246,17 @@ void handlePlayback(int c)
 void handleName(int c)
 {
 	printf("\nName change command: %s changed name to ", clients[c].name);
+
 	int size = *((int*)&clients[c].buffer.buf[1]);
+	int fullsize = 6 + strlen(clients[c].name) + size;
+	char *mes = (char*)malloc(fullsize);
+	mes[0] = SET_NAME;
+	memcpy(mes + 1, &fullsize, sizeof(int));
+	memcpy(mes + 5, clients[c].name, strlen(clients[c].name));
+	mes[strlen(clients[c].name) + 5] = '\0';
+	memcpy(mes + strlen(clients[c].name) + 6, clients[c].buffer.buf + 5, size);
+	sendMessageToAll(mes, fullsize, c);
+
 	free(clients[c].name);
 	clients[c].name = (char*)malloc(size+1);
 	memcpy(clients[c].name, clients[c].buffer.buf + 5, size);
@@ -290,7 +303,20 @@ void handleUserList(int c)
 			sendMessage(c, mes, len + 5);
 			free(mes);
 		}
+}
 
+void handleMessage(int c)
+{
+	int len = *((int*)&clients[c].buffer.buf[1]) + strlen(clients[c].name) + 2;
+	char *mes = (char*)malloc(len + 5);
+	mes[0] = MESSAGE;
+	memcpy(mes + 1, &len, sizeof(int));
+	memcpy(mes + 4, clients[c].name, strlen(clients[c].name));
+	mes[strlen(clients[c].name) + 5] = ':';
+	mes[strlen(clients[c].name) + 6] = ' ';
+	memcpy(mes + strlen(clients[c].name) + 7, clients[c].buffer.buf + 5, *((int*)&clients[c].buffer.buf[1]));
+	sendMessageToAll(mes, len, c);
+	free(mes);
 }
 
 void sendMessage(int c, char *mes, int len)
@@ -303,6 +329,22 @@ void sendMessageToAll(char *mes, int len, int except)
 	for (unsigned int i = 0; i < clients.size(); ++i)
 		if (i != except)
 			sendMessage(i, mes, len);
+}
+
+bool checkAdmin(int c)
+{
+	for (unsigned int i = 0; i < admins.size(); ++i)
+		if (strcmp(admins[i].c_str, inet_ntoa(clients[c].address->sin_addr)) == 0)
+			return true;
+
+	int len = strlen(UNAUTH_MESSAGE);
+	char *mes = (char*)malloc(len + 5);
+	mes[0] = MESSAGE;
+	memcpy(mes + 1, &len, sizeof(len));
+	sprintf(mes + 5, UNAUTH_MESSAGE);
+	sendMessage(c, mes, len + 5);
+	free(mes);
+	return false;
 }
 
 void inline blank_line()

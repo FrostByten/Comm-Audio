@@ -11,6 +11,8 @@
 #include <list>
 #include <WinSock2.h>
 #include <WS2tcpip.h>
+#include <string>
+#include <fstream>
 #include "multicast.h"
 
 #pragma warning (disable : 4996)
@@ -22,6 +24,7 @@
 #define PROG_BAR_WIDTH 60
 #define PROG_STRING "Progress: "
 #define PAUSE_STRING "Paused:   "
+#define UNAUTH_MESSAGE "You are no authorized to perform this function"
 
 //#define DEBUG
 
@@ -40,11 +43,13 @@ void CALLBACK client_read(DWORD dwError, DWORD cbTransferred, LPWSAOVERLAPPED lp
 void media_error(const struct libvlc_event_t* event, void *userData);
 void sendMessage(int, char*, int);
 void sendMessageToAll(char*, int , int = -1);
+bool checkAdmin(int);
 void handleRequest(int);
 void handlePlayback(int);
-void handleName(int c);
-void handleSelect(int c);
-void handleUserList(int c);
+void handleName(int);
+void handleSelect(int);
+void handleUserList(int);
+void handleMessage(int);
 
 void inline blank_line();
 void inline printPercent(float through);
@@ -79,5 +84,6 @@ typedef struct user
 
 extern std::vector<user> clients;
 extern std::list<media> queue;
+extern std::vector<std::string> admins;
 
 #endif
