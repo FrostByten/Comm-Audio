@@ -34,9 +34,11 @@ FORMS    += mainwindow.ui
 
 INSTALLS += install_it
 
+
+#link windows lib
+LIBS += -lws2_32
+
 #INCLUDEPATH += $$PWD/../include/
-
-
 
 #unix|win32: LIBS += -L$$PWD/../libs/ -llibvlc
 
