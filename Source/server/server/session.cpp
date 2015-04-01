@@ -103,6 +103,18 @@ DWORD WINAPI mediaRoutine(LPVOID lpArg)
 		libvlc_media_release(m);
 		libvlc_media_player_play(mp);
 
+		char *message = (char*)malloc(FILE_BUFF_LENGTH);
+		sprintf(message, "Now playing: %s%s%s", libvlc_media_get_meta(m, libvlc_meta_Title), libvlc_media_get_meta(m, libvlc_meta_Artist) ? " - " : "", libvlc_media_get_meta(m, libvlc_meta_Artist) ? libvlc_media_get_meta(m, libvlc_meta_Artist) : "");
+		printf("\n%s", message);
+		int len = strlen(message + strlen("Now playing: "));
+		char *msg = (char*)malloc(len + 5);
+		msg[0] = CURRENT;
+		memcpy(msg + 1, &len, sizeof(int));
+		memcpy(msg + 5, message + strlen("Now playing: "), len);
+		sendMessageToAll(msg, len + 5);
+		free(msg);
+		free(message);
+
 		libvlc_event_attach(em, libvlc_MediaPlayerEncounteredError, media_error, NULL);
 
 		//Wait for player to load the media
