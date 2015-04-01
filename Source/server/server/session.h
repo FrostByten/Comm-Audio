@@ -52,6 +52,7 @@ void handleSelect(int);
 void handleUserList(int);
 void handleMessage(int);
 void handleMute(int);
+void handleFileList(int);
 
 void inline blank_line();
 void inline printPercent(float through);
@@ -87,5 +88,6 @@ typedef struct user
 extern std::vector<user> clients;
 extern std::list<media> queue;
 extern std::vector<std::string> admins;
+extern std::vector<char *> files;
 
 #endif

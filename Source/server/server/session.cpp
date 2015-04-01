@@ -223,6 +223,9 @@ void handleRequest(int c)
 		case MUTE:
 			handleMute(c);
 			break;
+		case FILE_LIST:
+			handleFileList(c);
+			break;
 	}
 }
 
@@ -345,6 +348,21 @@ void handleMute(int c)
 	{
 		clients[tomute].muted = mute;
 		sendMessageToAll(clients[c].buffer.buf, clients[c].bytes_recvd);
+	}
+}
+
+void handleFileList(int c)
+{
+	printf("\nFile listing request from client[%s]\n", clients[c].name);
+
+	for (unsigned int i = 0; i < files.size(); ++i)
+	{
+		int len = strlen(files[i]);
+		char *mes = (char*)malloc(len + 5);
+		mes[0] = FILE_LIST;
+		memcpy(mes + 1, &len, sizeof(int));
+		memcpy(mes + 5, files[i], len);
+		sendMessage(c, mes, len + 5);
 	}
 }
 
