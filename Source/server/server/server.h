@@ -19,6 +19,7 @@
 void getFileList(char *path = "\0");
 void openMulticastSocket();
 void setupMulticast();
+void setupMicrophoneSocket();
 void setupListenSocket();
 void print(char *m);
 void cleanup(int ret);

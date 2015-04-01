@@ -3,9 +3,14 @@
 WSADATA stWSAData;
 char achMCAddr[MAX_ADDR_SIZE] = MULTICAST_ADDR;
 SOCKADDR_IN stLclAddr, stDstAddr;
-SOCKET hMulticast_Socket, hListen_Socket;
+SOCKET hMulticast_Socket, hListen_Socket, hMicrophone_Socket;
 HANDLE hControl_Thread = INVALID_HANDLE_VALUE;
 HANDLE hMedia_Thread = INVALID_HANDLE_VALUE;
+
+WSABUF mic_buffer;
+DWORD mic_bytes_recvd;
+WSAOVERLAPPED mic_wol;
+struct sockaddr_in *mic_from;
 
 std::list<media> queue;
 std::vector<user> clients;
@@ -37,6 +42,8 @@ int main(int argc, char* argv[])
 
 	openMulticastSocket();
 	setupMulticast();
+
+	setupMicrophoneSocket();
 
 	setupListenSocket();
 
@@ -112,6 +119,49 @@ void openMulticastSocket()
 		perror("Unable to bind multicast socket");
 		cleanup(1);
 	}
+}
+
+void setupMicrophoneSocket()
+{
+	struct sockaddr_in server;
+	u_long mode = 1;
+
+	if ((hMicrophone_Socket = WSASocket(AF_INET, SOCK_DGRAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED)) == INVALID_SOCKET)
+	{
+		perror("Unable to create microphone socket");
+		cleanup(1);
+	}
+
+	/* Set socket to non-blocking */
+	if (ioctlsocket(hMicrophone_Socket, FIONBIO, &mode) != NO_ERROR)
+	{
+		perror("Unable to set microphone socket to non-blocking mode");
+		cleanup(1);
+	}
+
+	/* Setup the address and port */
+	memset((char *)&server, 0, sizeof(struct sockaddr_in));
+	server.sin_family = AF_INET;
+	server.sin_port = htons(MICROPHONE_PORT);
+	server.sin_addr.s_addr = htonl(INADDR_ANY);
+
+	/* Bind the TCP socket */
+	if (bind(hMicrophone_Socket, (struct sockaddr*)&server, sizeof(server)) == SOCKET_ERROR)
+	{
+		perror("Unable to bind control socket");
+		cleanup(1);
+	}
+
+	mic_buffer.buf = (char*)malloc(MIC_BUFFER_SIZE);
+	mic_buffer.len = MIC_BUFFER_SIZE;
+	mic_bytes_recvd = 0;
+	int mic_len = sizeof(sockaddr_in);
+	mic_from = (sockaddr_in*)malloc(mic_len);
+
+	if (WSARecvFrom(hMicrophone_Socket, &mic_buffer, 1, &mic_bytes_recvd, &read_flags, (sockaddr*)mic_from, &mic_len, &mic_wol, mic_read) == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
+		perror("Error reading from microphone");
+
+	print("Microphone connection ready");
 }
 
 void setupListenSocket()
@@ -378,11 +428,15 @@ void cleanup(int ret)
 		free(clients[i].buffer.buf);
 	}
 
+	free(mic_buffer.buf);
+
 	/* Network cleanup */
 	WSACloseEvent(event_accept);
 	WSACloseEvent(event_close);
+	shutdown(hMicrophone_Socket, SD_BOTH);
 	shutdown(hListen_Socket, SD_BOTH);
 	shutdown(hMulticast_Socket, SD_BOTH);
+	closesocket(hMicrophone_Socket);
 	closesocket(hListen_Socket);
 	closesocket(hMulticast_Socket);
 	WSACleanup();

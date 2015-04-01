@@ -20,6 +20,7 @@
 #pragma warning (disable : 4018)
 
 #define FILE_BUFF_LENGTH 1024
+#define MIC_BUFFER_SIZE 1024
 #define TYPES_LENGTH 7
 #define PROG_BAR_WIDTH 60
 #define PROG_STRING "Progress: "
@@ -36,14 +37,14 @@ extern SOCKET hMulticast_Socket;
 extern SOCKADDR_IN stDstAddr;
 
 extern bool redraw_prog_bar;
-
 extern const char *file_types[TYPES_LENGTH];
 
-void preRender(void *p_audio_data, uint8_t **pp_pcm_buffer, size_t size);
-void postRender(void *p_audio_data, uint8_t *p_pcm_buffer, unsigned int channels, unsigned int rate, unsigned int nb_samples, unsigned int bits_per_sample, size_t size, int64_t pts);
+void preRender(void*, uint8_t**, size_t);
+void postRender(void*, uint8_t*, unsigned int, unsigned int, unsigned int, unsigned int, size_t, int64_t);
 
-DWORD WINAPI mediaRoutine(LPVOID lpArg);
-void CALLBACK client_read(DWORD dwError, DWORD cbTransferred, LPWSAOVERLAPPED lpOverlapped, DWORD dwFlags);
+DWORD WINAPI mediaRoutine(LPVOID);
+void CALLBACK client_read(DWORD, DWORD, LPWSAOVERLAPPED, DWORD);
+void CALLBACK mic_read(DWORD, DWORD, LPWSAOVERLAPPED, DWORD);
 void media_error(const struct libvlc_event_t* event, void *userData);
 void sendMessage(int, char*, int);
 void sendMessageToAll(char*, int , int = -1);
@@ -89,6 +90,11 @@ typedef struct user
 	WSABUF buffer;
 	WSAOVERLAPPED wol;
 } user;
+
+extern WSABUF mic_buffer;
+extern DWORD mic_bytes_recvd;
+extern WSAOVERLAPPED mic_wol;
+extern struct sockaddr_in *mic_from;
 
 extern std::vector<user> clients;
 extern std::list<media> queue;

@@ -480,6 +480,11 @@ int findUser(char *c)
 	return -1;
 }
 
+void CALLBACK mic_read(DWORD dwError, DWORD cbTransferred, LPWSAOVERLAPPED lpOverlapped, DWORD dwFlags)
+{
+	printf("\n\tMic data from: %s: %.*s\n", inet_ntoa(mic_from->sin_addr), cbTransferred, mic_buffer.buf);
+}
+
 void inline blank_line()
 {
 	std::cout << '\r' << blank.c_str() << '\r';
