@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
 
 	printf("Reading admins...\n");
 	loadAdmins();
-	printf("\nFinished reading admins\n");
+	printf("Finished reading admins\n\n");
 
 	openMulticastSocket();
 	setupMulticast();

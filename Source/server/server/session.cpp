@@ -334,7 +334,7 @@ void sendMessageToAll(char *mes, int len, int except)
 bool checkAdmin(int c)
 {
 	for (unsigned int i = 0; i < admins.size(); ++i)
-		if (strcmp(admins[i].c_str, inet_ntoa(clients[c].address->sin_addr)) == 0)
+		if (strcmp(admins[i].c_str(), inet_ntoa(clients[c].address->sin_addr)) == 0)
 			return true;
 
 	int len = strlen(UNAUTH_MESSAGE);
