@@ -21,11 +21,8 @@ PlayAudio::PlayAudio(QObject *parent) : QObject(parent)
     if (!info.isFormatSupported(format))
             format = info.nearestFormat(format);
 
-    timer =  new QTimer (this);
-    connect(timer, SIGNAL(timeout()),this, SLOT(playBuff()));
-    timer->setInterval(169.5);
-
     output = new QAudioOutput(format);
+    output->setBufferSize(88400);
     device = output->start();
     connect(socket, SIGNAL(readyRead()), this, SLOT(playData()));
 }
@@ -48,15 +45,16 @@ void PlayAudio::playData()
         {
             buffered->append(data.data(),data.size());
             qDebug() << "at start buffered size: " << buffered->size() << " Data size: " << data.size();
-
-            timer->start();
+            device->write(buffered->data(), buffered->size());
+            buffered->clear();
+            //timer->start();
             buff_pos=0;
         }
 
     }
 }
 
-void PlayAudio::playBuff()
+/*void PlayAudio::playBuff()
 {
     if (!buffered->isEmpty())
     {
@@ -65,4 +63,4 @@ void PlayAudio::playBuff()
         device->write(buffered->data(), buffered->size());
         buffered->clear();
     }
-}
+}*/

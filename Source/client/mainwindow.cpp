@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 //#include "processmic.h"
+#include "playaudio.h"
 
 //ProcessMic mic;
 
@@ -20,6 +21,8 @@ MainWindow::MainWindow(QWidget *parent) :
     format.setByteOrder(QAudioFormat::LittleEndian);
     format.setSampleType(QAudioFormat::UnSignedInt);*/
     //ui->pauseButton->setVisible(false);
+
+    new PlayAudio();
 
 }
 
