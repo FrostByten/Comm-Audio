@@ -1,14 +1,16 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "processmic.h"
+//#include "processmic.h"
 
-ProcessMic mic;
+//ProcessMic mic;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    //VlcInstance * v = new VlcInstance(VlcCommon::args(), this);
     ui->setupUi(this);
+    //VlcMedia("http://incompetech.com/music/royalty-free/mp3-royaltyfree/Who%20Likes%20to%20Party.mp3");
     /*QAudioFormat format;
     audioInput = new QAudioInput();
     format.setSampleRate(44100);
@@ -28,10 +30,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_micRButton_toggled(bool checked)
 {
-    if(checked)
-        mic.startMic();
-    else
-        mic.stopMic();
+    //if(checked)
+        //mic.startMic();
+    //else
+        //mic.stopMic();
 }
 
 void MainWindow::on_playButton_clicked()

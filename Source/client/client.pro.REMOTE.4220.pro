@@ -36,7 +36,6 @@ INSTALLS += install_it
 
 LIBS     += -L ../lib -lvlc-qt -lvlc-qt-widgets
 INCLUDEPATH += ../include
-LIBS += -lwinmm
 
 RESOURCES += \
     client.qrc

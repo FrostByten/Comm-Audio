@@ -34,9 +34,25 @@ FORMS    += mainwindow.ui \
 INSTALLS += install_it
 
 
+<<<<<<< Updated upstream
+#link windows lib
+LIBS += -lws2_32
+LIBS += -lwinmm
+
+INCLUDEPATH += $$PWD/../include/
+
+#unix|win32: LIBS += -L$$PWD/../libs/ -llibvlc
+
+INCLUDEPATH += $$PWD/../include/vlc
+DEPENDPATH += $$PWD/../include/vlc
+
+win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../libs/libvlc.lib
+win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../libs/libvlccore.lib
+#else:unix|win32-g++: PRE_TARGETDEPS += $$PWD/../libs/liblibvlc.a
+=======
 LIBS     += -L ../lib -lvlc-qt -lvlc-qt-widgets
 INCLUDEPATH += ../include
-LIBS += -lwinmm
+>>>>>>> Stashed changes
 
 RESOURCES += \
     client.qrc
