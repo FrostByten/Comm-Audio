@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
     format.setCodec("audio/pcm");
     format.setByteOrder(QAudioFormat::LittleEndian);
     format.setSampleType(QAudioFormat::UnSignedInt);*/
-    ui->pauseButton->setVisible(false);
+    //ui->pauseButton->setVisible(false);
 
 }
 
@@ -38,13 +38,13 @@ void MainWindow::on_micRButton_toggled(bool checked)
 
 void MainWindow::on_playButton_clicked()
 {
-    ui->playButton->setVisible(false);
-    ui->pauseButton->setVisible(true);
+   // ui->playButton->setVisible(false);
+   // ui->pauseButton->setVisible(true);
 
 }
 
 void MainWindow::on_pauseButton_clicked()
 {
-    ui->pauseButton->setVisible(false);
-    ui->playButton->setVisible(true);
+    //ui->pauseButton->setVisible(false);
+    //ui->playButton->setVisible(true);
 }
