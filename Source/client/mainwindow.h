@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QtMultimedia/QAudioInput>
+#include "settings.h"
 
 namespace Ui {
 class MainWindow;
@@ -14,6 +15,7 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = 0);
+
     ~MainWindow();
 
 private slots:
@@ -23,9 +25,12 @@ private slots:
 
     void on_pauseButton_clicked();
 
+    void on_open_settings();
+
 private:
     Ui::MainWindow *ui;
     QAudioInput *audioInput;
+    Settings * settings_window;
 };
 
 #endif // MAINWINDOW_H

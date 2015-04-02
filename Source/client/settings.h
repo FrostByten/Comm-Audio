@@ -13,6 +13,8 @@ class Settings : public QDialog
 
 public:
     explicit Settings(QWidget *parent = 0);
+    QString getControlPort();
+    QString getControlIp();
     ~Settings();
 
 private:
