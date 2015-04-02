@@ -6,10 +6,15 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    settings_window(new Settings(this))
+
 {
     //VlcInstance * v = new VlcInstance(VlcCommon::args(), this);
     ui->setupUi(this);
+    QAction * settingsAct = ui->menuBar->addAction("Settings");
+
+    connect(settingsAct, SIGNAL(triggered()), this, SLOT(on_open_settings()));
     //VlcMedia("http://incompetech.com/music/royalty-free/mp3-royaltyfree/Who%20Likes%20to%20Party.mp3");
     /*QAudioFormat format;
     audioInput = new QAudioInput();
@@ -21,6 +26,11 @@ MainWindow::MainWindow(QWidget *parent) :
     format.setSampleType(QAudioFormat::UnSignedInt);*/
     //ui->pauseButton->setVisible(false);
 
+}
+
+void MainWindow::on_open_settings()
+{
+    settings_window->exec();
 }
 
 MainWindow::~MainWindow()
