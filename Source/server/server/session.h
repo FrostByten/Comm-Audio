@@ -1,3 +1,45 @@
+/*-------------------------------------------------------------------------
+-- SOURCE FILE: session.h - Session header for Comm Audio
+--
+-- PROGRAM: Comm Audio Server
+--
+-- FUNCTIONS:
+-- 		void preRender(void*, uint8_t**, size_t);
+-- 		void postRender(void*, uint8_t*, unsigned int, unsigned int, unsigned int, unsigned int, size_t, int64_t);
+--
+-- 		DWORD WINAPI mediaRoutine(LPVOID);
+-- 		void CALLBACK client_read(DWORD, DWORD, LPWSAOVERLAPPED, DWORD);
+-- 		void CALLBACK mic_read(DWORD, DWORD, LPWSAOVERLAPPED, DWORD);
+-- 		void media_error(const struct libvlc_event_t* event, void *userData);
+-- 		void sendMessage(int, char*, int);
+-- 		void sendMessageToAll(char*, int , int = -1);
+-- 		int findUser(char*);
+-- 		bool checkAdmin(int);
+-- 		void handleRequest(int);
+-- 		void handlePlayback(int);
+-- 		void handleName(int);
+-- 		void handleSelect(int);
+-- 		void handleUserList(int);
+-- 		void handleMessage(int);
+-- 		void handleMute(int);
+-- 		void handleFileList(int);
+-- 		void handleFileRequest(int);
+-- 		void mixSamples(char*, char*, int);
+--
+-- 		void inline blank_line();
+-- 		void inline printPercent(float through);
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- NOTES:
+-------------------------------------------------------------------------*/
+
 #ifndef SESSION_H
 #define SESSION_H
 

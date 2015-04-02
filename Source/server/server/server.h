@@ -1,3 +1,31 @@
+/*-------------------------------------------------------------------------
+-- SOURCE FILE: server.h - Server header for Comm Audio
+--
+-- PROGRAM: Comm Audio Server
+--
+-- FUNCTIONS:
+-- 		void getFileList(char* = "\0");
+--		void openMulticastSocket();
+--		void setupMulticast();
+--		void setupMicrophoneSocket();
+--		void setupListenSocket();
+--		void print(char*);
+--		void cleanup(int);
+--		void loadAdmins();
+--		DWORD WINAPI acceptRoutine(LPVOID);
+--		void inline disable_cursor();
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- NOTES:
+-------------------------------------------------------------------------*/
+
 #ifndef SERVER_H
 #define SERVER_H
 

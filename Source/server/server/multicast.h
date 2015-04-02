@@ -1,3 +1,19 @@
+/*-------------------------------------------------------------------------
+-- SOURCE FILE: multicast.h - Shared header for Comm Audio
+--
+-- PROGRAM: Comm Audio Client/Server
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- NOTES:
+-------------------------------------------------------------------------*/
+
 #ifndef MULTICAST_H
 #define MULTICAST_H
 

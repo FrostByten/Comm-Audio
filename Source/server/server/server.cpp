@@ -1,3 +1,31 @@
+/*-------------------------------------------------------------------------
+-- SOURCE FILE: server.cpp - Server for Comm Audio
+--
+-- PROGRAM: Comm Audio Server
+--
+-- FUNCTIONS:
+-- 		void getFileList(char* = "\0");
+--		void openMulticastSocket();
+--		void setupMulticast();
+--		void setupMicrophoneSocket();
+--		void setupListenSocket();
+--		void print(char*);
+--		void cleanup(int);
+--		void loadAdmins();
+--		DWORD WINAPI acceptRoutine(LPVOID);
+--		void inline disable_cursor();
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- NOTES:
+-------------------------------------------------------------------------*/
+
 #include "server.h"
 
 WSADATA stWSAData;
@@ -20,6 +48,29 @@ std::vector<std::string> admins;
 WSAEVENT event_accept, event_close;
 DWORD read_flags = 0;
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: main
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: int main(int argc, char *argv[]);
+--
+-- PARAMETERS:
+--		int argc:		The number of arguments supplied.
+--		char *argv[]:	The supplied arguments.
+--
+-- RETURNS: int: Result. 0 on success, non-zero on fail.
+--
+-- NOTES:
+-- Entry point into the application. Loads the various networking components,
+-- then starts the server.
+-------------------------------------------------------------------------*/
 int main(int argc, char* argv[])
 {
 	WSAStartup(0x0202, &stWSAData);
@@ -62,6 +113,24 @@ int main(int argc, char* argv[])
 	cleanup(0);
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: setupMulticast
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void setupMulticast();
+--
+-- RETURNS: void.
+--
+-- NOTES:
+-- Sets up the multicast on the UDP socket.
+-------------------------------------------------------------------------*/
 void setupMulticast()
 {
 	u_long lTTL = 2;
@@ -101,6 +170,24 @@ void setupMulticast()
 	print("Multicast ready");
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: openMulticastSocket
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void openMulticastSocket();
+--
+-- RETURNS: void.
+--
+-- NOTES:
+-- Opens and binds a UDP socket.
+-------------------------------------------------------------------------*/
 void openMulticastSocket()
 {
 	/* Open a UDP socket */
@@ -121,6 +208,24 @@ void openMulticastSocket()
 	}
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: setupMicrophoneSocket
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void setupMicrophoneSocket();
+--
+-- RETURNS: void.
+--
+-- NOTES:
+-- Opens and binds a UDP socket to listen for microphone data
+-------------------------------------------------------------------------*/
 void setupMicrophoneSocket()
 {
 	struct sockaddr_in server;
@@ -155,6 +260,24 @@ void setupMicrophoneSocket()
 	print("Microphone connection ready");
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: setupLisstenSocket
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void setupListenSocket();
+--
+-- RETURNS: void.
+--
+-- NOTES:
+-- Sets up, binds and starts listening on the main TCP control socket.
+-------------------------------------------------------------------------*/
 void setupListenSocket()
 {
 	struct sockaddr_in server;
@@ -226,6 +349,28 @@ void setupListenSocket()
 	print("Control connection ready");
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: getFileList
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void getFileList(char *path);
+--
+-- PARAMETERS:
+--		char *path: The path to search for files
+--
+-- RETURNS: int: Result. 0 on success, non-zero on fail.
+--
+-- NOTES:
+-- Fills up the files vector with locations of valid files of a matching
+-- type by recursively crawling directories around the executable.
+-------------------------------------------------------------------------*/
 void getFileList(char *path)
 {
 	WIN32_FIND_DATA ffd;
@@ -246,7 +391,7 @@ void getFileList(char *path)
 	{
 		do
 		{
-			/* Call recersively on directories */
+			/* Call recursively on directories */
 			if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY && ffd.cFileName[0] != '.')
 			{
 				char *subpath = (char*)malloc(FILE_BUFF_LENGTH);
@@ -284,6 +429,28 @@ void getFileList(char *path)
 	free(path);
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: acceptRoutine
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: DWORD WINAPI acceptRoutine(LPVOID lpArg);
+--
+-- PARAMETERS:
+--		LPVOID lpArg: A pointer to the startup arguments for the thread.
+--
+-- RETURNS: DWORD: The return status of the thread.
+--
+-- NOTES:
+-- Startup routine for the thread that listens on the tcp control channel
+-- for network events.
+-------------------------------------------------------------------------*/
 DWORD WINAPI acceptRoutine(LPVOID lpArg)
 {
 	HANDLE events[2] = { event_accept, event_close };
@@ -393,11 +560,53 @@ DWORD WINAPI acceptRoutine(LPVOID lpArg)
 	return 0;
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: print
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void print(char *m);
+--
+-- PARAMETERS:
+--		char *m: The string to print.
+--
+-- RETURNS: void.
+--
+-- NOTES:
+-- Prints a string and a newline.
+-------------------------------------------------------------------------*/
 void print(char *m)
 {
 	std::cout << m << std::endl;
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: cleanup
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void cleanup(int ret);
+--
+-- PARAMETERS:
+--		int ret: The value for the program to return.
+--
+-- RETURNS: void.
+--
+-- NOTES:
+-- De-allocates memory, closes threads and exits the application.
+-------------------------------------------------------------------------*/
 void cleanup(int ret)
 {
 	std::cin.get();
@@ -446,6 +655,24 @@ void cleanup(int ret)
 	exit(ret);
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: loadAdmins
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void loadAdmins();
+--
+-- RETURNS: void.
+--
+-- NOTES:
+-- Fills the admins vector with IPs from the 'admins.cfg' file.
+-------------------------------------------------------------------------*/
 void loadAdmins()
 {
 	std::ifstream in_stream("admin.cfg");
@@ -458,6 +685,24 @@ void loadAdmins()
 		printf("\tLoaded admin: %s\n", admins[i].c_str());
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: disable_cursor
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void inline disable_cursor();
+--
+-- RETURNS: void.
+--
+-- NOTES:
+-- Stops the cursor from flashing in the console window.
+-------------------------------------------------------------------------*/
 void inline disable_cursor()
 {
 	CONSOLE_CURSOR_INFO info;

@@ -1,3 +1,45 @@
+/*-------------------------------------------------------------------------
+-- SOURCE FILE: session.cpp - Session for Comm Audio
+--
+-- PROGRAM: Comm Audio Server
+--
+-- FUNCTIONS:
+-- 		void preRender(void*, uint8_t**, size_t);
+-- 		void postRender(void*, uint8_t*, unsigned int, unsigned int, unsigned int, unsigned int, size_t, int64_t);
+--
+-- 		DWORD WINAPI mediaRoutine(LPVOID);
+-- 		void CALLBACK client_read(DWORD, DWORD, LPWSAOVERLAPPED, DWORD);
+-- 		void CALLBACK mic_read(DWORD, DWORD, LPWSAOVERLAPPED, DWORD);
+-- 		void media_error(const struct libvlc_event_t* event, void *userData);
+-- 		void sendMessage(int, char*, int);
+-- 		void sendMessageToAll(char*, int , int = -1);
+-- 		int findUser(char*);
+-- 		bool checkAdmin(int);
+-- 		void handleRequest(int);
+-- 		void handlePlayback(int);
+-- 		void handleName(int);
+-- 		void handleSelect(int);
+-- 		void handleUserList(int);
+-- 		void handleMessage(int);
+-- 		void handleMute(int);
+-- 		void handleFileList(int);
+-- 		void handleFileRequest(int);
+-- 		void mixSamples(char*, char*, int);
+--
+-- 		void inline blank_line();
+-- 		void inline printPercent(float through);
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- NOTES:
+-------------------------------------------------------------------------*/
+
 #include "multicast.h"
 #include "session.h"
 
@@ -6,12 +48,63 @@ const std::string blank(PROG_BAR_WIDTH + strlen(PROG_STRING), ' ');
 bool paused, skip;
 libvlc_media_player_t *mp;
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: preRender
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void preRender(void *p_audio_data, uint8_t **pp_pcm_buffer, size_t size);
+--
+-- PARAMETERS:
+--		void *p_audio_data:			Pointer to the information about the data.
+--		uint8_t **pp_pcm_buffer:	Pointer to place the memory block into.
+--		size_t size:				The amount of data to allocate.
+--
+-- RETURNS: void
+--
+-- NOTES:
+-- Allocates memory blocks for libvlc to render PCM into.
+-------------------------------------------------------------------------*/
 void preRender(void *p_audio_data, uint8_t **pp_pcm_buffer, size_t size)
 {
 	*pp_pcm_buffer = (uint8_t*)malloc(size);
 	SecureZeroMemory(*pp_pcm_buffer, size);
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: postRender
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void postRender(void *p_audio_data, uint8_t *p_pcm_buffer, unsigned int channels, unsigned int rate, unsigned int nb_samples, unsigned int bits_per_sample, size_t size, int64_t pts);
+--
+-- PARAMETERS:
+--		void *p_audio_data:				Information about the data.
+--		uint8_t *p_pcm_buffer:			Pointer to the memory block where the data was rendered.
+--		unsigned int channels:			The number of audio channels.
+--		unsigned int rate:				The sample rate, in Hz.
+--		unsigned int nb_samples:		The number of rendered samples.
+--		unsigned int bits_per_sample:	The number of bits per audio sample.
+--		size_t size:					The size of the rendered data in bytes.
+--		int64_t pts:					The number of audio keyframes.
+--
+-- RETURNS: void.
+--
+-- NOTES:
+-- Prepares the rendered PCM audio into chunks and sends them via multicast UDP.
+-------------------------------------------------------------------------*/
 void postRender(void *p_audio_data, uint8_t *p_pcm_buffer, unsigned int channels, unsigned int rate, unsigned int nb_samples, unsigned int bits_per_sample, size_t size, int64_t pts)
 {
 	static bool first = true;
@@ -47,6 +140,28 @@ void postRender(void *p_audio_data, uint8_t *p_pcm_buffer, unsigned int channels
 	first = false;
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: mediaRoutine
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: DWORD WINAPI mediaRoutine(LPVOID lpArg);
+--
+-- PARAMETERS:
+--		LPVOID lpArg: Pointer to the startup arguments for the thread.
+--
+-- RETURNS: DWORD: The return value for the thread.
+--
+-- NOTES:
+-- Starting point for the media control thread. Renders audio and sends it via
+-- the multicast UDP socket.
+-------------------------------------------------------------------------*/
 DWORD WINAPI mediaRoutine(LPVOID lpArg)
 {
 	libvlc_instance_t *inst;
@@ -142,6 +257,28 @@ DWORD WINAPI mediaRoutine(LPVOID lpArg)
 	return 0;
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: printPercent
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void inline printPercent(float through);
+--
+-- PARAMETERS:
+--		float through: 0-1, percentage of the bar to fill.
+--
+-- RETURNS: void.
+--
+-- NOTES:
+-- Prints a line to the console that represents how far through the song the
+-- media thread currently is.
+-------------------------------------------------------------------------*/
 void inline printPercent(float through)
 {
 	static int bars = -1;
@@ -154,6 +291,30 @@ void inline printPercent(float through)
 	}
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: client_read
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void CALLBACK client_read(DWORD dwError, DWORD cbTransferred, LPWSAOVERLAPPED lpOverlapped, DWORD dwFlags);
+--
+-- PARAMETERS:
+--		DWORD dwError:					The error, if any occurred.
+--		DWORD cbTransferred:			The number of bytes transferred.
+--		LPWSAOVERLAPPED lpOverlapped:	A pointer to the overlapped structure.
+--		DWORD dwFlags:					The flags used during reading.
+--
+-- RETURNS: void.
+--
+-- NOTES:
+-- Reads from a client.
+-------------------------------------------------------------------------*/
 void CALLBACK client_read(DWORD dwError, DWORD cbTransferred, LPWSAOVERLAPPED lpOverlapped, DWORD dwFlags)
 {
 	unsigned int i;
@@ -181,6 +342,27 @@ void CALLBACK client_read(DWORD dwError, DWORD cbTransferred, LPWSAOVERLAPPED lp
 		perror("Error reading from client");
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: handleRequest
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void handleRequest(int c);
+--
+-- PARAMETERS:
+--		int c: The index of the client that initiated the request.
+--
+-- RETURNS: void.
+--
+-- NOTES:
+-- Handles a request from a client and distributes it accordingly.
+-------------------------------------------------------------------------*/
 void handleRequest(int c)
 {
 	int data_length = *((int*)&clients[c].buffer.buf[1]);
@@ -232,6 +414,27 @@ void handleRequest(int c)
 	}
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: handlePlayback
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void handlePlayback(int c);
+--
+-- PARAMETERS:
+--		int c: The index of the client that initiated the request.
+--
+-- RETURNS: void.
+--
+-- NOTES:
+-- Handles a playback command and controls the media thread.
+-------------------------------------------------------------------------*/
 void handlePlayback(int c)
 {
 	printf("\nPlayback command: ");
@@ -264,6 +467,27 @@ void handlePlayback(int c)
 	}
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: handleName
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void handleName(int c);
+--
+-- PARAMETERS:
+--		int c: The index of the client that initiated the request.
+--
+-- RETURNS: void.
+--
+-- NOTES:
+-- Handles a name change request from a client and notifies other clients.
+-------------------------------------------------------------------------*/
 void handleName(int c)
 {
 	printf("\nName change command: %s changed name to ", clients[c].name);
@@ -285,6 +509,27 @@ void handleName(int c)
 	printf("%s\n", clients[c].name);
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: handleSelect
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void handleSelect(int c);
+--
+-- PARAMETERS:
+--		int c: The index of the client that initiated the request.
+--
+-- RETURNS: void.
+--
+-- NOTES:
+-- Handle a file selection request by adding the request to the media queue.
+-------------------------------------------------------------------------*/
 void handleSelect(int c)
 {
 	int size = *((int*)&clients[c].buffer.buf[1]);
@@ -308,6 +553,27 @@ void handleSelect(int c)
 	queue.push_back(m);
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: handleUserList
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void handleUserList(int c);
+--
+-- PARAMETERS:
+--		int c: The index of the client that initiated the request.
+--
+-- RETURNS: void.
+--
+-- NOTES:
+-- Handles a request for the user list by sending it to the client.
+-------------------------------------------------------------------------*/
 void handleUserList(int c)
 {
 	printf("\nClient[%s] is requesting user list, sending...\n", clients[c].name);
@@ -326,20 +592,65 @@ void handleUserList(int c)
 		}
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: handleMessage
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void handleMessage(int c);
+--
+-- PARAMETERS:
+--		int c: The index of the client that initiated the request.
+--
+-- RETURNS: void.
+--
+-- NOTES:
+-- Handles a message from a client by sending it to every other client.
+-------------------------------------------------------------------------*/
 void handleMessage(int c)
 {
-	int len = *((int*)&clients[c].buffer.buf[1]) + strlen(clients[c].name) + 2;
-	char *mes = (char*)malloc(len + 5);
-	mes[0] = MESSAGE;
-	memcpy(mes + 1, &len, sizeof(int));
-	memcpy(mes + 4, clients[c].name, strlen(clients[c].name));
-	mes[strlen(clients[c].name) + 5] = ':';
-	mes[strlen(clients[c].name) + 6] = ' ';
-	memcpy(mes + strlen(clients[c].name) + 7, clients[c].buffer.buf + 5, *((int*)&clients[c].buffer.buf[1]));
-	sendMessageToAll(mes, len + 5, c);
-	free(mes);
+	if(!clients[c].muted)
+	{
+		int len = *((int*)&clients[c].buffer.buf[1]) + strlen(clients[c].name) + 2;
+		char *mes = (char*)malloc(len + 5);
+		mes[0] = MESSAGE;
+		memcpy(mes + 1, &len, sizeof(int));
+		memcpy(mes + 4, clients[c].name, strlen(clients[c].name));
+		mes[strlen(clients[c].name) + 5] = ':';
+		mes[strlen(clients[c].name) + 6] = ' ';
+		memcpy(mes + strlen(clients[c].name) + 7, clients[c].buffer.buf + 5, *((int*)&clients[c].buffer.buf[1]));
+		sendMessageToAll(mes, len + 5, c);
+		free(mes);
+	}
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: handleMute
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void handleMute(int c);
+--
+-- PARAMETERS:
+--		int c: The index of the client that initiated the request.
+--
+-- RETURNS: void.
+--
+-- NOTES:
+-- Handles a request for mute by checking permissions and notifying clients.
+-------------------------------------------------------------------------*/
 void handleMute(int c)
 {
 	checkAdmin(c);
@@ -354,6 +665,27 @@ void handleMute(int c)
 	}
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: handleFileList
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void handleFileList(int c);
+--
+-- PARAMETERS:
+--		int c: The index of the client that initiated the request.
+--
+-- RETURNS: void.
+--
+-- NOTES:
+-- Handles a request for the file list by sending it to the client.
+-------------------------------------------------------------------------*/
 void handleFileList(int c)
 {
 	printf("\nFile listing request from client[%s]\n", clients[c].name);
@@ -370,6 +702,27 @@ void handleFileList(int c)
 	}
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: handleFileRequest
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void handleFileRequest(int c);
+--
+-- PARAMETERS:
+--		int c: The index of the client that initiated the request.
+--
+-- RETURNS: void.
+--
+-- NOTES:
+-- Handle a file request by sending the relevant file over TCP to the client.
+-------------------------------------------------------------------------*/
 void handleFileRequest(int c)
 {
 	printf("\nFile request command from client[%s] for: %s: ", clients[c].name, clients[c].buffer.buf + 5);
@@ -441,11 +794,57 @@ void handleFileRequest(int c)
 	CloseHandle((HANDLE)file);
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: sendMessage
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void sendMessage(int c, char *mes, int len);
+--
+-- PARAMETERS:
+--		int c: 		The index of the client to send the message to.
+--		char *mes:	The message to send.
+--		int len:	The length of the message in bytes.
+--
+-- RETURNS: void.
+--
+-- NOTES:
+-- Sends a control message to a specified client.
+-------------------------------------------------------------------------*/
 void sendMessage(int c, char *mes, int len)
 {
 	send(clients[c].socket, mes, len, NULL);
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: sendMessageToAll
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void sendMessageToAll(char *mes, int len, int except);
+--
+-- PARAMETERS:
+--		char *mes:	The message to send.
+--		int len:	The length of the message in bytes.
+--		int except:	The client (if any) NOT to send the message to.
+--
+-- RETURNS: void.
+--
+-- NOTES:
+-- Sends a message to every client (except an optional specified client).
+-------------------------------------------------------------------------*/
 void sendMessageToAll(char *mes, int len, int except)
 {
 	for (unsigned int i = 0; i < clients.size(); ++i)
@@ -453,6 +852,27 @@ void sendMessageToAll(char *mes, int len, int except)
 			sendMessage(i, mes, len);
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: checkAdmin
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: bool checkAdmin(int c);
+--
+-- PARAMETERS:
+--		int c: The index of the client to check.
+--
+-- RETURNS: bool. Whether or not the user is an admin.
+--
+-- NOTES:
+-- Checks whether or not a user is an admin.
+-------------------------------------------------------------------------*/
 bool checkAdmin(int c)
 {
 	for (unsigned int i = 0; i < admins.size(); ++i)
@@ -469,6 +889,27 @@ bool checkAdmin(int c)
 	return false;
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: findUser
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: int findUser(char *c);
+--
+-- PARAMETERS:
+--		char *c: The name to search for.
+--
+-- RETURNS: int. The index of the found user, if any.
+--
+-- NOTES:
+-- Handles a request from a client and distributes it accordingly.
+-------------------------------------------------------------------------*/
 int findUser(char *c)
 {
 	for (unsigned int i = 0; i < clients.size(); ++i)
@@ -480,6 +921,30 @@ int findUser(char *c)
 	return -1;
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: mic_read
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void CALLBACK mic_read(DWORD dwError, DWORD cbTransferred, LPWSAOVERLAPPED lpOverlapped, DWORD dwFlags);
+--
+-- PARAMETERS:
+--		DWORD dwError:					The error, if any, that occurred.
+--		DWORD cbTransferred:			The number of bytes that were transferred.
+--		LPWSAOVERLAPPED lpOverlapped:	A pointer to the overlapped structure.
+--		DWORD dwFlags:					The flags used to receive.
+--
+-- RETURNS: void.
+--
+-- NOTES:
+-- Completion routine for the microphone socket.
+-------------------------------------------------------------------------*/
 void CALLBACK mic_read(DWORD dwError, DWORD cbTransferred, LPWSAOVERLAPPED lpOverlapped, DWORD dwFlags)
 {
 	for (unsigned int i = 0; i < clients.size(); ++i)
@@ -498,6 +963,29 @@ void CALLBACK mic_read(DWORD dwError, DWORD cbTransferred, LPWSAOVERLAPPED lpOve
 		perror("Error reading from microphone");
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: mixSamples
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void mixSamples(char *bus, char *channel, int num_samples);
+--
+-- PARAMETERS:
+--		char *bus:			The first channel for samples, result will be placed here.
+--		char *channel:		The second channel for samples.
+--		int num_samples:	The number of samples to mix.
+--
+-- RETURNS: void.
+--
+-- NOTES:
+-- Mixes two sets of PCM samples together.
+-------------------------------------------------------------------------*/
 void mixSamples(char *bus, char *channel, int num_samples)
 {
 	for (unsigned int i = 0; i < num_samples; ++i)
@@ -508,14 +996,54 @@ void mixSamples(char *bus, char *channel, int num_samples)
 	}
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: blank_line
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void inline blank_line();
+--
+-- RETURNS: void.
+--
+-- NOTES:
+-- Blanks the current line.
+-------------------------------------------------------------------------*/
 void inline blank_line()
 {
 	std::cout << '\r' << blank.c_str() << '\r';
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: media_error
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void media_error(const struct libvlc_event_t* event, void *userData);
+--
+-- PARAMETERS:
+--		const struct libvlc_event_t* event:	Pointer to the event that occurred.
+--		void *userData:						Pointer to user data.
+--
+-- RETURNS: void.
+--
+-- NOTES:
+-- Handles a media playing error by skipping the current media.
+-------------------------------------------------------------------------*/
 void media_error(const struct libvlc_event_t* event, void *userData)
 {
 	blank_line();
-	printf("Error occured while playing media, skipping...\n");
+	printf("Error occurred while playing media, skipping...\n");
 	skip = true;
 }
