@@ -482,7 +482,30 @@ int findUser(char *c)
 
 void CALLBACK mic_read(DWORD dwError, DWORD cbTransferred, LPWSAOVERLAPPED lpOverlapped, DWORD dwFlags)
 {
-	printf("\n\tMic data from address[%s]: %.*s\n", inet_ntoa(mic_from->sin_addr), cbTransferred, mic_buffer.buf);
+	for (unsigned int i = 0; i < clients.size(); ++i)
+	{
+		if (memcmp(&clients[i].address->sin_addr, &mic_from->sin_addr, sizeof(SOCKADDR_IN)) == 0 && !clients[i].muted)
+		{
+			for (unsigned int j = 0; j < cbTransferred; j += 2)
+			{
+				printf("Sample: %d\n", *((short*)(mic_buffer.buf + j)));
+			}
+		}
+	}
+
+	int mic_len = sizeof(sockaddr_in);
+	if (WSARecvFrom(hMicrophone_Socket, &mic_buffer, 1, &mic_bytes_recvd, &empty, (sockaddr*)mic_from, &mic_len, &mic_wol, mic_read) == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
+		perror("Error reading from microphone");
+}
+
+void mixSamples(char *bus, char *channel, int num_samples)
+{
+	for (unsigned int i = 0; i < num_samples; ++i)
+	{
+		int additive = *((short*)(bus + (2 * i))) + *((short*)(bus + (2 * i)));
+		short clipped = (additive > short_range::max()) ? short_range::max() : ((additive < short_range::min()) ? short_range::min() : additive);
+		memcpy(bus + (2 * i), &clipped, sizeof(short));
+	}
 }
 
 void inline blank_line()

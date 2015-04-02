@@ -12,12 +12,17 @@
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 #include <string>
+#include <limits>
 #include <fstream>
 #include "multicast.h"
 
 #pragma warning (disable : 4996)
 #pragma warning (disable : 4244)
 #pragma warning (disable : 4018)
+
+//because microsoft thought it would be funny to pre-define these... I'm not laughing.
+#undef max 
+#undef min
 
 #define FILE_BUFF_LENGTH 1024
 #define MIC_BUFFER_SIZE 1024
@@ -32,6 +37,8 @@
 //#define DEBUG
 
 #define STREAM_OPTIONS "#transcode{acodec=s16l,samplerate=44100,ab=705600,channels=2}:smem{audio-postrender-callback=%lld,audio-prerender-callback=%lld}"
+
+typedef std::numeric_limits<short> short_range;
 
 extern SOCKET hMulticast_Socket;
 extern SOCKADDR_IN stDstAddr;
@@ -59,6 +66,7 @@ void handleMessage(int);
 void handleMute(int);
 void handleFileList(int);
 void handleFileRequest(int);
+void mixSamples(char*, char*, int);
 
 void inline blank_line();
 void inline printPercent(float through);
@@ -95,6 +103,7 @@ extern WSABUF mic_buffer;
 extern DWORD mic_bytes_recvd;
 extern WSAOVERLAPPED mic_wol;
 extern struct sockaddr_in *mic_from;
+extern SOCKET hMicrophone_Socket;
 
 extern std::vector<user> clients;
 extern std::list<media> queue;

@@ -328,6 +328,7 @@ DWORD WINAPI acceptRoutine(LPVOID lpArg)
 			memcpy(client.name, inet_ntoa(client.address->sin_addr), strlen(inet_ntoa(client.address->sin_addr)));
 			client.name[strlen(inet_ntoa(client.address->sin_addr))] = '\0';
 			client.bytes_recvd = 0;
+			client.muted = false;
 			client.buffer.buf = (char*)malloc(CLIENT_BUFFER_SIZE);
 			client.buffer.len = CLIENT_BUFFER_SIZE;
 			ZeroMemory(&client.wol, sizeof(WSAOVERLAPPED));
