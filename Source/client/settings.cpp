@@ -1,6 +1,8 @@
 #include "settings.h"
 #include "ui_settings.h"
 
+#include <iostream>
+
 Settings::Settings(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Settings)
@@ -15,6 +17,7 @@ Settings::~Settings()
 
 QString Settings::getControlPort()
 {
+
     return ui->control_port->text();
 }
 

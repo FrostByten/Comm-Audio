@@ -188,21 +188,13 @@ QRadioButton::indicator:checked  {
        </widget>
       </item>
       <item row="0" column="2">
-       <layout class="QGridLayout" name="Settings" rowstretch="1,0,0,0,0" columnstretch="1,0,0,0">
+       <layout class="QGridLayout" name="Settings" rowstretch="1,0,0,0,0" columnstretch="0,0,0,0">
         <property name="sizeConstraint">
          <enum>QLayout::SetDefaultConstraint</enum>
         </property>
-        <item row="2" column="1">
-         <widget class="QPushButton" name="req_file_Btn">
-          <property name="text">
-           <string>Request File</string>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="0" colspan="4">
          <widget class="QWidget" name="widget" native="true">
           <layout class="QGridLayout" name="gridLayout_5"/>
-          <zorder>TabArea</zorder>
          </widget>
         </item>
         <item row="1" column="1">
@@ -247,17 +239,24 @@ QRadioButton::indicator:checked  {
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
-         <widget class="QPushButton" name="play_Btn">
-          <property name="text">
-           <string>Play</string>
-          </property>
-         </widget>
-        </item>
         <item row="4" column="3">
          <widget class="QPushButton" name="skip_for_Btn">
           <property name="text">
            <string>Skip Forward</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QPushButton" name="req_file_Btn">
+          <property name="text">
+           <string>Request File</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QPushButton" name="play_Btn">
+          <property name="text">
+           <string>Play</string>
           </property>
          </widget>
         </item>
@@ -273,7 +272,7 @@ QRadioButton::indicator:checked  {
      <x>0</x>
      <y>0</y>
      <width>1033</width>
-     <height>18</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

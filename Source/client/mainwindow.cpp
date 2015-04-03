@@ -4,6 +4,8 @@
 
 //ProcessMic mic;
 
+
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -15,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QAction * settingsAct = ui->menuBar->addAction("Settings");
 
     connect(settingsAct, SIGNAL(triggered()), this, SLOT(on_open_settings()));
+    connect(ui->connect_Btn, SIGNAL(clicked()), this, SLOT(connect_control()));
     //VlcMedia("http://incompetech.com/music/royalty-free/mp3-royaltyfree/Who%20Likes%20to%20Party.mp3");
     /*QAudioFormat format;
     audioInput = new QAudioInput();
@@ -26,6 +29,15 @@ MainWindow::MainWindow(QWidget *parent) :
     format.setSampleType(QAudioFormat::UnSignedInt);*/
     //ui->pauseButton->setVisible(false);
 
+}
+
+void MainWindow::connect_control()
+{
+
+    std::string control_ip   = settings_window->getControlIp().toStdString();
+    std::string control_port = settings_window->getControlPort().toStdString();
+
+    control = new Networking(control_ip.c_str(), control_port.c_str());
 }
 
 void MainWindow::on_open_settings()

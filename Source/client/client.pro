@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     audiothread.cpp \
     audioreceive.cpp \
     settings.cpp \
-    playaudio.cpp
+    playaudio.cpp \
+    networking.cpp
 
 HEADERS += mainwindow.h \
         processmic.h \
@@ -29,7 +30,8 @@ HEADERS += mainwindow.h \
     audioreceive.h \
     settings.h \
     playaudio.h \
-    playaudio.h
+    playaudio.h \
+    networking.h
 
 FORMS    += mainwindow.ui \
     settings.ui
