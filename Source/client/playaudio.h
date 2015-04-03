@@ -22,7 +22,7 @@ class PlayAudio : public QObject
         void bytesWritten();
     public slots:
         void playData();
-        void playBuff();
+        //void playBuff();
 
     private:
         QUdpSocket *socket;

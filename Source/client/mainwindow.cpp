@@ -1,8 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-//#include "processmic.h"
+#include "processmic.h"
+#include "playaudio.h"
 
-//ProcessMic mic;
+ProcessMic mic;
 
 
 
@@ -29,6 +30,8 @@ MainWindow::MainWindow(QWidget *parent) :
     format.setSampleType(QAudioFormat::UnSignedInt);*/
     //ui->pauseButton->setVisible(false);
 
+    new PlayAudio();
+
 }
 
 void MainWindow::connect_control()
@@ -52,10 +55,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_micRButton_toggled(bool checked)
 {
-    //if(checked)
-        //mic.startMic();
-    //else
-        //mic.stopMic();
+    if(checked)
+        mic.startMic();
+    else
+        mic.stopMic();
 }
 
 void MainWindow::on_playButton_clicked()

@@ -138,7 +138,7 @@ typedef struct user
 	DWORD bytes_recvd;
 	bool muted;
 	WSABUF buffer;
-	WSAOVERLAPPED wol;
+	LPWSAOVERLAPPED wol;
 } user;
 
 extern WSABUF mic_buffer;
