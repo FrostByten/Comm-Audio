@@ -655,12 +655,11 @@ void handleMute(int c)
 {
 	checkAdmin(c);
 
-	bool mute = clients[c].buffer.buf[5]==1?true:false;
-	int tomute = findUser(clients[c].buffer.buf + 6);
+	int tomute = findUser(clients[c].buffer.buf + 5);
 
 	if (tomute != -1)
 	{
-		clients[tomute].muted = mute;
+		clients[tomute].muted = !clients[tomute].muted;
 		sendMessageToAll(clients[c].buffer.buf, clients[c].bytes_recvd);
 	}
 }

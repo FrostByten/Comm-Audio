@@ -24,7 +24,9 @@ Networking::Networking(const char * address, const char * port)
 
         std::cout << "Could not get host info" << std::endl;
     }
-    else if(sock = (Connect(addr_info)) < 0)
+
+	sock = (Connect(addr_info));
+	if(sock < 0)
     {
         connected = false;
         sock = -1;
@@ -41,9 +43,10 @@ Networking::Networking(const char * address, const char * port)
 Networking::~Networking()
 {
     if(sock != -1)
+	{
+		shutdown(sock, SD_BOTH);
         closesocket(sock);
-    WSACleanup();
-
+	}
 }
 
 /******************************************************************************************
@@ -135,7 +138,26 @@ SOCKET Networking::Connect(addrinfo * addr)
 
     if(p == NULL)
         return -1;
-    else
-        return sockfd;
+	else
+		return sockfd;
 }
 
+bool Networking::getConnected()
+{
+	return connected;
+}
+
+void Networking::sendMessage(char type, int length, const char *mes)
+{
+	char *buf = (char*)malloc(length + 5);
+	buf[0] = type;
+	memcpy(buf + 1, &length, sizeof(int));
+	memcpy(buf + 5, mes, length);
+
+	std::cerr << "Sending: " << buf << std::endl;
+
+	if(send(sock, buf, length + 5, 0) == SOCKET_ERROR)
+		std::cerr << "Error sending: " << WSAGetLastError() << std::endl;
+
+	free(buf);
+}

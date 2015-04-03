@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <QtMultimedia/QAudioInput>
+#include <QStandardItemModel>
+#include <QListView>
 #include "settings.h"
 #include "networking.h"
 
@@ -28,13 +30,26 @@ private slots:
 
     void on_pauseButton_clicked();
     void connect_control();
+	void pause_control();
+	void play_control();
+	void skip_for_control();
+	void mute_control();
+	void file_select_control();
+	void URL_select_control();
+	void file_download_control();
     void on_open_settings();
+	QString getSelected(QListView *);
+public slots:
+	void send_control();
 
 private:
     Ui::MainWindow *ui;
     QAudioInput *audioInput;
     Settings * settings_window;
     Networking * control;
+	QStandardItemModel *chatmodel;
+	QStandardItemModel *usermodel;
+	QStandardItemModel *filesmodel;
 };
 
 #endif // MAINWINDOW_H
