@@ -1,12 +1,12 @@
 #include "processmic.h"
-
+#include <QDebug>
 void ProcessMic::startMic()
 {
     // Set up sound format
     QAudioFormat format;
     format.setSampleRate(44100);
-    format.setChannelCount(1);
-    format.setSampleSize(8);
+    format.setChannelCount(2);
+    format.setSampleSize(16);
     format.setCodec("audio/pcm");
     format.setByteOrder(QAudioFormat::LittleEndian);
     format.setSampleType(QAudioFormat::UnSignedInt);
@@ -19,7 +19,7 @@ void ProcessMic::startMic()
 
     audioInput = new QAudioInput(format,reinterpret_cast<QObject*>(this));
     QUdpSocket* socket = new QUdpSocket();
-    socket->connectToHost("127.0.0.1", 7000);
+    socket->connectToHost("127.0.0.1", 8912);
 
     audioInput->start(socket);
 
