@@ -498,7 +498,8 @@ DWORD WINAPI acceptRoutine(LPVOID lpArg)
 			client.muted = false;
 			client.buffer.buf = (char*)malloc(CLIENT_BUFFER_SIZE);
 			client.buffer.len = CLIENT_BUFFER_SIZE;
-			ZeroMemory(&client.wol, sizeof(WSAOVERLAPPED));
+			client.wol = (LPWSAOVERLAPPED)malloc(sizeof(WSAOVERLAPPED));
+			ZeroMemory(client.wol, sizeof(WSAOVERLAPPED));
 
 			int len = strlen(client.name);
 			char *mes = (char*)malloc(len + 6);
@@ -513,7 +514,7 @@ DWORD WINAPI acceptRoutine(LPVOID lpArg)
 			clients.push_back(client);
 
 			/* Setup the socket to receive */
-			if (WSARecv(client.socket, &client.buffer, 1, &client.bytes_recvd, &read_flags, &client.wol, client_read) == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
+			if (WSARecv(client.socket, &client.buffer, 1, &client.bytes_recvd, &read_flags, client.wol, client_read) == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
 				perror("Error reading from client");
 
 			/* Reset to event ready to be triggered again */
@@ -547,6 +548,7 @@ DWORD WINAPI acceptRoutine(LPVOID lpArg)
 					free(clients[i].name);
 					closesocket(clients[i].socket);
 					free(clients[i].buffer.buf);
+					free(clients[i].wol);
 					clients.erase(clients.begin() + (i * sizeof(user)));
 					break;
 				}
@@ -637,6 +639,7 @@ void cleanup(int ret)
 		shutdown(clients[i].socket, SD_BOTH);
 		closesocket(clients[i].socket);
 		free(clients[i].buffer.buf);
+		free(clients[i].wol);
 	}
 
 	free(mic_buffer.buf);

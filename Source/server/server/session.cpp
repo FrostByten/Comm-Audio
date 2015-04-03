@@ -318,9 +318,9 @@ void inline printPercent(float through)
 void CALLBACK client_read(DWORD dwError, DWORD cbTransferred, LPWSAOVERLAPPED lpOverlapped, DWORD dwFlags)
 {
 	unsigned int i;
-	for (i = 0; i <= clients.size(); ++i)
+	for (i = 0; i < clients.size(); ++i)
 	{
-		if (clients[i].wol.Internal == lpOverlapped->Internal)
+		if (clients[i].wol == lpOverlapped)
 			break;
 	}
 
@@ -338,7 +338,7 @@ void CALLBACK client_read(DWORD dwError, DWORD cbTransferred, LPWSAOVERLAPPED lp
 
 	handleRequest(i);
 
-	if (WSARecv(clients[i].socket, &clients[i].buffer, 1, &clients[i].bytes_recvd, &empty, &clients[i].wol, client_read) == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
+	if (WSARecv(clients[i].socket, &clients[i].buffer, 1, &clients[i].bytes_recvd, &empty, clients[i].wol, client_read) == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
 		perror("Error reading from client");
 }
 
