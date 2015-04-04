@@ -24,6 +24,9 @@ public:
 
     ~MainWindow();
 
+	void handle_userList(message *msg);
+	void handle_setName(message *msg);
+
 private slots:
     void on_micRButton_toggled(bool checked);
 

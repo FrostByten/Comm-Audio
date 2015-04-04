@@ -35,6 +35,11 @@ typedef enum playback
 	PLAY, PAUSE, SKIP
 } playback;
 
+typedef enum user_list
+{
+	EXIST, CONNECT, DISCONNECT
+} user_list;
+
 
 struct message
 {

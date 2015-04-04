@@ -338,6 +338,12 @@ void CALLBACK client_read(DWORD dwError, DWORD cbTransferred, LPWSAOVERLAPPED lp
 
 	handleRequest(i);
 
+	if ((*((int*)clients[i].buffer.buf + 1)) + 5 < cbTransferred)
+	{
+		memcpy(clients[i].buffer.buf, clients[i].buffer.buf + (*((int*)clients[i].buffer.buf + 1)) + 5, cbTransferred - ((*((int*)clients[i].buffer.buf + 1) + 5)));
+		handleRequest(i);
+	}
+
 	if (WSARecv(clients[i].socket, &clients[i].buffer, 1, &clients[i].bytes_recvd, &empty, clients[i].wol, client_read) == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
 		perror("Error reading from client");
 }

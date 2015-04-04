@@ -78,6 +78,79 @@ void MainWindow::handle_control(message * msg)
 {
     // handle message
     std::cout << msg << std::endl;
+
+	switch(msg->type)
+	{
+		case MESSAGE:
+		{
+			chatmodel->appendRow(new QStandardItem(QString(msg->data)));
+			break;
+		}
+		case USER_LIST:
+		{
+			handle_userList(msg);
+			break;
+		}
+		case FILE_LIST:
+		{
+			filesmodel->appendRow(new QStandardItem(QString(msg->data)));
+			break;
+		}
+		case CURRENT:
+		{
+			QString m("Now playing: ");
+			m.append(msg->data);
+			chatmodel->appendRow(new QStandardItem(m));
+			break;
+		}
+		case SET_NAME:
+		{
+			handle_setName(msg);
+			break;
+		}
+	}
+}
+
+void MainWindow::handle_userList(message *msg)
+{
+	if(msg->data[0] == EXIST || msg->data[0] == CONNECT)
+		usermodel->appendRow(new QStandardItem(QString(msg->data+1)));
+	if(msg->data[0] == CONNECT)
+	{
+		QString m(msg->data+1);
+		m.append(" has connected");
+		chatmodel->appendRow(new QStandardItem(m));
+	}
+	if(msg->data[0] == DISCONNECT)
+	{
+		QString m(msg->data+1);
+
+		for(int i = 0; i < usermodel->rowCount(); ++i)
+		{
+			if(usermodel->index(i,0).data().toString().compare(m) == 0)
+				usermodel->removeRow(i);
+		}
+		m.append(" disconnected");
+		chatmodel->appendRow(new QStandardItem(m));
+	}
+}
+
+void MainWindow::handle_setName(message *msg)
+{
+	int j = 0;
+	for(;;++j)
+	{
+		if(msg->data[j] == '\0');
+		{
+			break;
+		}
+	}
+
+	for(int i = 0; i < usermodel->rowCount(); ++i)
+	{
+		if(usermodel->index(i,0).data().toString().compare(msg->data) == 0)
+			usermodel->setItem(i, 0, new QStandardItem(msg->data+j));
+	}
 }
 
 void MainWindow::connect_control()
