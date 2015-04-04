@@ -203,6 +203,7 @@ void Networking::sendMessage(message * msg)
 int Networking::recvMessage(message * msg)
 {
     char * buffer = new char[BUFFERSIZE];
+    memset(buffer, 0, BUFFERSIZE);
     std::string fullbuff("");
     int len = 0, total = 0;
 
@@ -212,10 +213,11 @@ int Networking::recvMessage(message * msg)
 
         fullbuff += buffer;
         total += len;
-        std::cerr << fullbuff.c_str() << std::endl;
+        if(len < BUFFERSIZE)
+            break;
     }
 
-    std::cout << fullbuff.c_str() << std::endl;
+    std::cout << "Reading: " << fullbuff.c_str() << std::endl;
     msg->type = fullbuff.c_str()[0];
     msg->len  = fullbuff.c_str()[1];
     msg->data = new char[msg->len];
