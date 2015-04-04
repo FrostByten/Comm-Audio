@@ -3,6 +3,7 @@
 #include "processmic.h"
 #include "playaudio.h"
 #include "entercatch.h"
+#include "controlthread.h"
 
 ProcessMic mic;
 
@@ -30,8 +31,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->select_URL_Btn, SIGNAL(clicked()), this, SLOT(URL_select_control()));
 	connect(ui->download_Btn, SIGNAL(clicked()), this, SLOT(file_download_control()));
 
-    connect(cont_thread, SIGNAL(message_found(message * msg)), this, SLOT(handle_control(msg)));
-    connect(cont_thread, SIGNAL(server_disconnect()), this, SLOT(disconnect_server()));
 	//VlcMedia("http://incompetech.com/music/royalty-free/mp3-royaltyfree/Who%20Likes%20to%20Party.mp3");
     /*QAudioFormat format;
     audioInput = new QAudioInput();
@@ -76,9 +75,6 @@ void MainWindow::disconnect_server()
 
 void MainWindow::handle_control(message * msg)
 {
-    // handle message
-    std::cout << msg << std::endl;
-
 	switch(msg->type)
 	{
 		case MESSAGE:
@@ -176,13 +172,16 @@ void MainWindow::connect_control()
 			ui->skip_for_Btn->setEnabled(true);
 			ui->connect_Btn->setText(QString("Disconnect"));
 			con = true;
+
+			cont_thread = new ControlThread(control);
+			connect(cont_thread, SIGNAL(message_found(message *)), this, SLOT(handle_control(message *)));
+			connect(cont_thread, SIGNAL(server_disconnect()), this, SLOT(disconnect_server()));
+			cont_thread->start();
+
             message msg = {USER_LIST, 0, NULL};
             control->sendMessage(&msg);
             msg = {FILE_LIST, 0, NULL};
             control->sendMessage(&msg);
-            cont_thread = new ControlThread(control);
-            cont_thread->start();
-
 		}
 		else
 		{
@@ -203,6 +202,8 @@ void MainWindow::connect_control()
 		ui->connect_Btn->setText(QString("Connect"));
 		con = false;
 		chatmodel->appendRow(new QStandardItem(QString("Disconnected...")));
+		usermodel->clear();
+		filesmodel->clear();
 	}
 }
 
