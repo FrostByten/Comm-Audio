@@ -146,18 +146,84 @@ bool Networking::getConnected()
 {
 	return connected;
 }
-
-void Networking::sendMessage(char type, int length, const char *mes)
+/*
+ *
+ *
+ * DATE: April 3rd
+ *
+ * REVISION: April 4nd - Changed param to message type / removed magic numbers.
+ *
+ * PROGRAMMER: Lewis Scott
+ *             Marc Vouve - revision 1 april 4
+ *
+ * DESIGNER: Lewis Scott
+ *           Marc Vouve - revision 1 april 4
+ *
+ * NOTES: I changed this to use a message struct because they're going to be passed around
+ * a lot. It should also be noted that the message type changed the char and the int to use
+ * stdint's int8_t and int32_t this should decouple the program from hardware, although
+ * it probably is unnessesary.
+ *
+ */
+void Networking::sendMessage(message * msg)
 {
-	char *buf = (char*)malloc(length + 5);
-	buf[0] = type;
-	memcpy(buf + 1, &length, sizeof(int));
-	memcpy(buf + 5, mes, length);
+    char *buf = new char[msg->len + HEADERLEN];
+    buf[0] = msg->type;
+    memcpy(buf + TYPELEN, (void *)&msg->len, sizeof(int32_t));
+    memcpy(buf + HEADERLEN, msg->data, msg->len);
 
+    if(msg->data != nullptr)
+        std::cerr << "Buffer: " << msg->data << std::endl;
 	std::cerr << "Sending: " << buf << std::endl;
 
-	if(send(sock, buf, length + 5, 0) == SOCKET_ERROR)
+    if(send(sock, buf, msg->len + HEADERLEN, 0) == SOCKET_ERROR)
 		std::cerr << "Error sending: " << WSAGetLastError() << std::endl;
 
 	free(buf);
+}
+
+/******************************************************************************************
+ * FUNCTION ChatNet::recvMessage()
+ *
+ * DESIGNER: Marc Vouve
+ *
+ * PROGRAMMER: Marc Vouve
+ *
+ * DATE: FRIDAY MARCH 13th
+ *
+ * REVISIONS:
+ *
+ * PROTOTYPE: message Networking::recvMessage(message ** msg)
+ *
+ * Returns message recv'd.
+ *
+ * NOTES: This function will dynamicly resize the buffer for what it reads.
+ *        Check for 0 len to see if socket has disconnected.
+ * ***************************************************************************************/
+int Networking::recvMessage(message * msg)
+{
+    char * buffer = new char[BUFFERSIZE];
+    std::string fullbuff("");
+    int len = 0, total = 0;
+
+    // while there's things to recv
+    while((len = recv(sock, buffer, BUFFERSIZE, 0 )) > 1)
+    {
+
+        fullbuff += buffer;
+        total += len;
+        std::cerr << fullbuff.c_str() << std::endl;
+    }
+
+    std::cout << fullbuff.c_str() << std::endl;
+    msg->type = fullbuff.c_str()[0];
+    msg->len  = fullbuff.c_str()[1];
+    msg->data = new char[msg->len];
+    memcpy(msg->data, &(fullbuff.c_str())[2], msg->len);
+
+    delete buffer;
+    msg->data = new char[fullbuff.length()];
+    memcpy(msg->data, fullbuff.c_str(), fullbuff.length());
+
+    return total;
 }

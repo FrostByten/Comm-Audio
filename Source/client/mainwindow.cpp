@@ -11,7 +11,8 @@ ProcessMic mic;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    settings_window(new Settings(this))
+    settings_window(new Settings(this)),
+    cont_thread(nullptr)
 
 {
     //VlcInstance * v = new VlcInstance(VlcCommon::args(), this);
@@ -29,6 +30,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->select_URL_Btn, SIGNAL(clicked()), this, SLOT(URL_select_control()));
 	connect(ui->download_Btn, SIGNAL(clicked()), this, SLOT(file_download_control()));
 
+    connect(cont_thread, SIGNAL(message_found(message * msg)), this, SLOT(handle_control(msg)));
+    connect(cont_thread, SIGNAL(server_disconnect()), this, SLOT(disconnect_server()));
 	//VlcMedia("http://incompetech.com/music/royalty-free/mp3-royaltyfree/Who%20Likes%20to%20Party.mp3");
     /*QAudioFormat format;
     audioInput = new QAudioInput();
@@ -63,6 +66,20 @@ MainWindow::MainWindow(QWidget *parent) :
     new PlayAudio();
 }
 
+void MainWindow::disconnect_server()
+{
+    // handle closing thread.
+    cont_thread->terminate();
+    delete cont_thread;
+    delete control;
+}
+
+void MainWindow::handle_control(message * msg)
+{
+    // handle message
+    std::cout << msg << std::endl;
+}
+
 void MainWindow::connect_control()
 {
 	static bool con = false;
@@ -86,8 +103,13 @@ void MainWindow::connect_control()
 			ui->skip_for_Btn->setEnabled(true);
 			ui->connect_Btn->setText(QString("Disconnect"));
 			con = true;
-			control->sendMessage(USER_LIST, 0, NULL);
-			control->sendMessage(FILE_LIST, 0, NULL);
+            message msg = {USER_LIST, 0, NULL};
+            control->sendMessage(&msg);
+            msg = {FILE_LIST, 0, NULL};
+            control->sendMessage(&msg);
+            cont_thread = new ControlThread(control);
+            cont_thread->start();
+
 		}
 		else
 		{
@@ -113,35 +135,39 @@ void MainWindow::connect_control()
 
 void MainWindow::pause_control()
 {
-	char mes = PAUSE;
-	control->sendMessage(PLAYBACK, 1, &mes);
+    char m = PAUSE;
+    message mes = {PLAYBACK, 1, &m};
+    control->sendMessage(&mes);
 }
 
 void MainWindow::play_control()
 {
-	char mes = PLAY;
-	control->sendMessage(PLAYBACK, 1, &mes);
+    char m = PLAY;
+    message mes = {PLAYBACK, 1, &m};
+    control->sendMessage(&mes);
 }
 
 void MainWindow::skip_for_control()
 {
-	char mes = SKIP;
-	control->sendMessage(PLAYBACK, 1, &mes);
+    char m = SKIP;
+    message mes = {PLAYBACK, 1, &m};
+    control->sendMessage(&mes);
 }
 
 void MainWindow::send_control()
 {
 	QString text = ui->lineEdit->text();
-	QString message("You: ");
-	message.append(text);
+    QString cmessage("You: ");
+    cmessage.append(text);
+
 
 	ui->lineEdit->clear();
 
 	if(text.size() > 0)
 	{
-		chatmodel->appendRow(new QStandardItem(message));
-
-		control->sendMessage(MESSAGE, strlen(text.toStdString().c_str()), text.toStdString().c_str());
+        chatmodel->appendRow(new QStandardItem(cmessage));
+        message mes = {MESSAGE, text.length(), (char *) text.toStdString().c_str()};
+        control->sendMessage(&mes);
 	}
 }
 
@@ -152,7 +178,8 @@ void MainWindow::mute_control()
 		return;
 	std::cerr<<"Selected user: "<<text.toStdString().c_str()<<std::endl;
 
-	control->sendMessage(MUTE, strlen(text.toStdString().c_str()), text.toStdString().c_str());
+    message mes = {MUTE, text.length(), (char *) text.toStdString().c_str()};
+    control->sendMessage(&mes);
 }
 
 void MainWindow::file_select_control()
@@ -164,7 +191,9 @@ void MainWindow::file_select_control()
 
 	char *b = (char*)malloc(strlen(text.toStdString().c_str()) + 1);
 	b[0] = 0;
-	control->sendMessage(FILE_SELECT, strlen(text.toStdString().c_str() + 1), b);
+
+    message mes = {FILE_SELECT, strlen(text.toStdString().c_str() + 1), b};
+    control->sendMessage(&mes);
 	free(b);
 }
 
@@ -177,7 +206,8 @@ void MainWindow::URL_select_control()
 	{
 		char *b = (char*)malloc(strlen(text.toStdString().c_str()) + 1);
 		b[0] = 1;
-		control->sendMessage(FILE_SELECT, strlen(text.toStdString().c_str()) + 1, b);
+        message mes = {FILE_SELECT, text.length() + 1, b};
+        control->sendMessage(&mes);
 		free(b);
 	}
 }
@@ -189,7 +219,9 @@ void MainWindow::file_download_control()
 
 	std::cerr<<text.toStdString().c_str();
 
-	control->sendMessage(FILE_REQUEST, strlen(text.toStdString().c_str()), text.toStdString().c_str());
+
+    message mes = {FILE_REQUEST, text.length(), (char *) text.toStdString().c_str()};
+    control->sendMessage(&mes);
 }
 
 QString MainWindow::getSelected(QListView *view)

@@ -7,6 +7,7 @@
 #include <QListView>
 #include "settings.h"
 #include "networking.h"
+#include "controlthread.h"
 
 
 
@@ -39,8 +40,11 @@ private slots:
 	void file_download_control();
     void on_open_settings();
 	QString getSelected(QListView *);
+    void disconnect_server();
+    void handle_control(message * msg);
 public slots:
 	void send_control();
+
 
 private:
     Ui::MainWindow *ui;
@@ -50,6 +54,7 @@ private:
 	QStandardItemModel *chatmodel;
 	QStandardItemModel *usermodel;
 	QStandardItemModel *filesmodel;
+    ControlThread * cont_thread;
 };
 
 #endif // MAINWINDOW_H

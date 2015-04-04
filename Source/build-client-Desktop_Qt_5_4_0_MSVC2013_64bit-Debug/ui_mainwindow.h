@@ -18,7 +18,6 @@
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QListView>
-#include <QtWidgets/QListWidget>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
@@ -46,25 +45,25 @@ public:
     QTabWidget *TabArea;
     QWidget *People;
     QGridLayout *gridLayout_3;
-    QListWidget *list_people;
+    QListView *list_people;
     QWidget *SongList;
     QGridLayout *gridLayout_4;
-    QListWidget *list_songs;
+    QListView *list_songs;
     QWidget *PlayList;
     QVBoxLayout *verticalLayout_2;
     QListView *list_playlist;
     QGridLayout *Settings;
     QWidget *widget;
     QGridLayout *gridLayout_5;
-    QPushButton *pause_Btn;
     QPushButton *connect_Btn;
-    QPushButton *req_URL_Btn;
+    QPushButton *select_URL_Btn;
     QSlider *volume;
-    QPushButton *mute_Btn;
-    QPushButton *skip_back_Btn;
-    QPushButton *skip_for_Btn;
-    QPushButton *req_file_Btn;
     QPushButton *play_Btn;
+    QPushButton *select_file_Btn;
+    QPushButton *mute_Btn;
+    QPushButton *pause_Btn;
+    QPushButton *skip_for_Btn;
+    QPushButton *download_Btn;
     QMenuBar *menuBar;
     QStatusBar *statusBar;
 
@@ -157,7 +156,7 @@ public:
         gridLayout_3->setContentsMargins(11, 11, 11, 11);
         gridLayout_3->setObjectName(QStringLiteral("gridLayout_3"));
         gridLayout_3->setContentsMargins(2, 2, 2, 2);
-        list_people = new QListWidget(People);
+        list_people = new QListView(People);
         list_people->setObjectName(QStringLiteral("list_people"));
         QSizePolicy sizePolicy3(QSizePolicy::Expanding, QSizePolicy::Expanding);
         sizePolicy3.setHorizontalStretch(1);
@@ -175,7 +174,7 @@ public:
         gridLayout_4->setContentsMargins(11, 11, 11, 11);
         gridLayout_4->setObjectName(QStringLiteral("gridLayout_4"));
         gridLayout_4->setContentsMargins(2, 2, 2, 2);
-        list_songs = new QListWidget(SongList);
+        list_songs = new QListView(SongList);
         list_songs->setObjectName(QStringLiteral("list_songs"));
 
         gridLayout_4->addWidget(list_songs, 0, 0, 1, 1);
@@ -210,51 +209,51 @@ public:
 
         Settings->addWidget(widget, 0, 0, 1, 4);
 
-        pause_Btn = new QPushButton(centralWidget);
-        pause_Btn->setObjectName(QStringLiteral("pause_Btn"));
-
-        Settings->addWidget(pause_Btn, 1, 1, 1, 1);
-
         connect_Btn = new QPushButton(centralWidget);
         connect_Btn->setObjectName(QStringLiteral("connect_Btn"));
 
-        Settings->addWidget(connect_Btn, 2, 0, 1, 1);
+        Settings->addWidget(connect_Btn, 3, 0, 1, 1);
 
-        req_URL_Btn = new QPushButton(centralWidget);
-        req_URL_Btn->setObjectName(QStringLiteral("req_URL_Btn"));
+        select_URL_Btn = new QPushButton(centralWidget);
+        select_URL_Btn->setObjectName(QStringLiteral("select_URL_Btn"));
 
-        Settings->addWidget(req_URL_Btn, 2, 3, 1, 1);
+        Settings->addWidget(select_URL_Btn, 3, 3, 1, 1);
 
         volume = new QSlider(centralWidget);
         volume->setObjectName(QStringLiteral("volume"));
         volume->setOrientation(Qt::Horizontal);
 
-        Settings->addWidget(volume, 4, 1, 1, 1);
-
-        mute_Btn = new QPushButton(centralWidget);
-        mute_Btn->setObjectName(QStringLiteral("mute_Btn"));
-
-        Settings->addWidget(mute_Btn, 1, 3, 1, 1);
-
-        skip_back_Btn = new QPushButton(centralWidget);
-        skip_back_Btn->setObjectName(QStringLiteral("skip_back_Btn"));
-
-        Settings->addWidget(skip_back_Btn, 4, 0, 1, 1);
-
-        skip_for_Btn = new QPushButton(centralWidget);
-        skip_for_Btn->setObjectName(QStringLiteral("skip_for_Btn"));
-
-        Settings->addWidget(skip_for_Btn, 4, 3, 1, 1);
-
-        req_file_Btn = new QPushButton(centralWidget);
-        req_file_Btn->setObjectName(QStringLiteral("req_file_Btn"));
-
-        Settings->addWidget(req_file_Btn, 1, 0, 1, 1);
+        Settings->addWidget(volume, 6, 1, 1, 1);
 
         play_Btn = new QPushButton(centralWidget);
         play_Btn->setObjectName(QStringLiteral("play_Btn"));
 
-        Settings->addWidget(play_Btn, 2, 1, 1, 1);
+        Settings->addWidget(play_Btn, 3, 1, 1, 1);
+
+        select_file_Btn = new QPushButton(centralWidget);
+        select_file_Btn->setObjectName(QStringLiteral("select_file_Btn"));
+
+        Settings->addWidget(select_file_Btn, 2, 3, 1, 1);
+
+        mute_Btn = new QPushButton(centralWidget);
+        mute_Btn->setObjectName(QStringLiteral("mute_Btn"));
+
+        Settings->addWidget(mute_Btn, 2, 0, 1, 1);
+
+        pause_Btn = new QPushButton(centralWidget);
+        pause_Btn->setObjectName(QStringLiteral("pause_Btn"));
+
+        Settings->addWidget(pause_Btn, 2, 1, 1, 1);
+
+        skip_for_Btn = new QPushButton(centralWidget);
+        skip_for_Btn->setObjectName(QStringLiteral("skip_for_Btn"));
+
+        Settings->addWidget(skip_for_Btn, 6, 0, 1, 1);
+
+        download_Btn = new QPushButton(centralWidget);
+        download_Btn->setObjectName(QStringLiteral("download_Btn"));
+
+        Settings->addWidget(download_Btn, 6, 3, 1, 1);
 
         Settings->setRowStretch(0, 1);
 
@@ -266,7 +265,7 @@ public:
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1033, 21));
+        menuBar->setGeometry(QRect(0, 0, 1033, 18));
         MainWindow->setMenuBar(menuBar);
         statusBar = new QStatusBar(MainWindow);
         statusBar->setObjectName(QStringLiteral("statusBar"));
@@ -290,14 +289,14 @@ public:
         TabArea->setTabText(TabArea->indexOf(People), QApplication::translate("MainWindow", "People", 0));
         TabArea->setTabText(TabArea->indexOf(SongList), QApplication::translate("MainWindow", "Songs", 0));
         TabArea->setTabText(TabArea->indexOf(PlayList), QApplication::translate("MainWindow", "Play List", 0));
-        pause_Btn->setText(QApplication::translate("MainWindow", "Pause", 0));
         connect_Btn->setText(QApplication::translate("MainWindow", "Connect", 0));
-        req_URL_Btn->setText(QApplication::translate("MainWindow", "Request URL", 0));
-        mute_Btn->setText(QApplication::translate("MainWindow", "Mute User", 0));
-        skip_back_Btn->setText(QApplication::translate("MainWindow", "Skip Back", 0));
-        skip_for_Btn->setText(QApplication::translate("MainWindow", "Skip Forward", 0));
-        req_file_Btn->setText(QApplication::translate("MainWindow", "Request File", 0));
+        select_URL_Btn->setText(QApplication::translate("MainWindow", "Queue URL", 0));
         play_Btn->setText(QApplication::translate("MainWindow", "Play", 0));
+        select_file_Btn->setText(QApplication::translate("MainWindow", "Queue File", 0));
+        mute_Btn->setText(QApplication::translate("MainWindow", "Mute User", 0));
+        pause_Btn->setText(QApplication::translate("MainWindow", "Pause", 0));
+        skip_for_Btn->setText(QApplication::translate("MainWindow", "Skip Song", 0));
+        download_Btn->setText(QApplication::translate("MainWindow", "Download File", 0));
     } // retranslateUi
 
 };

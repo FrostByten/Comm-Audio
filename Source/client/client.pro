@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     settings.cpp \
     playaudio.cpp \
     networking.cpp \
-    entercatch.cpp
+    entercatch.cpp \
+    controlthread.cpp
 
 HEADERS += mainwindow.h \
         processmic.h \
@@ -33,7 +34,8 @@ HEADERS += mainwindow.h \
     playaudio.h \
     playaudio.h \
     networking.h \
-    entercatch.h
+    entercatch.h \
+    controlthread.h
 
 FORMS    += mainwindow.ui \
     settings.ui
