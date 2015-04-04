@@ -146,6 +146,7 @@ bool Networking::getConnected()
 {
 	return connected;
 }
+
 /*
  *
  *
@@ -202,9 +203,37 @@ void Networking::sendMessage(message * msg)
  * ***************************************************************************************/
 int Networking::recvMessage(message * msg)
 {
-    char * buffer = new char[BUFFERSIZE];
-    memset(buffer, 0, BUFFERSIZE);
-    std::string fullbuff("");
+	std::cerr<<"\tStarting to receive!"<<std::endl;
+
+	char *buffer = (char*)malloc(5);
+	memset(buffer, 0, 5);
+	int tot = 0;
+
+	std::cerr<<"herez"<<std::endl;
+
+	while(tot < 5)
+		tot += recv(sock, buffer + tot, 5 - tot, 0);
+
+	std::cerr<<"got first 5"<<std::endl;
+
+	msg->type = buffer[0];
+	memcpy(&(msg->len), buffer+1, sizeof(int));
+	//msg->len = *((int*)buffer + 1);
+	msg->data = (char*)malloc(msg->len);
+
+	std::cerr<<"getting the rest"<<std::endl;
+	std::cerr<<msg->len<<std::endl;
+
+	tot = 0;
+	while(tot < msg->len)
+		tot += recv(sock, msg->data + tot, msg->len - tot, 0);
+
+	std::cout << "Received message[" << msg->type << "]:" << msg->data << std::endl;
+
+	free(buffer);
+	return tot + 5;
+
+	/*std::string fullbuff("");
     int len = 0, total = 0;
 
     // while there's things to recv
@@ -213,19 +242,19 @@ int Networking::recvMessage(message * msg)
 
         fullbuff += buffer;
         total += len;
-        if(len < BUFFERSIZE)
+		if(total > BUFFERSIZE)
             break;
     }
 
     std::cout << "Reading: " << fullbuff.c_str() << std::endl;
     msg->type = fullbuff.c_str()[0];
-    msg->len  = fullbuff.c_str()[1];
+	msg->len  = *((int*)fullbuff.c_str()+1);
     msg->data = new char[msg->len];
-    memcpy(msg->data, &(fullbuff.c_str())[2], msg->len);
+	memcpy(msg->data, fullbuff.c_str() + 5), msg->len);
 
     delete buffer;
     msg->data = new char[fullbuff.length()];
     memcpy(msg->data, fullbuff.c_str(), fullbuff.length());
 
-    return total;
+	return total;*/
 }

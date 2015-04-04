@@ -43,9 +43,9 @@ typedef enum user_list
 
 struct message
 {
-    int8_t type;
-    int32_t len;    // THIS SHOULD ONLY BE THE LENGTH OF THE DATA, ADD + 5 for header.
-    char * data;
+	char type;
+	int len;    // THIS SHOULD ONLY BE THE LENGTH OF THE DATA, ADD + 5 for header.
+	char *data;
 };
 
 enum{BUFFERSIZE = 1024};

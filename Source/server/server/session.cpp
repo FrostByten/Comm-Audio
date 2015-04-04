@@ -698,6 +698,7 @@ void handleFileList(int c)
 	for (unsigned int i = 0; i < files.size(); ++i)
 	{
 		int len = strlen(files[i]);
+		printf("\nFile length: %d\n", len);
 		char *mes = (char*)malloc(len + 5);
 		mes[0] = FILE_LIST;
 		memcpy(mes + 1, &len, sizeof(int));

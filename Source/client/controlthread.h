@@ -15,7 +15,7 @@ private:
     void run();
     Networking * sock;
 signals:
-    void message_found(message *);
+	void message_found(message * msg);
     void server_disconnect();
 
 };
