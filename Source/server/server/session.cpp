@@ -190,7 +190,13 @@ DWORD WINAPI mediaRoutine(LPVOID lpArg)
 		{
 
 			if (list->second->front().type == TYPE_FILE)
-				m = libvlc_media_new_path(inst, list->second->front().location);
+			{
+				char *c = (char*)malloc(FILE_BUFF_LENGTH);
+				GetCurrentDirectory(FILE_BUFF_LENGTH, c);
+				strcpy(c + strlen(c), list->second->front().location);
+				m = libvlc_media_new_path(inst, c);
+				free(c);
+			}
 			else
 				m = libvlc_media_new_location(inst, list->second->front().location);
 
@@ -218,6 +224,11 @@ DWORD WINAPI mediaRoutine(LPVOID lpArg)
 		libvlc_media_release(m);
 		libvlc_media_player_play(mp);
 
+		libvlc_event_attach(em, libvlc_MediaPlayerEncounteredError, media_error, NULL);
+
+		//Wait for player to load the media
+		while (!libvlc_media_player_is_playing(mp) && !skip);
+
 		char *message = (char*)malloc(FILE_BUFF_LENGTH);
 		sprintf(message, "Now playing: %s%s%s", libvlc_media_get_meta(m, libvlc_meta_Title), libvlc_media_get_meta(m, libvlc_meta_Artist) ? " - " : "", libvlc_media_get_meta(m, libvlc_meta_Artist) ? libvlc_media_get_meta(m, libvlc_meta_Artist) : "");
 		printf("\n%s", message);
@@ -229,11 +240,6 @@ DWORD WINAPI mediaRoutine(LPVOID lpArg)
 		sendMessageToAll(msg, len + 5);
 		free(msg);
 		free(message);
-
-		libvlc_event_attach(em, libvlc_MediaPlayerEncounteredError, media_error, NULL);
-
-		//Wait for player to load the media
-		while (!libvlc_media_player_is_playing(mp) && !skip);
 
 		//Wait until end of media
 		std::cout << std::endl;
@@ -747,7 +753,7 @@ void handleFileList(int c)
 	for (unsigned int i = 0; i < files.size(); ++i)
 	{
 		int len = strlen(files[i]);
-		printf("\nFile length: %d\n", len);
+		printf("\nSending file listing: %s[%d]\n", files[i], len);
 		char *mes = (char*)malloc(len + 5);
 		mes[0] = FILE_LIST;
 		memcpy(mes + 1, &len, sizeof(int));
@@ -787,6 +793,7 @@ void handleFileRequest(int c)
 	{
 		if (strcmp(file_types[i], strrchr(clients[c].buffer.buf + 5, '.')) == 0)
 		{
+			printf("\nConsidering: %s\n", file_types[i]);
 			go = true;
 			break;
 		}

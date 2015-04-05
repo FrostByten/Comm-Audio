@@ -104,6 +104,16 @@ void MainWindow::handle_control(message * msg)
 			handle_setName(msg);
 			break;
 		}
+		case FILE_REQUEST:
+		{
+			handle_download(msg);
+			break;
+		}
+		case FILE_EOF:
+		{
+			handle_eof();
+			break;
+		}
 	}
 }
 
@@ -182,6 +192,14 @@ void MainWindow::connect_control()
             control->sendMessage(&msg);
             msg = {FILE_LIST, 0, NULL};
             control->sendMessage(&msg);
+			const char *name = settings_window->getUsername().toStdString().c_str();
+			char *nam = (char*)malloc(strlen(name));
+			memcpy(nam, name, strlen(name));
+			msg.data = nam;
+			msg.len = strlen(nam);
+			msg.type = SET_NAME;
+			control->sendMessage(&msg);
+			free(nam);
 		}
 		else
 		{
@@ -240,7 +258,7 @@ void MainWindow::send_control()
 	if(text.size() > 0)
 	{
         chatmodel->appendRow(new QStandardItem(cmessage));
-        message mes = {MESSAGE, text.length(), (char *) text.toStdString().c_str()};
+		message mes = {MESSAGE, text.length(), (char *)text.toStdString().c_str()};
         control->sendMessage(&mes);
 	}
 }
@@ -264,9 +282,10 @@ void MainWindow::file_select_control()
 	std::cerr<<"Selected file: "<<text.toStdString().c_str()<<std::endl;
 
 	char *b = (char*)malloc(strlen(text.toStdString().c_str()) + 1);
-	b[0] = 0;
+	b[0] = 1;
+	memcpy(b + 1, text.toStdString().c_str(), strlen(text.toStdString().c_str()));
 
-    message mes = {FILE_SELECT, strlen(text.toStdString().c_str() + 1), b};
+	message mes = {FILE_SELECT, strlen(text.toStdString().c_str()) + 1, b};
     control->sendMessage(&mes);
 	free(b);
 }
@@ -279,7 +298,8 @@ void MainWindow::URL_select_control()
 	if(text.size() > 0)
 	{
 		char *b = (char*)malloc(strlen(text.toStdString().c_str()) + 1);
-		b[0] = 1;
+		b[0] = 0;
+		memcpy(b + 1, text.toStdString().c_str(), strlen(text.toStdString().c_str()));
         message mes = {FILE_SELECT, text.length() + 1, b};
         control->sendMessage(&mes);
 		free(b);
@@ -291,11 +311,43 @@ void MainWindow::file_download_control()
 	ui->download_Btn->setEnabled(false);
 	QString text = getSelected(ui->list_songs);
 
-	std::cerr<<text.toStdString().c_str();
+	if(text != NULL)
+	{
+		std::cerr<<text.toStdString().c_str();
 
+		char *m = (char*)malloc(text.length());
+		memcpy(m, text.toStdString().c_str(), text.length());
+		message mes = {FILE_REQUEST, text.length(), m};
+		control->sendMessage(&mes);
+		free(m);
+	}
+	if(dlFile != NULL)
+		CloseHandle(dlFile);
+	OFSTRUCT p;
+	char *m = (char*)malloc(1024);
+	memcpy(m, text.toStdString().c_str(), text.size());
+	dlFile = (HANDLE)OpenFile(m, &p, OF_WRITE || OF_CREATE);
+	free(m);
+}
 
-    message mes = {FILE_REQUEST, text.length(), (char *) text.toStdString().c_str()};
-    control->sendMessage(&mes);
+void MainWindow::handle_download(message *msg)
+{
+	if(dlFile != (HANDLE)HFILE_ERROR && dlFile != NULL)
+	{
+		DWORD written = 0;
+		WriteFile(dlFile, msg->data, msg->len, &written, NULL);
+		if(written != msg->len)
+			std::cerr << "Error occurred writing to file!" << std::endl;
+		else
+			std::cerr << "Got a file piece!" << std::endl;
+	}
+}
+
+void MainWindow::handle_eof()
+{
+	CloseHandle(dlFile);
+	dlFile = NULL;
+	chatmodel->appendRow(new QStandardItem(QString("File download complete!")));
 }
 
 QString MainWindow::getSelected(QListView *view)

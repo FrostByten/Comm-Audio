@@ -509,15 +509,20 @@ void getFileList(char *path)
 				{
 					if (!strcmp(file_types[i], place))
 					{
-						/* Note file in file list */
-						std::cout << "\tFound: " << ffd.cFileName << std::endl;
-
 						char *filepath = (char*)malloc(FILE_BUFF_LENGTH);
-						strcpy(filepath, path);
-						filepath[strlen(filepath) - 1] = '\0';
+						
+						char *p = (char*)malloc(FILE_BUFF_LENGTH);
+						GetCurrentDirectory(FILE_BUFF_LENGTH, p);
+						strcpy(filepath, path + strlen(p));
+
+						filepath[strlen(path + strlen(p)) - 1] = '\0';
 						strcat(filepath, ffd.cFileName);
 
+						/* Note file in file list */
 						files.push_back(filepath);
+						printf("\tFound: %s\n", filepath);
+
+						free(p);
 						break;
 					}
 				}

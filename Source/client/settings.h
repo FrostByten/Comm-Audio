@@ -15,6 +15,7 @@ public:
     explicit Settings(QWidget *parent = 0);
     QString getControlPort();
     QString getControlIp();
+	QString getUsername();
     ~Settings();
 
 private:

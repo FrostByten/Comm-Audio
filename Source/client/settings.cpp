@@ -25,3 +25,8 @@ QString Settings::getControlIp()
 {
     return ui->control_ip->text();
 }
+
+QString Settings::getUsername()
+{
+	return ui->username->text();
+}

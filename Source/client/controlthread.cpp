@@ -23,4 +23,5 @@ void ControlThread::run()
         mes = new message;  // make a new message so that we don't break stuff.
     }
     emit server_disconnect();
+	std::cerr << "Control thread dying..." << std::endl;
 }

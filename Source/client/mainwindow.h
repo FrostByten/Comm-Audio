@@ -26,6 +26,8 @@ public:
 
 	void handle_userList(message *msg);
 	void handle_setName(message *msg);
+	void handle_download(message *msg);
+	void handle_eof();
 
 private slots:
     void on_micRButton_toggled(bool checked);
@@ -33,7 +35,9 @@ private slots:
     void on_playButton_clicked();
 
     void on_pauseButton_clicked();
-    void connect_control();
+public slots:
+	void send_control();
+	void connect_control();
 	void pause_control();
 	void play_control();
 	void skip_for_control();
@@ -41,13 +45,10 @@ private slots:
 	void file_select_control();
 	void URL_select_control();
 	void file_download_control();
-    void on_open_settings();
+	void on_open_settings();
 	QString getSelected(QListView *);
-    void disconnect_server();
-    void handle_control(message * msg);
-public slots:
-	void send_control();
-
+	void disconnect_server();
+	void handle_control(message * msg);
 
 private:
     Ui::MainWindow *ui;
@@ -58,6 +59,7 @@ private:
 	QStandardItemModel *usermodel;
 	QStandardItemModel *filesmodel;
     ControlThread * cont_thread;
+	HANDLE dlFile;
 };
 
 #endif // MAINWINDOW_H
