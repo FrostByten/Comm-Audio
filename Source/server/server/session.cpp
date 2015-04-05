@@ -257,6 +257,55 @@ DWORD WINAPI mediaRoutine(LPVOID lpArg)
 	return 0;
 }
 
+
+/*-------------------------------------------------------------------------
+-- FUNCTION: micRoutine
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: DWORD WINAPI mediaRoutine(LPVOID lpArg);
+--
+-- PARAMETERS:
+--		LPVOID lpArg: Pointer to the startup arguments for the thread.
+--
+-- RETURNS: DWORD: The return value for the thread.
+--
+-- NOTES:
+-- Starting point for the media control thread. Renders audio and sends it via
+-- the multicast UDP socket.
+-------------------------------------------------------------------------*/
+DWORD WINAPI micRoutine(LPVOID lpArg)
+{
+	int		client_len, n;
+	char	buf[88200];
+	struct	sockaddr_in client;
+
+	for (;;)
+	{
+		client_len = sizeof(client);
+		if ((n = recvfrom(hMicrophone_Socket, buf, 88200, 0, (struct sockaddr *)&client, &client_len)) < 0)
+		{
+			perror("recvfrom error");
+			exit(1);
+		}
+		if (sendto(hMicMulticast_Socket, buf, n, 0, (struct sockaddr*)&stMicDstAddr, sizeof(stMicDstAddr)) != n)
+		{
+			perror("sendto error");
+			exit(1);
+		}
+	}
+
+		//printf("buffer: %d\r\n", mic_buffer.buf);
+			//sendto(hMicMulticast_Socket, mic_buffer.buf, mic_buffer.len, 0, (struct sockaddr*)&stMicDstAddr, sizeof(stMicDstAddr));
+	return 0;
+}
+
 /*-------------------------------------------------------------------------
 -- FUNCTION: printPercent
 --

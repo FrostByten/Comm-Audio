@@ -22,17 +22,23 @@ class PlayAudio : public QObject
         void bytesWritten();
     public slots:
         void playData();
+        void playMic();
         //void playBuff();
 
     private:
         QUdpSocket *socket;
+        QUdpSocket *mic_socket;
         QAudioOutput *output;
+        QAudioOutput *mic_output;
         QIODevice *device;
+        QIODevice *mic_device;
 
-        //QDataStream *in;
         QByteArray *buffered;
-        QBuffer *buffer;
         int buff_pos;
+
+        QByteArray *mic_buffered;
+        int mic_buff_pos;
+
         QTimer *timer;
 };
 

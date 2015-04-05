@@ -30,10 +30,12 @@
 
 WSADATA stWSAData;
 char achMCAddr[MAX_ADDR_SIZE] = MULTICAST_ADDR;
-SOCKADDR_IN stLclAddr, stDstAddr;
-SOCKET hMulticast_Socket, hListen_Socket, hMicrophone_Socket;
+char achMicMCAddr[MAX_ADDR_SIZE] = MICROPHONE_MULTICAST_ADDR;
+SOCKADDR_IN stLclAddr, stDstAddr, stMicLclAddr, stMicDstAddr, stMicFromAddr;
+SOCKET hMulticast_Socket, hMicMulticast_Socket, hListen_Socket, hMicrophone_Socket;
 HANDLE hControl_Thread = INVALID_HANDLE_VALUE;
 HANDLE hMedia_Thread = INVALID_HANDLE_VALUE;
+HANDLE hMic_Thread = INVALID_HANDLE_VALUE;
 
 WSABUF mic_buffer;
 DWORD mic_bytes_recvd;
@@ -92,7 +94,10 @@ int main(int argc, char* argv[])
 	printf("Finished reading admins\n\n");
 
 	openMulticastSocket();
+	openMicMulticastSocket();
+
 	setupMulticast();
+	setupMicMulticast();
 
 	setupMicrophoneSocket();
 
@@ -108,6 +113,15 @@ int main(int argc, char* argv[])
 		cleanup(1);
 	}
 	print("Media thread ready");
+
+	/* Create a thread to echo mic from clients */
+	DWORD mic_thread_id;
+	if ((hMic_Thread = CreateThread(NULL, 0, micRoutine, 0, 0, &mic_thread_id)) == NULL)
+	{
+		perror("Unable to create mic thread");
+		cleanup(1);
+	}
+	print("Mic thread ready");
 
 	print("\nServer running, press <Enter> to terminate\n");
 	cleanup(0);
@@ -171,6 +185,63 @@ void setupMulticast()
 }
 
 /*-------------------------------------------------------------------------
+-- FUNCTION: setupMicMulticast
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void setupMulticast();
+--
+-- RETURNS: void.
+--
+-- NOTES:
+-- Sets up the mic multicast on the UDP socket.
+-------------------------------------------------------------------------*/
+void setupMicMulticast()
+{
+	u_long lTTL = 2;
+	BOOL fFlag = true;
+	struct ip_mreq stMreq;
+
+	/* Join the multicast group */
+	stMreq.imr_multiaddr.s_addr = inet_addr(achMicMCAddr);
+	stMreq.imr_interface.s_addr = INADDR_ANY;
+
+	if (setsockopt(hMicMulticast_Socket, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*)&stMreq, sizeof(stMreq)) == SOCKET_ERROR)
+	{
+		perror("Unable to join multicast group");
+		cleanup(1);
+	}
+
+	/* Set the TTL */
+	if (setsockopt(hMicMulticast_Socket, IPPROTO_IP, IP_MULTICAST_TTL, (char*)&lTTL, sizeof(lTTL)) == SOCKET_ERROR)
+	{
+		perror("Unable to set TTL for multicast");
+		cleanup(1);
+	}
+
+	/* Disable loop-back */
+	fFlag = false;
+	if (setsockopt(hMicMulticast_Socket, IPPROTO_IP, IP_MULTICAST_LOOP, (char*)&fFlag, sizeof(fFlag)) == SOCKET_ERROR)
+	{
+		perror("Unable to disable loop-back for multicast");
+		cleanup(1);
+	}
+
+	/* Assign the multicast address */
+	stMicDstAddr.sin_family = AF_INET;
+	stMicDstAddr.sin_addr.s_addr = inet_addr(achMicMCAddr);
+	stMicDstAddr.sin_port = htons(MICROPHONE_MULTICAST_PORT);
+
+	print("Multicast ready");
+}
+
+/*-------------------------------------------------------------------------
 -- FUNCTION: openMulticastSocket
 --
 -- DATE: April 2nd, 2015
@@ -209,6 +280,44 @@ void openMulticastSocket()
 }
 
 /*-------------------------------------------------------------------------
+-- FUNCTION: openMicMulticastSocket
+--
+-- DATE: April 2nd, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void openMulticastSocket();
+--
+-- RETURNS: void.
+--
+-- NOTES:
+-- Opens and binds a UDP socket.
+-------------------------------------------------------------------------*/
+void openMicMulticastSocket()
+{
+	/* Open a UDP socket */
+	if ((hMicMulticast_Socket = socket(AF_INET, SOCK_DGRAM, 0)) == INVALID_SOCKET)
+	{
+		perror("Unable to create multicast socket");
+		cleanup(1);
+	}
+
+	/* Bind the socket so we can join the group */
+	stMicLclAddr.sin_family = AF_INET;
+	stMicLclAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	stMicLclAddr.sin_port = 0; //any port
+	if (bind(hMicMulticast_Socket, (struct sockaddr*)&stMicLclAddr, sizeof(stMicLclAddr)) == SOCKET_ERROR)
+	{
+		perror("Unable to bind multicast socket");
+		cleanup(1);
+	}
+}
+
+/*-------------------------------------------------------------------------
 -- FUNCTION: setupMicrophoneSocket
 --
 -- DATE: April 2nd, 2015
@@ -229,31 +338,22 @@ void openMulticastSocket()
 void setupMicrophoneSocket()
 {
 	struct sockaddr_in server;
-	u_long mode = 1;
 
-	if ((hMicrophone_Socket = WSASocket(PF_INET, SOCK_DGRAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED)) == INVALID_SOCKET)
+	// Create a datagram socket
+	if ((hMicrophone_Socket = socket(PF_INET, SOCK_DGRAM, 0)) == -1)
 	{
-		perror("Unable to create microphone socket");
+		perror("Can't create a socket");
 		cleanup(1);
 	}
 
-	/* Set socket to non-blocking */
-	if (ioctlsocket(hMicrophone_Socket, FIONBIO, &mode) != NO_ERROR)
-	{
-		perror("Unable to set microphone socket to non-blocking mode");
-		cleanup(1);
-	}
-
-	/* Setup the address and port */
-	memset((char *)&server, 0, sizeof(struct sockaddr_in));
+	// Bind an address to the socket
+	memset((char *)&server, 0, sizeof(server));
 	server.sin_family = AF_INET;
 	server.sin_port = htons(MICROPHONE_PORT);
 	server.sin_addr.s_addr = htonl(INADDR_ANY);
-
-	/* Bind the TCP socket */
-	if (bind(hMicrophone_Socket, (struct sockaddr*)&server, sizeof(server)) == SOCKET_ERROR)
+	if (bind(hMicrophone_Socket, (struct sockaddr *)&server, sizeof(server)) == -1)
 	{
-		perror("Unable to bind control socket");
+		perror("Can't bind name to socket");
 		cleanup(1);
 	}
 
@@ -462,8 +562,8 @@ DWORD WINAPI acceptRoutine(LPVOID lpArg)
 	ZeroMemory(&mic_wol, sizeof(WSAOVERLAPPED));
 	read_flags = 0;
 
-	if (WSARecvFrom(hMicrophone_Socket, &mic_buffer, 1, &mic_bytes_recvd, &read_flags, (sockaddr*)mic_from, &mic_len, &mic_wol, mic_read) == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
-		perror("Error reading from microphone");
+	//if (WSARecvFrom(hMicrophone_Socket, &mic_buffer, 1, &mic_bytes_recvd, &read_flags, (sockaddr*)mic_from, &mic_len, &mic_wol, mic_read) == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
+	//	perror("Error reading from microphone");
 
 	for (;;)
 	{
@@ -622,6 +722,10 @@ void cleanup(int ret)
 	if (hMedia_Thread != INVALID_HANDLE_VALUE)
 		TerminateThread(hMedia_Thread, 0);
 
+	/* Kill the mic thread */
+	if (hMic_Thread != INVALID_HANDLE_VALUE)
+		TerminateThread(hMic_Thread, 0);
+
 	/* De-allocate memory and disconnect from clients before we die */
 	for (unsigned int i = 0; i < files.size(); ++i)
 		free(files[i]);
@@ -650,9 +754,11 @@ void cleanup(int ret)
 	shutdown(hMicrophone_Socket, SD_BOTH);
 	shutdown(hListen_Socket, SD_BOTH);
 	shutdown(hMulticast_Socket, SD_BOTH);
+	shutdown(hMicMulticast_Socket, SD_BOTH);
 	closesocket(hMicrophone_Socket);
 	closesocket(hListen_Socket);
 	closesocket(hMulticast_Socket);
+	closesocket(hMicMulticast_Socket);
 	WSACleanup();
 
 	exit(ret);

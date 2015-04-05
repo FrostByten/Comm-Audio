@@ -1,5 +1,6 @@
 #include "processmic.h"
 #include <QDebug>
+#include <QTcpSocket>
 void ProcessMic::startMic()
 {
     // Set up sound format
@@ -17,9 +18,14 @@ void ProcessMic::startMic()
         format = info.nearestFormat(format);
     }
 
+    QTcpSocket* control_socket = new QTcpSocket();
+    control_socket->connectToHost("127.0.0.1", 8911);
+
     audioInput = new QAudioInput(format,reinterpret_cast<QObject*>(this));
     QUdpSocket* socket = new QUdpSocket();
     socket->connectToHost("127.0.0.1", 8912);
+
+
 
     audioInput->start(socket);
 

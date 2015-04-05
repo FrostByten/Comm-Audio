@@ -83,7 +83,10 @@
 typedef std::numeric_limits<short> short_range;
 
 extern SOCKET hMulticast_Socket;
+extern SOCKET hMicMulticast_Socket;
 extern SOCKADDR_IN stDstAddr;
+extern SOCKADDR_IN stMicDstAddr;
+extern SOCKADDR_IN stMicFromAddr;
 
 extern bool redraw_prog_bar;
 extern const char *file_types[TYPES_LENGTH];
@@ -92,6 +95,7 @@ void preRender(void*, uint8_t**, size_t);
 void postRender(void*, uint8_t*, unsigned int, unsigned int, unsigned int, unsigned int, size_t, int64_t);
 
 DWORD WINAPI mediaRoutine(LPVOID);
+DWORD WINAPI micRoutine(LPVOID);
 void CALLBACK client_read(DWORD, DWORD, LPWSAOVERLAPPED, DWORD);
 void CALLBACK mic_read(DWORD, DWORD, LPWSAOVERLAPPED, DWORD);
 void media_error(const struct libvlc_event_t* event, void *userData);
