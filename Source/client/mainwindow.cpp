@@ -279,7 +279,6 @@ void MainWindow::file_select_control()
 	QString text = getSelected(ui->list_songs);
 	if(text == NULL)
 		return;
-	std::cerr<<"Selected file: "<<text.toStdString().c_str()<<std::endl;
 
 	char *b = (char*)malloc(strlen(text.toStdString().c_str()) + 1);
 	b[0] = 1;
@@ -313,34 +312,44 @@ void MainWindow::file_download_control()
 
 	if(text != NULL)
 	{
-		std::cerr<<text.toStdString().c_str();
+		if(dlFile != NULL)
+			CloseHandle(dlFile);
+		wchar_t wtext[1024];
+		char *m = (char*)malloc(1024);
+		DWORD num = GetCurrentDirectory(1024-text.size(), wtext);
+		memcpy(m, text.toStdString().c_str(), text.size());
+		m[text.size()] = '\0';
+		mbstowcs(wtext + num, m, strlen(m)+1);
+		std::cerr << "Requesting: " << m << std::endl;
+		dlFile = CreateFile(wtext, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+		free(m);
 
-		char *m = (char*)malloc(text.length());
+		if(dlFile == NULL || dlFile == INVALID_HANDLE_VALUE)
+		{
+			chatmodel->appendRow(new QStandardItem(QString("Unable to create local file...")));
+			return;
+		}
+		chatmodel->appendRow(new QStandardItem(QString("Starting file transfer...")));
+
+		m = (char*)malloc(text.length());
 		memcpy(m, text.toStdString().c_str(), text.length());
 		message mes = {FILE_REQUEST, text.length(), m};
 		control->sendMessage(&mes);
 		free(m);
 	}
-	if(dlFile != NULL)
-		CloseHandle(dlFile);
-	OFSTRUCT p;
-	char *m = (char*)malloc(1024);
-	memcpy(m, text.toStdString().c_str(), text.size());
-	dlFile = (HANDLE)OpenFile(m, &p, OF_WRITE || OF_CREATE);
-	free(m);
 }
 
 void MainWindow::handle_download(message *msg)
 {
-	if(dlFile != (HANDLE)HFILE_ERROR && dlFile != NULL)
+	if(dlFile != INVALID_HANDLE_VALUE && dlFile != NULL)
 	{
 		DWORD written = 0;
 		WriteFile(dlFile, msg->data, msg->len, &written, NULL);
 		if(written != msg->len)
 			std::cerr << "Error occurred writing to file!" << std::endl;
-		else
-			std::cerr << "Got a file piece!" << std::endl;
 	}
+	else
+		std::cerr << "File is not open!" << std::endl;
 }
 
 void MainWindow::handle_eof()
@@ -348,6 +357,7 @@ void MainWindow::handle_eof()
 	CloseHandle(dlFile);
 	dlFile = NULL;
 	chatmodel->appendRow(new QStandardItem(QString("File download complete!")));
+	ui->download_Btn->setEnabled(true);
 }
 
 QString MainWindow::getSelected(QListView *view)

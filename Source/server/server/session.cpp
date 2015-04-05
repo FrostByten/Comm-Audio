@@ -273,9 +273,9 @@ DWORD WINAPI mediaRoutine(LPVOID lpArg)
 --
 -- DESIGNER: Lewis Scott
 --
--- PROGRAMMER: Lewis Scott
+-- PROGRAMMER: Marc Rafanan
 --
--- INTERFACE: DWORD WINAPI mediaRoutine(LPVOID lpArg);
+-- INTERFACE: DWORD WINAPI micRoutine(LPVOID lpArg);
 --
 -- PARAMETERS:
 --		LPVOID lpArg: Pointer to the startup arguments for the thread.
@@ -283,8 +283,7 @@ DWORD WINAPI mediaRoutine(LPVOID lpArg)
 -- RETURNS: DWORD: The return value for the thread.
 --
 -- NOTES:
--- Starting point for the media control thread. Renders audio and sends it via
--- the multicast UDP socket.
+-- Starting point for the microphone thread.
 -------------------------------------------------------------------------*/
 DWORD WINAPI micRoutine(LPVOID lpArg)
 {
@@ -380,10 +379,7 @@ void CALLBACK client_read(DWORD dwError, DWORD cbTransferred, LPWSAOVERLAPPED lp
 	}
 
 	if (i >= clients.size())
-	{
-		perror("\nData available, but client unknown...");
 		return;
-	}
 
 	if (cbTransferred == 0) //Client disconnected
 		return;
@@ -753,7 +749,6 @@ void handleFileList(int c)
 	for (unsigned int i = 0; i < files.size(); ++i)
 	{
 		int len = strlen(files[i]);
-		printf("\nSending file listing: %s[%d]\n", files[i], len);
 		char *mes = (char*)malloc(len + 5);
 		mes[0] = FILE_LIST;
 		memcpy(mes + 1, &len, sizeof(int));
@@ -791,18 +786,14 @@ void handleFileRequest(int c)
 
 	for (unsigned int i = 0; i < TYPES_LENGTH; ++i)
 	{
-		if (strcmp(file_types[i], strrchr(clients[c].buffer.buf + 5, '.')) == 0)
+		if (strcmp(file_types[i], strrchr(clients[c].buffer.buf + 5, '.') + 1) == 0)
 		{
-			printf("\nConsidering: %s\n", file_types[i]);
 			go = true;
 			break;
 		}
 	}
 
-	char *path = (char*)malloc(FILE_BUFF_LENGTH);
-	GetCurrentDirectory(FILE_BUFF_LENGTH, path);
-	std::string s2(clients[c].buffer.buf + 5);
-	if (!go || s2.find(path) == std::string::npos)
+	if (!go)
 	{
 		printf("Denied");
 		int len = strlen(FILE_DENIED_MESSAGE);
@@ -812,14 +803,25 @@ void handleFileRequest(int c)
 		sprintf(mes + 5, FILE_DENIED_MESSAGE);
 		sendMessage(c, mes, len + 5);
 		free(mes);
-		free(path);
+
+		char *k = (char*)malloc(5);
+		int t = 0;
+		memcpy(k + 1, &t, sizeof(int));
+		mes[0] = FILE_EOF;
+		sendMessage(c, k, 5);
+		free(k);
+
 		return;
 	}
-
-	free(path);
+	
 	printf("Permitted");
 	OFSTRUCT of;
-	HFILE file = OpenFile(clients[c].buffer.buf + 5, &of, OF_READ);
+	char *path = (char*)malloc(FILE_BUFF_LENGTH);
+	GetCurrentDirectory(FILE_BUFF_LENGTH, path);
+	std::string p(path);
+	p.append(clients[c].buffer.buf + 5);
+	free(path);
+	HFILE file = OpenFile(p.c_str(), &of, OF_READ);
 	if (file == HFILE_ERROR)
 	{
 		printf("\nCan't open file!");
@@ -830,6 +832,13 @@ void handleFileRequest(int c)
 		sprintf(mes + 5, NO_OPEN_MESSAGE);
 		sendMessage(c, mes, len + 5);
 		free(mes);
+
+		char *k = (char*)malloc(5);
+		int t = 0;
+		memcpy(k + 1, &t, sizeof(int));
+		mes[0] = FILE_EOF;
+		sendMessage(c, k, 5);
+		free(k);
 	}
 	else
 	{
@@ -851,7 +860,6 @@ void handleFileRequest(int c)
 		memcpy(mes + 1, &len, sizeof(int));
 		mes[0] = FILE_EOF;
 		sendMessage(c, mes, 5);
-		free(mes);
 	}
 	CloseHandle((HANDLE)file);
 }
