@@ -180,8 +180,6 @@ void setupMulticast()
 	stDstAddr.sin_family = AF_INET;
 	stDstAddr.sin_addr.s_addr = inet_addr(achMCAddr);
 	stDstAddr.sin_port = htons(MULTICAST_PORT);
-
-	print("Multicast ready");
 }
 
 /*-------------------------------------------------------------------------

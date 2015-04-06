@@ -8,8 +8,7 @@
 #include "settings.h"
 #include "networking.h"
 #include "controlthread.h"
-
-
+#include "playaudio.h"
 
 namespace Ui {
 class MainWindow;
@@ -53,12 +52,13 @@ public slots:
 private:
     Ui::MainWindow *ui;
     QAudioInput *audioInput;
-    Settings * settings_window;
-    Networking * control;
+	Settings *settings_window;
+	Networking *control;
 	QStandardItemModel *chatmodel;
 	QStandardItemModel *usermodel;
 	QStandardItemModel *filesmodel;
-    ControlThread * cont_thread;
+	ControlThread *cont_thread;
+	PlayAudio *audio;
 	HANDLE dlFile;
 };
 

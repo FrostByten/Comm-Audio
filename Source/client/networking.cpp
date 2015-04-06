@@ -8,6 +8,7 @@
 
 Networking::Networking(const char * address, const char * port)
 {
+	connected = false;
     addrinfo * addr_info = nullptr;
 
     if (WSAStartup(MAKEWORD(2,2), &wsaData) != 0)
@@ -17,8 +18,7 @@ Networking::Networking(const char * address, const char * port)
 
 
     if(get_host_info(address, port, &addr_info) < 0)
-    {
-        connected = false;
+	{
         sock = -1;
         addr_info = nullptr;
 
@@ -27,17 +27,18 @@ Networking::Networking(const char * address, const char * port)
 
 	sock = (Connect(addr_info));
 	if(sock < 0)
-    {
-        connected = false;
+	{
         sock = -1;
-
         std::cout << "Could not connect" << std::endl;
     }
 
     if(!addr_info)
     {
         freeaddrinfo(addr_info);
-    }
+	}
+
+	if(sock != -1)
+		connected = true;
 }
 
 Networking::~Networking()
@@ -216,7 +217,12 @@ int Networking::recvMessage(message * msg)
 
 	tot = 0;
 	while(tot < msg->len)
-		tot += recv(sock, msg->data + tot, msg->len - tot, 0);
+	{
+		int k;
+		if((k = recv(sock, msg->data + tot, msg->len - tot, 0)) == 0)
+			return 0;
+		tot += k;
+	}
 
 	msg->data[msg->len] = '\0';
 

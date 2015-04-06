@@ -389,7 +389,7 @@ void CALLBACK client_read(DWORD dwError, DWORD cbTransferred, LPWSAOVERLAPPED lp
 
 	handleRequest(i);
 
-	if ((*((int*)clients[i].buffer.buf + 1)) + 5 < cbTransferred)
+	if (((*((int*)clients[i].buffer.buf + 1)) + 5 < cbTransferred))
 	{
 		memcpy(clients[i].buffer.buf, clients[i].buffer.buf + (*((int*)clients[i].buffer.buf + 1)) + 5, cbTransferred - ((*((int*)clients[i].buffer.buf + 1) + 5)));
 		handleRequest(i);
@@ -504,19 +504,50 @@ void handlePlayback(int c)
 	switch (clients[c].buffer.buf[5])
 	{
 		case PLAY:
+		{
 			printf("Play\n");
 			libvlc_media_player_set_pause(mp, 0);
 			redraw_prog_bar = true;
 			paused = false;
+
+			int f = strlen(PLAY_MSG);
+			char *m = (char*)malloc(f + 5);
+			m[0] = MESSAGE;
+			memcpy(m + 1, &f, sizeof(int));
+			memcpy(m + 5, PLAY_MSG, f);
+			sendMessageToAll(m, f + 5);
+			free(m);
+
 			break;
+		}
 		case PAUSE:
+		{
 			printf("Pause\n");
 			redraw_prog_bar = true;
 			libvlc_media_player_set_pause(mp, 1);
 			paused = true;
+
+			int f = strlen(PAUSE_MSG);
+			char *m = (char*)malloc(f + 5);
+			m[0] = MESSAGE;
+			memcpy(m + 1, &f, sizeof(int));
+			memcpy(m + 5, PAUSE_MSG, f);
+			sendMessageToAll(m, f + 5);
+			free(m);
+
 			break;
+		}
 		case SKIP:
 			printf("Skip\n");
+
+			int f = strlen(SKIP_MSG);
+			char *m = (char*)malloc(f + 5);
+			m[0] = MESSAGE;
+			memcpy(m + 1, &f, sizeof(int));
+			memcpy(m + 5, SKIP_MSG, f);
+			sendMessageToAll(m, f + 5);
+			free(m);
+
 			skip = true;
 			blank_line();
 			redraw_prog_bar = true;

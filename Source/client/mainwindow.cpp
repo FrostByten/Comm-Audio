@@ -7,14 +7,11 @@
 
 ProcessMic mic;
 
-
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     settings_window(new Settings(this)),
     cont_thread(nullptr)
-
 {
     //VlcInstance * v = new VlcInstance(VlcCommon::args(), this);
     ui->setupUi(this);
@@ -22,14 +19,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(settingsAct, SIGNAL(triggered()), this, SLOT(on_open_settings()));
     connect(ui->connect_Btn, SIGNAL(clicked()), this, SLOT(connect_control()));
-	connect(ui->pause_Btn, SIGNAL(clicked()), this, SLOT(pause_control()));
-	connect(ui->play_Btn, SIGNAL(clicked()), this, SLOT(play_control()));
-	connect(ui->skip_for_Btn, SIGNAL(clicked()), this, SLOT(skip_for_control()));
-	connect(ui->sendButton, SIGNAL(clicked()), this, SLOT(send_control()));
-	connect(ui->mute_Btn, SIGNAL(clicked()), this, SLOT(mute_control()));
-	connect(ui->select_file_Btn, SIGNAL(clicked()), this, SLOT(file_select_control()));
-	connect(ui->select_URL_Btn, SIGNAL(clicked()), this, SLOT(URL_select_control()));
-	connect(ui->download_Btn, SIGNAL(clicked()), this, SLOT(file_download_control()));
+    connect(ui->pause_Btn, SIGNAL(clicked()), this, SLOT(pause_control()));
+    connect(ui->play_Btn, SIGNAL(clicked()), this, SLOT(play_control()));
+    connect(ui->skip_for_Btn, SIGNAL(clicked()), this, SLOT(skip_for_control()));
+    connect(ui->sendButton, SIGNAL(clicked()), this, SLOT(send_control()));
+    connect(ui->mute_Btn, SIGNAL(clicked()), this, SLOT(mute_control()));
+    connect(ui->select_file_Btn, SIGNAL(clicked()), this, SLOT(file_select_control()));
+    connect(ui->select_URL_Btn, SIGNAL(clicked()), this, SLOT(URL_select_control()));
+    connect(ui->download_Btn, SIGNAL(clicked()), this, SLOT(file_download_control()));
 
 	//VlcMedia("http://incompetech.com/music/royalty-free/mp3-royaltyfree/Who%20Likes%20to%20Party.mp3");
     /*QAudioFormat format;
@@ -61,16 +58,12 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->skip_for_Btn->setEnabled(false);
 
 	ui->lineEdit->installEventFilter((new EnterCatch(this)));
-
-    new PlayAudio();
 }
 
 void MainWindow::disconnect_server()
 {
     // handle closing thread.
-    cont_thread->terminate();
-    delete cont_thread;
-    delete control;
+	connect_control();
 }
 
 void MainWindow::handle_control(message * msg)
@@ -191,15 +184,9 @@ void MainWindow::connect_control()
             message msg = {USER_LIST, 0, NULL};
             control->sendMessage(&msg);
             msg = {FILE_LIST, 0, NULL};
-            control->sendMessage(&msg);
-			const char *name = settings_window->getUsername().toStdString().c_str();
-			char *nam = (char*)malloc(strlen(name));
-			memcpy(nam, name, strlen(name));
-			msg.data = nam;
-			msg.len = strlen(nam);
-			msg.type = SET_NAME;
 			control->sendMessage(&msg);
-			free(nam);
+
+			audio = new PlayAudio();
 		}
 		else
 		{
@@ -209,6 +196,9 @@ void MainWindow::connect_control()
 	else
 	{
 		delete control;
+		delete audio;
+		cont_thread->terminate();
+		delete cont_thread;
 		ui->mute_Btn->setEnabled(false);
 		ui->pause_Btn->setEnabled(false);
 		ui->play_Btn->setEnabled(false);
@@ -371,6 +361,14 @@ QString MainWindow::getSelected(QListView *view)
 void MainWindow::on_open_settings()
 {
     settings_window->exec();
+
+    message msg;
+	char *nam = (char*)malloc(strlen(settings_window->getUsername().toStdString().c_str()));
+	strcpy(nam, settings_window->getUsername().toStdString().c_str());
+    msg.data = nam;
+    msg.len = strlen(nam);
+    msg.type = SET_NAME;
+    control->sendMessage(&msg);
 }
 
 MainWindow::~MainWindow()

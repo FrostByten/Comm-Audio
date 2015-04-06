@@ -72,9 +72,12 @@
 #define PROG_BAR_WIDTH 60
 #define PROG_STRING "Progress: "
 #define PAUSE_STRING "Paused:   "
-#define UNAUTH_MESSAGE "You are no authorized to perform this function"
-#define FILE_DENIED_MESSAGE "Access to this file is denied"
-#define NO_OPEN_MESSAGE "This file cannot be opened for some reason..."
+#define UNAUTH_MESSAGE "You are not authorized to perform this function."
+#define FILE_DENIED_MESSAGE "Access to this file is denied."
+#define NO_OPEN_MESSAGE "This file cannot be opened server-side for some reason..."
+#define PLAY_MSG "Stream resumed!"
+#define PAUSE_MSG "Stream paused..."
+#define SKIP_MSG "Song skipped..."
 
 //#define DEBUG
 
