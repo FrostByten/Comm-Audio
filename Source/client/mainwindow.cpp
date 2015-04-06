@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->select_file_Btn, SIGNAL(clicked()), this, SLOT(file_select_control()));
     connect(ui->select_URL_Btn, SIGNAL(clicked()), this, SLOT(URL_select_control()));
     connect(ui->download_Btn, SIGNAL(clicked()), this, SLOT(file_download_control()));
+	connect(ui->volume, SIGNAL(sliderMoved(int)), this, SLOT(vol_control(int)));
 
 	//VlcMedia("http://incompetech.com/music/royalty-free/mp3-royaltyfree/Who%20Likes%20to%20Party.mp3");
     /*QAudioFormat format;
@@ -384,15 +385,7 @@ void MainWindow::on_micRButton_toggled(bool checked)
         mic.stopMic();
 }
 
-void MainWindow::on_playButton_clicked()
+void MainWindow::vol_control(int c)
 {
-   // ui->playButton->setVisible(false);
-   // ui->pauseButton->setVisible(true);
-
-}
-
-void MainWindow::on_pauseButton_clicked()
-{
-    //ui->pauseButton->setVisible(false);
-    //ui->playButton->setVisible(true);
+	audio->setVolume(c);
 }

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1033</width>
-    <height>659</height>
+    <width>809</width>
+    <height>435</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -98,6 +98,87 @@ QRadioButton::indicator:checked  {
         </item>
        </layout>
       </item>
+      <item row="0" column="2">
+       <layout class="QGridLayout" name="Settings" rowstretch="1,0,0,0,0,0,0" columnstretch="0,0,0,0">
+        <property name="sizeConstraint">
+         <enum>QLayout::SetDefaultConstraint</enum>
+        </property>
+        <item row="0" column="0" colspan="4">
+         <widget class="QWidget" name="widget" native="true">
+          <layout class="QGridLayout" name="gridLayout_5"/>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QPushButton" name="connect_Btn">
+          <property name="text">
+           <string>Connect</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="3">
+         <widget class="QPushButton" name="select_URL_Btn">
+          <property name="text">
+           <string>Queue URL</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QPushButton" name="play_Btn">
+          <property name="text">
+           <string>Play</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="3">
+         <widget class="QPushButton" name="select_file_Btn">
+          <property name="text">
+           <string>Queue File</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QPushButton" name="mute_Btn">
+          <property name="text">
+           <string>Mute User</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QPushButton" name="pause_Btn">
+          <property name="text">
+           <string>Pause</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QPushButton" name="skip_for_Btn">
+          <property name="text">
+           <string>Skip Song</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="3">
+         <widget class="QPushButton" name="download_Btn">
+          <property name="text">
+           <string>Download File</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="1">
+         <widget class="QSlider" name="volume">
+          <property name="cursor">
+           <cursorShape>SplitHCursor</cursorShape>
+          </property>
+          <property name="value">
+           <number>99</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
       <item row="0" column="1">
        <widget class="QTabWidget" name="TabArea">
         <property name="currentIndex">
@@ -163,104 +244,7 @@ QRadioButton::indicator:checked  {
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="PlayList">
-         <attribute name="title">
-          <string>Play List</string>
-         </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
-          <property name="leftMargin">
-           <number>2</number>
-          </property>
-          <property name="topMargin">
-           <number>2</number>
-          </property>
-          <property name="rightMargin">
-           <number>2</number>
-          </property>
-          <property name="bottomMargin">
-           <number>2</number>
-          </property>
-          <item>
-           <widget class="QListView" name="list_playlist"/>
-          </item>
-         </layout>
-        </widget>
        </widget>
-      </item>
-      <item row="0" column="2">
-       <layout class="QGridLayout" name="Settings" rowstretch="1,0,0,0,0,0,0" columnstretch="0,0,0,0">
-        <property name="sizeConstraint">
-         <enum>QLayout::SetDefaultConstraint</enum>
-        </property>
-        <item row="0" column="0" colspan="4">
-         <widget class="QWidget" name="widget" native="true">
-          <layout class="QGridLayout" name="gridLayout_5"/>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QPushButton" name="connect_Btn">
-          <property name="text">
-           <string>Connect</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="3">
-         <widget class="QPushButton" name="select_URL_Btn">
-          <property name="text">
-           <string>Queue URL</string>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="1">
-         <widget class="QSlider" name="volume">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QPushButton" name="play_Btn">
-          <property name="text">
-           <string>Play</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="3">
-         <widget class="QPushButton" name="select_file_Btn">
-          <property name="text">
-           <string>Queue File</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QPushButton" name="mute_Btn">
-          <property name="text">
-           <string>Mute User</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QPushButton" name="pause_Btn">
-          <property name="text">
-           <string>Pause</string>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="0">
-         <widget class="QPushButton" name="skip_for_Btn">
-          <property name="text">
-           <string>Skip Song</string>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="3">
-         <widget class="QPushButton" name="download_Btn">
-          <property name="text">
-           <string>Download File</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
       </item>
      </layout>
     </item>
@@ -271,7 +255,7 @@ QRadioButton::indicator:checked  {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1033</width>
+     <width>809</width>
      <height>18</height>
     </rect>
    </property>

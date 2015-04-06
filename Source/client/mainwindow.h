@@ -29,11 +29,8 @@ public:
 	void handle_eof();
 
 private slots:
-    void on_micRButton_toggled(bool checked);
+	void on_micRButton_toggled(bool checked);
 
-    void on_playButton_clicked();
-
-    void on_pauseButton_clicked();
 public slots:
 	void send_control();
 	void connect_control();
@@ -48,6 +45,7 @@ public slots:
 	QString getSelected(QListView *);
 	void disconnect_server();
 	void handle_control(message * msg);
+	void vol_control(int);
 
 private:
     Ui::MainWindow *ui;

@@ -24,6 +24,7 @@ class PlayAudio : public QObject
         void playData();
         void playMic();
         //void playBuff();
+		void setVolume(int c);
 
     private:
         QUdpSocket *socket;

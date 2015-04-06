@@ -103,3 +103,10 @@ void PlayAudio::playMic()
 
     }
 }
+
+void PlayAudio::setVolume(int c)
+{
+	qreal v = ((float)c / 99.0f);
+	output->setVolume(v);
+	mic_output->setVolume(v);
+}

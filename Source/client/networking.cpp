@@ -172,9 +172,7 @@ void Networking::sendMessage(message * msg)
     char *buf = new char[msg->len + HEADERLEN];
     buf[0] = msg->type;
     memcpy(buf + TYPELEN, (void *)&msg->len, sizeof(int32_t));
-    memcpy(buf + HEADERLEN, msg->data, msg->len);
-
-	std::cerr << "Sending: [" << msg->type << "]" << std::endl;
+	memcpy(buf + HEADERLEN, msg->data, msg->len);
 
     if(send(sock, buf, msg->len + HEADERLEN, 0) == SOCKET_ERROR)
 		std::cerr << "Error sending: " << WSAGetLastError() << std::endl;
@@ -212,8 +210,6 @@ int Networking::recvMessage(message * msg)
 	msg->type = buffer[0];
 	memcpy(&(msg->len), buffer+1, sizeof(int));
 	msg->data = (char*)malloc(msg->len + 1);
-
-	std::cerr << "Message length: " << msg->len << std::endl;
 
 	tot = 0;
 	while(tot < msg->len)
