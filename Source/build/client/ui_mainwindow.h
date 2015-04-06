@@ -20,6 +20,7 @@
 #include <QtWidgets/QListView>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
+#include <QtWidgets/QProgressBar>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QRadioButton>
 #include <QtWidgets/QSlider>
@@ -49,11 +50,11 @@ public:
     QPushButton *select_URL_Btn;
     QPushButton *play_Btn;
     QPushButton *select_file_Btn;
-    QPushButton *mute_Btn;
     QPushButton *pause_Btn;
     QPushButton *skip_for_Btn;
     QPushButton *download_Btn;
     QSlider *volume;
+    QPushButton *mute_Btn;
     QTabWidget *TabArea;
     QWidget *People;
     QGridLayout *gridLayout_3;
@@ -61,6 +62,7 @@ public:
     QWidget *SongList;
     QGridLayout *gridLayout_4;
     QListView *list_songs;
+    QProgressBar *progressBar;
     QMenuBar *menuBar;
     QStatusBar *statusBar;
 
@@ -171,11 +173,6 @@ public:
 
         Settings->addWidget(select_file_Btn, 2, 3, 1, 1);
 
-        mute_Btn = new QPushButton(centralWidget);
-        mute_Btn->setObjectName(QStringLiteral("mute_Btn"));
-
-        Settings->addWidget(mute_Btn, 2, 0, 1, 1);
-
         pause_Btn = new QPushButton(centralWidget);
         pause_Btn->setObjectName(QStringLiteral("pause_Btn"));
 
@@ -198,6 +195,11 @@ public:
         volume->setOrientation(Qt::Horizontal);
 
         Settings->addWidget(volume, 6, 1, 1, 1);
+
+        mute_Btn = new QPushButton(centralWidget);
+        mute_Btn->setObjectName(QStringLiteral("mute_Btn"));
+
+        Settings->addWidget(mute_Btn, 2, 0, 1, 1);
 
         Settings->setRowStretch(0, 1);
 
@@ -241,12 +243,23 @@ public:
 
         gridLayout_4->addWidget(list_songs, 0, 0, 1, 1);
 
+        progressBar = new QProgressBar(SongList);
+        progressBar->setObjectName(QStringLiteral("progressBar"));
+        progressBar->setEnabled(true);
+        progressBar->setAutoFillBackground(false);
+        progressBar->setValue(0);
+        progressBar->setTextVisible(true);
+        progressBar->setOrientation(Qt::Horizontal);
+        progressBar->setInvertedAppearance(false);
+
+        gridLayout_4->addWidget(progressBar, 1, 0, 1, 1);
+
         TabArea->addTab(SongList, QString());
 
         gridLayout->addWidget(TabArea, 0, 1, 1, 1);
 
 
-        gridLayout_2->addLayout(gridLayout, 0, 0, 1, 1);
+        gridLayout_2->addLayout(gridLayout, 1, 0, 1, 1);
 
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
@@ -276,10 +289,10 @@ public:
         select_URL_Btn->setText(QApplication::translate("MainWindow", "Queue URL", 0));
         play_Btn->setText(QApplication::translate("MainWindow", "Play", 0));
         select_file_Btn->setText(QApplication::translate("MainWindow", "Queue File", 0));
-        mute_Btn->setText(QApplication::translate("MainWindow", "Mute User", 0));
         pause_Btn->setText(QApplication::translate("MainWindow", "Pause", 0));
         skip_for_Btn->setText(QApplication::translate("MainWindow", "Skip Song", 0));
         download_Btn->setText(QApplication::translate("MainWindow", "Download File", 0));
+        mute_Btn->setText(QApplication::translate("MainWindow", "Mute User", 0));
         TabArea->setTabText(TabArea->indexOf(People), QApplication::translate("MainWindow", "People", 0));
         TabArea->setTabText(TabArea->indexOf(SongList), QApplication::translate("MainWindow", "Songs", 0));
     } // retranslateUi

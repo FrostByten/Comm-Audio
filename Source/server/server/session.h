@@ -78,6 +78,7 @@
 #define PLAY_MSG "Stream resumed!"
 #define PAUSE_MSG "Stream paused..."
 #define SKIP_MSG "Song skipped..."
+#define TAKEN_MSG "This name is already taken!"
 
 //#define DEBUG
 

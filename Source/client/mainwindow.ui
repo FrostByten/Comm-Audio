@@ -30,7 +30,7 @@
     </sizepolicy>
    </property>
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="0" column="0">
+    <item row="1" column="0">
      <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0,0">
       <property name="sizeConstraint">
        <enum>QLayout::SetMaximumSize</enum>
@@ -136,13 +136,6 @@ QRadioButton::indicator:checked  {
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
-         <widget class="QPushButton" name="mute_Btn">
-          <property name="text">
-           <string>Mute User</string>
-          </property>
-         </widget>
-        </item>
         <item row="2" column="1">
          <widget class="QPushButton" name="pause_Btn">
           <property name="text">
@@ -174,6 +167,13 @@ QRadioButton::indicator:checked  {
           </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QPushButton" name="mute_Btn">
+          <property name="text">
+           <string>Mute User</string>
           </property>
          </widget>
         </item>
@@ -241,6 +241,28 @@ QRadioButton::indicator:checked  {
           </property>
           <item row="0" column="0">
            <widget class="QListView" name="list_songs"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QProgressBar" name="progressBar">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="value">
+             <number>0</number>
+            </property>
+            <property name="textVisible">
+             <bool>true</bool>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="invertedAppearance">
+             <bool>false</bool>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>

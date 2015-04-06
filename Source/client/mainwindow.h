@@ -46,6 +46,7 @@ public slots:
 	void disconnect_server();
 	void handle_control(message * msg);
 	void vol_control(int);
+	void handle_file_size(message *msg);
 
 private:
     Ui::MainWindow *ui;
@@ -58,6 +59,7 @@ private:
 	ControlThread *cont_thread;
 	PlayAudio *audio;
 	HANDLE dlFile;
+	int filesize, filereceived;
 };
 
 #endif // MAINWINDOW_H

@@ -582,6 +582,23 @@ void handleName(int c)
 
 	int size = *((int*)&clients[c].buffer.buf[1]);
 	int fullsize = 6 + strlen(clients[c].name) + size;
+
+	for (unsigned int l = 0; l < clients.size(); ++l)
+	{
+		if (c != l && strcmp(clients[l].name, clients[c].buffer.buf + 5) == 0)
+		{
+			int f = strlen(TAKEN_MSG);
+			char *o = (char*)malloc(f + 5);
+			o[0] = MESSAGE;
+			memcpy(o + 1, &f, sizeof(int));
+			memcpy(o + 5, TAKEN_MSG, f);
+			sendMessage(c, o, f + 5);
+			free(o);
+
+			return;
+		}
+	}
+
 	char *mes = (char*)malloc(fullsize);
 	mes[0] = SET_NAME;
 	memcpy(mes + 1, &fullsize, sizeof(int));
@@ -875,7 +892,13 @@ void handleFileRequest(int c)
 	{
 		char *mes = (char*)malloc(FILE_BUFF_LENGTH);
 		DWORD bread = 0;
-		int len = 0;
+		int len = sizeof(int);
+		mes[0] = FILE_SIZE;
+		memcpy(mes + 1, &len, sizeof(int));
+		int s = GetFileSize((HANDLE)file, NULL);
+		memcpy(mes + 5, &s, sizeof(int));
+		sendMessage(c, mes, sizeof(int) + 5);
+
 		mes[0] = FILE_REQUEST;
 
 		do

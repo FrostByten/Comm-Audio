@@ -17,6 +17,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     QAction * settingsAct = ui->menuBar->addAction("Settings");
 
+	filereceived = 0;
+
     connect(settingsAct, SIGNAL(triggered()), this, SLOT(on_open_settings()));
     connect(ui->connect_Btn, SIGNAL(clicked()), this, SLOT(connect_control()));
     connect(ui->pause_Btn, SIGNAL(clicked()), this, SLOT(pause_control()));
@@ -39,6 +41,8 @@ MainWindow::MainWindow(QWidget *parent) :
     format.setByteOrder(QAudioFormat::LittleEndian);
     format.setSampleType(QAudioFormat::UnSignedInt);*/
     //ui->pauseButton->setVisible(false);
+
+	filesize = 1;
 
 	chatmodel = new QStandardItemModel();
 	usermodel = new QStandardItemModel();
@@ -108,6 +112,11 @@ void MainWindow::handle_control(message * msg)
 			handle_eof();
 			break;
 		}
+		case FILE_SIZE:
+		{
+			handle_file_size(msg);
+			break;
+		}
 	}
 }
 
@@ -156,6 +165,8 @@ void MainWindow::handle_setName(message *msg)
 void MainWindow::connect_control()
 {
 	static bool con = false;
+
+	ui->progressBar->setValue(0);
 
 	if(con == false)
 	{
@@ -338,6 +349,8 @@ void MainWindow::handle_download(message *msg)
 		WriteFile(dlFile, msg->data, msg->len, &written, NULL);
 		if(written != msg->len)
 			std::cerr << "Error occurred writing to file!" << std::endl;
+		filereceived += msg->len;
+		ui->progressBar->setValue((int)(((float)filereceived/(float)filesize)*(float)100));
 	}
 	else
 		std::cerr << "File is not open!" << std::endl;
@@ -357,6 +370,11 @@ QString MainWindow::getSelected(QListView *view)
 	if(list.empty())
 		return NULL;
 	return list.first().data().toString();
+}
+
+void MainWindow::handle_file_size(message *msg)
+{
+	memcpy(&filesize, msg->data, sizeof(int));
 }
 
 void MainWindow::on_open_settings()
