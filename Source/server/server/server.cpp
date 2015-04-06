@@ -6,7 +6,9 @@
 -- FUNCTIONS:
 -- 		void getFileList(char* = "\0");
 --		void openMulticastSocket();
+--      void openMicMulticastSocket();
 --		void setupMulticast();
+--		void setupMicMulticast();
 --		void setupMicrophoneSocket();
 --		void setupListenSocket();
 --		void print(char*);
@@ -22,7 +24,7 @@
 -- DESIGNER: Lewis Scott
 --
 -- PROGRAMMER: Lewis Scott
---
+--			   Marc Rafanan
 -- NOTES:
 -------------------------------------------------------------------------*/
 
@@ -191,9 +193,9 @@ void setupMulticast()
 --
 -- DESIGNER: Lewis Scott
 --
--- PROGRAMMER: Lewis Scott
+-- PROGRAMMER: Marc Rafanan
 --
--- INTERFACE: void setupMulticast();
+-- INTERFACE: void setupMicMulticast();
 --
 -- RETURNS: void.
 --
@@ -286,14 +288,14 @@ void openMulticastSocket()
 --
 -- DESIGNER: Lewis Scott
 --
--- PROGRAMMER: Lewis Scott
+-- PROGRAMMER: Marc Rafanan
 --
 -- INTERFACE: void openMulticastSocket();
 --
 -- RETURNS: void.
 --
 -- NOTES:
--- Opens and binds a UDP socket.
+-- Opens and binds a UDP socket for the mic input echo.
 -------------------------------------------------------------------------*/
 void openMicMulticastSocket()
 {

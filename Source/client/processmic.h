@@ -12,7 +12,7 @@ class ProcessMic : public QObject
 {
   Q_OBJECT
 public:
-  void startMic();
+  void startMic(QString host);
   void stopMic();
 
 private:

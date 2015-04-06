@@ -398,7 +398,7 @@ MainWindow::~MainWindow()
 void MainWindow::on_micRButton_toggled(bool checked)
 {
     if(checked)
-        mic.startMic();
+        mic.startMic(settings_window->getControlIp());
     else
         mic.stopMic();
 }

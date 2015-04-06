@@ -271,7 +271,7 @@ DWORD WINAPI mediaRoutine(LPVOID lpArg)
 --
 -- REVISIONS: (Date and Description)
 --
--- DESIGNER: Lewis Scott
+-- DESIGNER: Marc Rafanan
 --
 -- PROGRAMMER: Marc Rafanan
 --
@@ -287,9 +287,13 @@ DWORD WINAPI mediaRoutine(LPVOID lpArg)
 -------------------------------------------------------------------------*/
 DWORD WINAPI micRoutine(LPVOID lpArg)
 {
-	int		client_len, n;
+	int		client_len, dst_len, n;
 	char	buf[88200];
 	struct	sockaddr_in client;
+
+	std::vector<std::string> mic_senders;
+	std::vector<std::string>::iterator it;
+
 
 	for (;;)
 	{
@@ -299,15 +303,28 @@ DWORD WINAPI micRoutine(LPVOID lpArg)
 			perror("recvfrom error");
 			exit(1);
 		}
-		if (sendto(hMicMulticast_Socket, buf, n, 0, (struct sockaddr*)&stMicDstAddr, sizeof(stMicDstAddr)) != n)
+
+		std::string current_client(inet_ntoa(client.sin_addr));
+		it = std::find(mic_senders.begin(), mic_senders.end(), current_client);
+		if (it == mic_senders.end())
+			mic_senders.push_back(current_client);
+
+		for (unsigned int i = 0; i < clients.size(); ++i)
 		{
-			perror("sendto error");
-			exit(1);
+			dst_len = sizeof(clients[i].address);
+			std::string existing_client(inet_ntoa(clients[i].address->sin_addr));
+
+			if (existing_client.compare(current_client) == 0 && !clients[i].muted)
+			{
+				if (sendto(hMicMulticast_Socket, buf, n, 0, (struct sockaddr*)&stMicDstAddr, sizeof(stMicDstAddr)) != n)
+				{
+					perror("sendto error");
+					exit(1);
+				}
+			}
 		}
 	}
 
-		//printf("buffer: %d\r\n", mic_buffer.buf);
-			//sendto(hMicMulticast_Socket, mic_buffer.buf, mic_buffer.len, 0, (struct sockaddr*)&stMicDstAddr, sizeof(stMicDstAddr));
 	return 0;
 }
 
@@ -1046,7 +1063,7 @@ int findUser(char *c)
 }
 
 /*-------------------------------------------------------------------------
--- FUNCTION: mic_read
+-- FUNCTION: mic_read (deprecated)
 --
 -- DATE: April 2nd, 2015
 --
