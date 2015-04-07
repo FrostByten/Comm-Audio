@@ -13,6 +13,8 @@ MainWindow::MainWindow(QWidget *parent) :
     settings_window(new Settings(this)),
     cont_thread(nullptr)
 {
+	audio = NULL;
+
     //VlcInstance * v = new VlcInstance(VlcCommon::args(), this);
     ui->setupUi(this);
     QAction * settingsAct = ui->menuBar->addAction("Settings");
@@ -405,5 +407,16 @@ void MainWindow::on_micRButton_toggled(bool checked)
 
 void MainWindow::vol_control(int c)
 {
-	audio->setVolume(c);
+	if(audio != NULL)
+		audio->setVolume(c);
+}
+
+void MainWindow::on_pauseButton_clicked()
+{
+
+}
+
+void MainWindow::on_playButton_clicked()
+{
+
 }
