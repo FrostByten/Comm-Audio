@@ -1,6 +1,44 @@
+/*-------------------------------------------------------------------------
+-- CLASS: ProcessMic
+--
+-- DATE: March 16, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Rafanan
+--
+-- PROGRAMMER: Marc Rafanan
+--
+-- FUNCTIONS:
+--      void ProcessMic::startMic(QString host)
+--      void ProcessMic::stopMic()
+--
+-- NOTES:
+--      Handles the mic transmission from clients
+-------------------------------------------------------------------------*/
 #include "processmic.h"
-#include <QDebug>
-#include <QTcpSocket>
+
+/*-------------------------------------------------------------------------
+-- FUNCTION: ProcessMic::startMic
+--
+-- DATE: March 16, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Rafanan
+--
+-- PROGRAMMER: Marc Rafanan
+--
+-- INTERFACE: void ProcessMic::startMic(QString host)
+--
+-- PARAMETERS:
+--		QString host - host ip address
+--
+-- RETURNS: void
+--
+-- NOTES:
+--      Starts the mic transmission to the server
+-------------------------------------------------------------------------*/
 void ProcessMic::startMic(QString host)
 {
     // Set up sound format
@@ -14,17 +52,39 @@ void ProcessMic::startMic(QString host)
 
     QAudioDeviceInfo info = QAudioDeviceInfo::defaultInputDevice();
     if (!info.isFormatSupported(format)) {
-        qWarning()<<"default format not supported try to use nearest";
+        qWarning()<<"Using nearest format";
         format = info.nearestFormat(format);
     }
 
+    // create audio input
     audioInput = new QAudioInput(format,reinterpret_cast<QObject*>(this));
     QUdpSocket* socket = new QUdpSocket();
     socket->connectToHost(host, 8912);
 
+    // starts the audio input and send it through the UDP socket
     audioInput->start(socket);
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: ProcessMic::stopMic
+--
+-- DATE: March 16, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Rafanan
+--
+-- PROGRAMMER: Marc Rafanan
+--
+-- INTERFACE: void ProcessMic::stopMic()
+--
+-- PARAMETERS:
+--
+-- RETURNS: void
+--
+-- NOTES:
+--      Stops the mic transmission
+-------------------------------------------------------------------------*/
 void ProcessMic::stopMic()
 {
     if(audioInput != NULL)

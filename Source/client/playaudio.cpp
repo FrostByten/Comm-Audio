@@ -29,11 +29,11 @@ PlayAudio::PlayAudio(QObject *parent) : QObject(parent)
             format = info.nearestFormat(format);
 
     output = new QAudioOutput(format);
-    output->setBufferSize(88400);
+    output->setBufferSize(BUFF_SIZE * 2);
     device = output->start();
 
     mic_output = new QAudioOutput(format);
-    mic_output->setBufferSize(88400);
+    mic_output->setBufferSize(BUFF_SIZE * 2);
     mic_device = mic_output->start();
 
     connect(socket, SIGNAL(readyRead()), this, SLOT(playData()));
@@ -57,26 +57,13 @@ void PlayAudio::playData()
         else
         {
             buffered->append(data.data(),data.size());
-            //qDebug() << "at start buffered size: " << buffered->size() << " Data size: " << data.size();
             device->write(buffered->data(), buffered->size());
             buffered->clear();
-            //timer->start();
             buff_pos=0;
         }
 
     }
 }
-
-/*void PlayAudio::playBuff()
-{
-    if (!buffered->isEmpty())
-    {
-        qDebug() << "buffered size: " << buffered->size();
-        //device->write(*buffered, buffered->size());
-        device->write(buffered->data(), buffered->size());
-        buffered->clear();
-    }
-}*/
 
 void PlayAudio::playMic()
 {
@@ -85,7 +72,7 @@ void PlayAudio::playMic()
         QByteArray data;
         data.resize(mic_socket->pendingDatagramSize());
         mic_socket->readDatagram(data.data(), data.size());
-        //mic_device->write(data.data(), data.size());
+
         if (mic_buff_pos < BUFF_SIZE)
         {
             mic_buffered->append(data.data(),data.size());
@@ -94,10 +81,8 @@ void PlayAudio::playMic()
         else
         {
             mic_buffered->append(data.data(),data.size());
-            //qDebug() << "at start buffered size: " << buffered->size() << " Data size: " << data.size();
             mic_device->write(mic_buffered->data(), mic_buffered->size());
             mic_buffered->clear();
-            //timer->start();
             mic_buff_pos=0;
         }
 

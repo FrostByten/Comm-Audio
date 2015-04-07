@@ -8,6 +8,7 @@
 -- 		void postRender(void*, uint8_t*, unsigned int, unsigned int, unsigned int, unsigned int, size_t, int64_t);
 --
 -- 		DWORD WINAPI mediaRoutine(LPVOID);
+--		DWORD WINAPI micRoutine(LPVOID);
 -- 		void CALLBACK client_read(DWORD, DWORD, LPWSAOVERLAPPED, DWORD);
 -- 		void CALLBACK mic_read(DWORD, DWORD, LPWSAOVERLAPPED, DWORD);
 -- 		void media_error(const struct libvlc_event_t* event, void *userData);
@@ -291,10 +292,6 @@ DWORD WINAPI micRoutine(LPVOID lpArg)
 	char	buf[88200];
 	struct	sockaddr_in client;
 
-	std::vector<std::string> mic_senders;
-	std::vector<std::string>::iterator it;
-
-
 	for (;;)
 	{
 		client_len = sizeof(client);
@@ -303,17 +300,16 @@ DWORD WINAPI micRoutine(LPVOID lpArg)
 			perror("recvfrom error");
 			exit(1);
 		}
-
+		
+		// Get sender's ip
 		std::string current_client(inet_ntoa(client.sin_addr));
-		it = std::find(mic_senders.begin(), mic_senders.end(), current_client);
-		if (it == mic_senders.end())
-			mic_senders.push_back(current_client);
-
 		for (unsigned int i = 0; i < clients.size(); ++i)
 		{
 			dst_len = sizeof(clients[i].address);
+			
+			// check if the sender's ip is not muted on the client's list.
+			// don't send the packet if it's from a muted client
 			std::string existing_client(inet_ntoa(clients[i].address->sin_addr));
-
 			if (existing_client.compare(current_client) == 0 && !clients[i].muted)
 			{
 				if (sendto(hMicMulticast_Socket, buf, n, 0, (struct sockaddr*)&stMicDstAddr, sizeof(stMicDstAddr)) != n)
