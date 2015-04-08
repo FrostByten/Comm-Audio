@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>138</height>
+    <width>393</width>
+    <height>205</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,10 +32,10 @@
   <widget class="QWidget" name="gridLayoutWidget">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>90</y>
-     <width>311</width>
-     <height>41</height>
+     <x>60</x>
+     <y>120</y>
+     <width>271</width>
+     <height>51</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout">
@@ -46,10 +46,10 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="0">
-     <widget class="QLabel" name="label_2">
+    <item row="0" column="3">
+     <widget class="QLineEdit" name="control_port">
       <property name="text">
-       <string>Audio Port</string>
+       <string>8911</string>
       </property>
      </widget>
     </item>
@@ -60,24 +60,38 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="3">
-     <widget class="QLineEdit" name="control_port">
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_2">
       <property name="text">
-       <string>8911</string>
+       <string>Audio Port</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="4">
+    <item row="1" column="0">
      <widget class="QLabel" name="label_3">
       <property name="text">
        <string>Mic Port</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="5">
+    <item row="1" column="1">
      <widget class="QLineEdit" name="mic_port">
       <property name="text">
        <string>8912</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="2">
+     <widget class="QLabel" name="label_7">
+      <property name="text">
+       <string>Mic Recv Port</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="3">
+     <widget class="QLineEdit" name="mic_recv_port">
+      <property name="text">
+       <string>8913</string>
       </property>
      </widget>
     </item>
@@ -89,11 +103,25 @@
      <x>10</x>
      <y>10</y>
      <width>271</width>
-     <height>74</height>
+     <height>101</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="2" column="0">
+     <widget class="QLabel" name="label_8">
+      <property name="text">
+       <string>Mic Recv IP</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="label_5">
+      <property name="text">
+       <string>Audio IP</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
      <widget class="QLabel" name="label_6">
       <property name="text">
        <string>Control IP</string>
@@ -114,24 +142,24 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="0">
-     <widget class="QLabel" name="label_5">
-      <property name="text">
-       <string>Audio IP</string>
-      </property>
-     </widget>
-    </item>
     <item row="1" column="2">
      <widget class="QLineEdit" name="audio_ip">
       <property name="text">
-       <string>234.5.6.7</string>
+       <string>224.0.0.0</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="2">
+     <widget class="QLineEdit" name="control_ip">
+      <property name="text">
+       <string>192.168.0.8</string>
       </property>
      </widget>
     </item>
     <item row="2" column="2">
-     <widget class="QLineEdit" name="control_ip">
+     <widget class="QLineEdit" name="mic_recv_ip">
       <property name="text">
-       <string>127.0.0.1</string>
+       <string>234.5.6.8</string>
       </property>
      </widget>
     </item>

@@ -15,7 +15,12 @@ public:
     explicit Settings(QWidget *parent = 0);
     QString getControlPort();
     QString getControlIp();
-	QString getUsername();
+    QString getAudioIp();
+    int getAudioPort();
+    int getMicPort();
+    QString getMicRecvIp();
+    int getMicRecvPort();
+    QString getUsername();
     ~Settings();
 
 private:

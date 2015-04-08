@@ -190,7 +190,8 @@ void MainWindow::connect_control()
             msg = {FILE_LIST, 0, NULL};
 			control->sendMessage(&msg);
 
-			audio = new PlayAudio();
+            audio = new PlayAudio(settings_window->getAudioIp(), settings_window->getAudioPort(),
+                                  settings_window->getMicRecvIp(), settings_window->getMicRecvPort());
 		}
 		else
 		{
@@ -373,13 +374,13 @@ void MainWindow::on_open_settings()
 {
     settings_window->exec();
 
-    message msg;
+    /*message msg;
 	char *nam = (char*)malloc(strlen(settings_window->getUsername().toStdString().c_str()));
 	strcpy(nam, settings_window->getUsername().toStdString().c_str());
     msg.data = nam;
     msg.len = strlen(nam);
     msg.type = SET_NAME;
-    control->sendMessage(&msg);
+    control->sendMessage(&msg);*/
 }
 
 MainWindow::~MainWindow()
@@ -390,7 +391,7 @@ MainWindow::~MainWindow()
 void MainWindow::on_micRButton_toggled(bool checked)
 {
     if(checked)
-        mic.startMic(settings_window->getControlIp());
+        mic.startMic(settings_window->getControlIp(), settings_window->getMicPort());
     else
         mic.stopMic();
 }
