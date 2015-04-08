@@ -33,6 +33,7 @@
 --
 -- PARAMETERS:
 --		QString host - host ip address
+--      int port       host port
 --
 -- RETURNS: void
 --

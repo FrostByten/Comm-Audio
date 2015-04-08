@@ -1,5 +1,55 @@
+/*-------------------------------------------------------------------------
+-- CLASS: PlayAudio
+--
+-- DATE: April, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Rafanan
+--
+-- PROGRAMMER: Marc Rafanan
+--
+-- CONSTRUCTOR:
+--      PlayAudio::PlayAudio(QString audio_ip, int audio_port,
+--                           QString mic_recv_ip, int mic_recv_port,
+--                           QObject *parent)
+-- FUNCTIONS:
+--      void PlayAudio::playData()
+--      void PlayAudio::playMic()
+--      void PlayAudio::setVolume(int c)
+--
+-- NOTES:
+--      Handles the mic transmission from clients
+-------------------------------------------------------------------------*/
 #include "playaudio.h"
 
+/*-------------------------------------------------------------------------
+-- CONSTRUCTOR: PlayAudio::PlayAudio
+--
+-- DATE: April 3, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Rafanan
+--
+-- PROGRAMMER: Marc Rafanan
+--
+-- INTERFACE: PlayAudio::PlayAudio(QString audio_ip, int audio_port,
+--                                 QString mic_recv_ip, int mic_recv_port,
+--                                 QObject *parent)
+--
+-- PARAMETERS:
+--		QString audio_ip    - multicast ip for the audio
+--      int     audio_port  - multicast port for audio
+--      QString mic_recv_ip - multicast ip for mic
+--      int     mic_recv_port - multicast port for mic
+--      QObject *parent     - parent Object (optional)
+--
+-- RETURNS:
+--
+-- NOTES:
+--      Creates PlayAudio object that plays audio and mic streams
+-------------------------------------------------------------------------*/
 PlayAudio::PlayAudio(QString audio_ip, int audio_port,
                      QString mic_recv_ip, int mic_recv_port, QObject *parent) : QObject(parent)
 {
@@ -11,12 +61,15 @@ PlayAudio::PlayAudio(QString audio_ip, int audio_port,
     mic_buff_pos = 0;
     mic_buffered = new QByteArray();
 
+    // join to audio multicast
     socket->bind(QHostAddress::AnyIPv4, audio_port, QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint);
     socket->joinMulticastGroup(QHostAddress(audio_ip));
 
+    // join to mic multicast
     mic_socket->bind(QHostAddress::AnyIPv4, mic_recv_port, QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint);
     mic_socket->joinMulticastGroup(QHostAddress(mic_recv_ip));
 
+    // setup audio format
     QAudioFormat format;
     format.setSampleRate(44100);
     format.setChannelCount(2);
@@ -29,6 +82,7 @@ PlayAudio::PlayAudio(QString audio_ip, int audio_port,
     if (!info.isFormatSupported(format))
             format = info.nearestFormat(format);
 
+    // link audio output to audio device
     output = new QAudioOutput(format);
     output->setBufferSize(BUFF_SIZE * 2);
     device = output->start();
@@ -37,10 +91,32 @@ PlayAudio::PlayAudio(QString audio_ip, int audio_port,
     mic_output->setBufferSize(BUFF_SIZE * 2);
     mic_device = mic_output->start();
 
+    // listen to both mic and audio sockets
     connect(socket, SIGNAL(readyRead()), this, SLOT(playData()));
     connect(mic_socket, SIGNAL(readyRead()), this, SLOT(playMic()));
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: PlayAudio::playData()
+--
+-- DATE: April 3, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Rafanan
+--
+-- PROGRAMMER: Marc Rafanan
+--
+-- INTERFACE: void PlayAudio::playData()
+--
+-- PARAMETERS:
+--
+-- RETURNS: void
+--
+-- NOTES:
+--      Slot that activates when there's data available on the audio socket.
+--      Buffers incoming data before sending to the output buffer.
+-------------------------------------------------------------------------*/
 void PlayAudio::playData()
 {
     QByteArray data;
@@ -66,6 +142,27 @@ void PlayAudio::playData()
     }
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: PlayAudio::playMic()
+--
+-- DATE: April 3, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Rafanan
+--
+-- PROGRAMMER: Marc Rafanan
+--
+-- INTERFACE: void PlayAudio::playMic()
+--
+-- PARAMETERS:
+--
+-- RETURNS: void
+--
+-- NOTES:
+--      Slot that activates when there's data available on the mic socket.
+--      Buffers incoming data before sending to the output buffer.
+-------------------------------------------------------------------------*/
 void PlayAudio::playMic()
 {
     if (mic_socket->hasPendingDatagrams())
@@ -90,6 +187,27 @@ void PlayAudio::playMic()
     }
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: PlayAudio::setVolume
+--
+-- DATE: April 3, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Lewis Scott
+--
+-- PROGRAMMER: Lewis Scott
+--
+-- INTERFACE: void PlayAudio::setVolume(int c)
+--
+-- PARAMETERS:
+--          int c - volume setting
+--
+-- RETURNS: void
+--
+-- NOTES:
+--      Controls the volume for both audio and mic
+-------------------------------------------------------------------------*/
 void PlayAudio::setVolume(int c)
 {
 	qreal v = ((float)c / 99.0f);
