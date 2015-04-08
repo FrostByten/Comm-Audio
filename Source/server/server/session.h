@@ -70,6 +70,7 @@
 #define MIC_BUFFER_SIZE 1024
 #define TYPES_LENGTH 7
 #define PROG_BAR_WIDTH 60
+#define TICK_TIME 0.01
 #define PROG_STRING "Progress: "
 #define PAUSE_STRING "Paused:   "
 #define UNAUTH_MESSAGE "You are not authorized to perform this function."
@@ -116,6 +117,7 @@ void handleMessage(int);
 void handleMute(int);
 void handleFileList(int);
 void handleFileRequest(int);
+void handleSeek(int);
 void mixSamples(char*, char*, int);
 
 void inline blank_line();
@@ -159,5 +161,6 @@ extern std::vector<user> clients;
 extern std::list<media> queue;
 extern std::vector<std::string> admins;
 extern std::vector<char *> files;
+extern float seekby;
 
 #endif

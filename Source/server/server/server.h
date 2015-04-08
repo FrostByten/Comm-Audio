@@ -58,6 +58,7 @@ DWORD WINAPI acceptRoutine(LPVOID lpArg);
 void inline disable_cursor();
 
 bool redraw_prog_bar = false;
+float seekby;
 const char *file_types[TYPES_LENGTH] = { "wav", "mp3", "ogg", "pcm", "aac", "flac", "m4a" };
 
 #endif

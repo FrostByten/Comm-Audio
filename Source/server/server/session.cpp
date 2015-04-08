@@ -184,6 +184,8 @@ DWORD WINAPI mediaRoutine(LPVOID lpArg)
 	if (inst == NULL)
 		exit(0);
 
+	seekby = -1.0;
+
 	for (;;)
 	{
 		//Load some media
@@ -252,6 +254,11 @@ DWORD WINAPI mediaRoutine(LPVOID lpArg)
 				paused = false;
 				blank_line();
 				break;
+			}
+			if (seekby != -1.0)
+			{
+				libvlc_media_player_set_position(mp, seekby);
+				seekby = -1.0;
 			}
 			printPercent(libvlc_media_player_get_position(mp));
 		}
@@ -344,11 +351,26 @@ DWORD WINAPI micRoutine(LPVOID lpArg)
 --
 -- NOTES:
 -- Prints a line to the console that represents how far through the song the
--- media thread currently is.
+-- media thread currently is. Also lets the clients know of process through
+-- the song incrementally.
 -------------------------------------------------------------------------*/
 void inline printPercent(float through)
 {
 	static int bars = -1;
+	static float tk = 0;
+
+	if (through > (tk + TICK_TIME) || through > tk - TICK_TIME)
+	{
+		char *mes = (char*)malloc(5 + sizeof(float));
+		mes[0] = SEEK;
+		int s = sizeof(float);
+		memcpy(mes + 1, &s, sizeof(int));
+		memcpy(mes + 5, &through, sizeof(float));
+		sendMessageToAll(mes, 5 + s);
+		free(mes);
+
+		tk = through;
+	}
 
 	if (bars != (int)(through * PROG_BAR_WIDTH) || redraw_prog_bar)
 	{
@@ -445,7 +467,7 @@ void handleRequest(int c)
 		return;
 	}
 
-	if ((byte)clients[c].buffer.buf[0] > SET_NAME) //Max allowed command code
+	if ((byte)clients[c].buffer.buf[0] > SEEK) //Max allowed command code
 	{
 		printf("Invalid command code: %d, discarding...\n", clients[c].buffer.buf[0]);
 		return;
@@ -480,6 +502,9 @@ void handleRequest(int c)
 			break;
 		case FILE_REQUEST:
 			handleFileRequest(c);
+			break;
+		case SEEK:
+			handleSeek(c);
 			break;
 	}
 }
@@ -929,6 +954,12 @@ void handleFileRequest(int c)
 		sendMessage(c, mes, 5);
 	}
 	CloseHandle((HANDLE)file);
+}
+
+void handleSeek(int c)
+{
+	seekby = *((float*)clients[c].buffer.buf + 5);
+	printf("\nSeeking by amount: %%%d\n", seekby * 100);
 }
 
 /*-------------------------------------------------------------------------
