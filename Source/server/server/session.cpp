@@ -359,7 +359,7 @@ void inline printPercent(float through)
 	static int bars = -1;
 	static float tk = 0;
 
-	if (through > (tk + TICK_TIME) || through > tk - TICK_TIME)
+	if (through >= (tk + TICK_TIME) || through >= tk - TICK_TIME)
 	{
 		char *mes = (char*)malloc(5 + sizeof(float));
 		mes[0] = SEEK;
