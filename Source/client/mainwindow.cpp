@@ -32,17 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->select_URL_Btn, SIGNAL(clicked()), this, SLOT(URL_select_control()));
     connect(ui->download_Btn, SIGNAL(clicked()), this, SLOT(file_download_control()));
 	connect(ui->volume, SIGNAL(sliderMoved(int)), this, SLOT(vol_control(int)));
-
-	//VlcMedia("http://incompetech.com/music/royalty-free/mp3-royaltyfree/Who%20Likes%20to%20Party.mp3");
-    /*QAudioFormat format;
-    audioInput = new QAudioInput();
-    format.setSampleRate(44100);
-    format.setChannelCount(2);
-    format.setSampleSize(16);
-    format.setCodec("audio/pcm");
-    format.setByteOrder(QAudioFormat::LittleEndian);
-    format.setSampleType(QAudioFormat::UnSignedInt);*/
-    //ui->pauseButton->setVisible(false);
+    connect(ui->seek_Bar, SIGNAL(sliderReleased(), this, SLOT(on_seek_move()));
 
 	filesize = 1;
 

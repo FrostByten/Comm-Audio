@@ -48,6 +48,8 @@ public slots:
 	void vol_control(int);
 	void handle_file_size(message *msg);
 
+    void on_seek_move();
+
 	void on_playButton_clicked();
 	void on_pauseButton_clicked();
 
