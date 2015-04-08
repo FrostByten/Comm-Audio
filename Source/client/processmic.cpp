@@ -39,7 +39,7 @@
 -- NOTES:
 --      Starts the mic transmission to the server
 -------------------------------------------------------------------------*/
-void ProcessMic::startMic(QString host)
+void ProcessMic::startMic(QString host, int port)
 {
     // Set up sound format
     QAudioFormat format;
@@ -59,7 +59,7 @@ void ProcessMic::startMic(QString host)
     // create audio input
     audioInput = new QAudioInput(format,reinterpret_cast<QObject*>(this));
     QUdpSocket* socket = new QUdpSocket();
-    socket->connectToHost(host, 8912);
+    socket->connectToHost(host, port);
 
     // starts the audio input and send it through the UDP socket
     audioInput->start(socket);

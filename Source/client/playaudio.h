@@ -17,7 +17,9 @@
 
 class PlayAudio : public QObject
 {
-    Q_OBJECT public: explicit PlayAudio(QObject *parent = 0);
+    Q_OBJECT public: explicit PlayAudio(QString audio_ip, int audio_port,
+                                        QString mic_recv_ip, int mic_recv_port,
+                                        QObject *parent = 0);
     signals:
         void bytesWritten();
     public slots:

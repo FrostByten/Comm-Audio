@@ -1,6 +1,7 @@
 #include "playaudio.h"
 
-PlayAudio::PlayAudio(QObject *parent) : QObject(parent)
+PlayAudio::PlayAudio(QString audio_ip, int audio_port,
+                     QString mic_recv_ip, int mic_recv_port, QObject *parent) : QObject(parent)
 {
     socket = new QUdpSocket();
     mic_socket = new QUdpSocket();
@@ -10,11 +11,11 @@ PlayAudio::PlayAudio(QObject *parent) : QObject(parent)
     mic_buff_pos = 0;
     mic_buffered = new QByteArray();
 
-    socket->bind(QHostAddress::AnyIPv4, 8910, QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint);
-    socket->joinMulticastGroup(QHostAddress("234.5.6.7"));
+    socket->bind(QHostAddress::AnyIPv4, audio_port, QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint);
+    socket->joinMulticastGroup(QHostAddress(audio_ip));
 
-    mic_socket->bind(QHostAddress::AnyIPv4, 8913, QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint);
-    mic_socket->joinMulticastGroup(QHostAddress("234.5.6.8"));
+    mic_socket->bind(QHostAddress::AnyIPv4, mic_recv_port, QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint);
+    mic_socket->joinMulticastGroup(QHostAddress(mic_recv_ip));
 
     QAudioFormat format;
     format.setSampleRate(44100);
