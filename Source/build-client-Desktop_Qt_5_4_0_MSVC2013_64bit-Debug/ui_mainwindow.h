@@ -55,7 +55,7 @@ public:
     QPushButton *mute_Btn;
     QPushButton *select_file_Btn;
     QPushButton *skip_for_Btn;
-    QSlider *horizontalSlider;
+    QSlider *seek_Bar;
     QTabWidget *TabArea;
     QWidget *People;
     QGridLayout *gridLayout_3;
@@ -202,11 +202,12 @@ public:
 
         Settings->addWidget(skip_for_Btn, 7, 0, 1, 1);
 
-        horizontalSlider = new QSlider(centralWidget);
-        horizontalSlider->setObjectName(QStringLiteral("horizontalSlider"));
-        horizontalSlider->setOrientation(Qt::Horizontal);
+        seek_Bar = new QSlider(centralWidget);
+        seek_Bar->setObjectName(QStringLiteral("seek_Bar"));
+        seek_Bar->setMaximum(999);
+        seek_Bar->setOrientation(Qt::Horizontal);
 
-        Settings->addWidget(horizontalSlider, 2, 0, 1, 4);
+        Settings->addWidget(seek_Bar, 2, 0, 1, 4);
 
         Settings->setRowStretch(0, 1);
 

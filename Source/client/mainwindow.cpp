@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->select_URL_Btn, SIGNAL(clicked()), this, SLOT(URL_select_control()));
     connect(ui->download_Btn, SIGNAL(clicked()), this, SLOT(file_download_control()));
 	connect(ui->volume, SIGNAL(sliderMoved(int)), this, SLOT(vol_control(int)));
-    connect(ui->seek_Bar, SIGNAL(sliderReleased(), this, SLOT(on_seek_move()));
+    connect(ui->seek_Bar, SIGNAL(sliderReleased()), this, SLOT(on_seek_move()));
 
 	filesize = 1;
 
@@ -141,7 +141,7 @@ void MainWindow::handle_setName(message *msg)
 	int j = 0;
 	for(;;++j)
 	{
-		if(msg->data[j] == '\0');
+        if(msg->data[j] == '\0')
 		{
 			break;
 		}
