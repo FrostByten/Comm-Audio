@@ -8,6 +8,7 @@ QT       += core gui \
             multimedia \
             network \
             opengl
+
 QT += multimedia
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -24,7 +25,9 @@ SOURCES += main.cpp\
     playaudio.cpp \
     networking.cpp \
     entercatch.cpp \
-    controlthread.cpp
+    controlthread.cpp \
+    customwidget.cpp \
+    fft.cpp
 
 HEADERS += mainwindow.h \
         processmic.h \
@@ -35,7 +38,9 @@ HEADERS += mainwindow.h \
     playaudio.h \
     networking.h \
     entercatch.h \
-    controlthread.h
+    controlthread.h \
+    customwidget.h \
+    fft.h
 
 FORMS    += mainwindow.ui \
     settings.ui

@@ -4,6 +4,7 @@
 #include "playaudio.h"
 #include "entercatch.h"
 #include "controlthread.h"
+#include "customwidget.h"
 
 ProcessMic mic;
 
@@ -18,6 +19,9 @@ MainWindow::MainWindow(QWidget *parent) :
     //VlcInstance * v = new VlcInstance(VlcCommon::args(), this);
     ui->setupUi(this);
     QAction * settingsAct = ui->menuBar->addAction("Settings");
+
+    widget = new CustomWidget();
+    ui->BarGraph->addWidget(widget);
 
 	filereceived = 0;
 
@@ -178,7 +182,7 @@ void MainWindow::connect_control()
 
 		control = new Networking(control_ip.c_str(), control_port.c_str());
 		if(control->getConnected())
-		{
+        {
 			chatmodel->appendRow(new QStandardItem(QString("Connected!")));
 			ui->mute_Btn->setEnabled(true);
 			ui->pause_Btn->setEnabled(true);
@@ -198,11 +202,12 @@ void MainWindow::connect_control()
 
             message msg = {USER_LIST, 0, NULL};
             control->sendMessage(&msg);
-            msg = {FILE_LIST, 0, NULL};
-			control->sendMessage(&msg);
+            message msg2 = {FILE_LIST, 0, NULL};
+            control->sendMessage(&msg2);
 
             audio = new PlayAudio(settings_window->getAudioIp(), settings_window->getAudioPort(),
                                   settings_window->getMicRecvIp(), settings_window->getMicRecvPort());
+            connect(audio, SIGNAL(barsSet(QByteArray)), widget, SLOT(setBars(QByteArray)));
 		}
 		else
 		{

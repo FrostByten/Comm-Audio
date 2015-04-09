@@ -67,6 +67,7 @@ private:
 	QStandardItemModel *filesmodel;
 	ControlThread *cont_thread;
 	PlayAudio *audio;
+    CustomWidget *widget;
 	HANDLE dlFile;
 	int filesize, filereceived;
     bool seeking;
