@@ -499,7 +499,8 @@ void handleRequest(int c)
 			handleSelect(c);
 			break;
 		case USER_LIST:
-			handleUserList(c);
+			//handleUserList(c);
+			//handleFileList(c);
 			break;
 		case MESSAGE:
 			handleMessage(c);
@@ -509,6 +510,7 @@ void handleRequest(int c)
 			break;
 		case FILE_LIST:
 			handleFileList(c);
+			handleUserList(c);
 			break;
 		case FILE_REQUEST:
 			handleFileRequest(c);
@@ -734,6 +736,7 @@ void handleUserList(int c)
 	for (unsigned int i = 0; i < clients.size(); ++i)
 		if (i != c)
 		{
+			printf("\n\tSending: %s\n", clients[i].name);
 			int len = strlen(clients[i].name);
 			char *mes = (char*)malloc(len + 7);
 			mes[0] = USER_LIST;
@@ -848,6 +851,7 @@ void handleFileList(int c)
 
 	for (unsigned int i = 0; i < files.size(); ++i)
 	{
+		printf("\n\tSending: %s\n", files[i]);
 		int len = strlen(files[i]);
 		char *mes = (char*)malloc(len + 5);
 		mes[0] = FILE_LIST;
