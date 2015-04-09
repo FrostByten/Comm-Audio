@@ -5,7 +5,27 @@
 
 
 
-
+/******************************************************************************************
+ * FUNCTION Networking::Networking(const char * address, const char * port)
+ *
+ * DESIGNER: Marc Vouve
+ *
+ * PROGRAMMER: Marc Vouve
+ *
+ * DATE: FRIDAY MARCH 13th
+ *
+ * REVISIONS: MARCH 24rd - Refactored for users and moved out of main function
+ *            APRIL 1st  - Migrated to Comm Audio, moved into constructor.
+ *
+ *
+ * PROTOTYPE: addrinfo * ChatNet::GetHostInfo(const char * address, const char * port, addrinfo ** addr_info)
+ *                                              const char * address: the ip as a string
+ *                                              const char * port: the port as a string.
+ *
+ * RETURNS object
+ *
+ * NOTES: If this function fails it will set the socket to -1, and connected to false.
+ * ***************************************************************************************/
 Networking::Networking(const char * address, const char * port)
 {
 	connected = false;
@@ -41,6 +61,27 @@ Networking::Networking(const char * address, const char * port)
 		connected = true;
 }
 
+/******************************************************************************************
+ * FUNCTION Networking::Networking(const char * address, const char * port)
+ *
+ * DESIGNER: Marc Vouve
+ *
+ * PROGRAMMER: Marc Vouve
+ *
+ * DATE: FRIDAY MARCH 13th
+ *
+ * REVISIONS: MARCH 24rd - Refactored for users and moved out of main function
+ *            APRIL 1st  - Migrated to Comm Audio, moved into constructor.
+ *
+ *
+ * PROTOTYPE: addrinfo * ChatNet::GetHostInfo(const char * address, const char * port, addrinfo ** addr_info)
+ *                                              const char * address: the ip as a string
+ *                                              const char * port: the port as a string.
+ *
+ * RETURNS object
+ *
+ * NOTES: This closes the socket if it is open. if not it doesn't do anything.
+ * ***************************************************************************************/
 Networking::~Networking()
 {
     if(sock != -1)
@@ -148,7 +189,7 @@ bool Networking::getConnected()
 	return connected;
 }
 
-/*
+/*************************************************************************************
  *
  *
  * DATE: April 3rd
@@ -166,7 +207,7 @@ bool Networking::getConnected()
  * stdint's int8_t and int32_t this should decouple the program from hardware, although
  * it probably is unnessesary.
  *
- */
+ **************************************************************************************/
 void Networking::sendMessage(message * msg)
 {
     char *buf = new char[msg->len + HEADERLEN];
