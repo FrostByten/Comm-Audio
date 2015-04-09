@@ -1,7 +1,8 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.4.1
+** Created: Wed Apr 8 19:33:59 2015
+**      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -10,24 +11,24 @@
 #define UI_MAINWINDOW_H
 
 #include <QtCore/QVariant>
-#include <QtWidgets/QAction>
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QButtonGroup>
-#include <QtWidgets/QGridLayout>
-#include <QtWidgets/QHBoxLayout>
-#include <QtWidgets/QHeaderView>
-#include <QtWidgets/QLineEdit>
-#include <QtWidgets/QListView>
-#include <QtWidgets/QMainWindow>
-#include <QtWidgets/QMenuBar>
-#include <QtWidgets/QProgressBar>
-#include <QtWidgets/QPushButton>
-#include <QtWidgets/QRadioButton>
-#include <QtWidgets/QSlider>
-#include <QtWidgets/QStatusBar>
-#include <QtWidgets/QTabWidget>
-#include <QtWidgets/QVBoxLayout>
-#include <QtWidgets/QWidget>
+#include <QtGui/QAction>
+#include <QtGui/QApplication>
+#include <QtGui/QButtonGroup>
+#include <QtGui/QGridLayout>
+#include <QtGui/QHBoxLayout>
+#include <QtGui/QHeaderView>
+#include <QtGui/QLineEdit>
+#include <QtGui/QListView>
+#include <QtGui/QMainWindow>
+#include <QtGui/QMenuBar>
+#include <QtGui/QProgressBar>
+#include <QtGui/QPushButton>
+#include <QtGui/QRadioButton>
+#include <QtGui/QSlider>
+#include <QtGui/QStatusBar>
+#include <QtGui/QTabWidget>
+#include <QtGui/QVBoxLayout>
+#include <QtGui/QWidget>
 
 QT_BEGIN_NAMESPACE
 
@@ -69,7 +70,7 @@ public:
     void setupUi(QMainWindow *MainWindow)
     {
         if (MainWindow->objectName().isEmpty())
-            MainWindow->setObjectName(QStringLiteral("MainWindow"));
+            MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
         MainWindow->resize(814, 435);
         QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
         sizePolicy.setHorizontalStretch(1);
@@ -78,7 +79,7 @@ public:
         MainWindow->setSizePolicy(sizePolicy);
         MainWindow->setWindowOpacity(1);
         centralWidget = new QWidget(MainWindow);
-        centralWidget->setObjectName(QStringLiteral("centralWidget"));
+        centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         QSizePolicy sizePolicy1(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
         sizePolicy1.setHorizontalStretch(0);
         sizePolicy1.setVerticalStretch(0);
@@ -87,37 +88,37 @@ public:
         gridLayout_2 = new QGridLayout(centralWidget);
         gridLayout_2->setSpacing(6);
         gridLayout_2->setContentsMargins(11, 11, 11, 11);
-        gridLayout_2->setObjectName(QStringLiteral("gridLayout_2"));
+        gridLayout_2->setObjectName(QString::fromUtf8("gridLayout_2"));
         gridLayout = new QGridLayout();
         gridLayout->setSpacing(6);
-        gridLayout->setObjectName(QStringLiteral("gridLayout"));
+        gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
         gridLayout->setSizeConstraint(QLayout::SetMaximumSize);
         ChatLayout = new QVBoxLayout();
         ChatLayout->setSpacing(6);
-        ChatLayout->setObjectName(QStringLiteral("ChatLayout"));
+        ChatLayout->setObjectName(QString::fromUtf8("ChatLayout"));
         chat = new QListView(centralWidget);
-        chat->setObjectName(QStringLiteral("chat"));
+        chat->setObjectName(QString::fromUtf8("chat"));
 
         ChatLayout->addWidget(chat);
 
         horizontalLayout = new QHBoxLayout();
         horizontalLayout->setSpacing(5);
         horizontalLayout->setContentsMargins(2, 2, 2, 2);
-        horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
+        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
         lineEdit = new QLineEdit(centralWidget);
-        lineEdit->setObjectName(QStringLiteral("lineEdit"));
+        lineEdit->setObjectName(QString::fromUtf8("lineEdit"));
 
         horizontalLayout->addWidget(lineEdit);
 
         sendButton = new QPushButton(centralWidget);
-        sendButton->setObjectName(QStringLiteral("sendButton"));
+        sendButton->setObjectName(QString::fromUtf8("sendButton"));
 
         horizontalLayout->addWidget(sendButton);
 
         micRButton = new QRadioButton(centralWidget);
-        micRButton->setObjectName(QStringLiteral("micRButton"));
+        micRButton->setObjectName(QString::fromUtf8("micRButton"));
         micRButton->setEnabled(true);
-        micRButton->setStyleSheet(QLatin1String("QRadioButton::indicator  {\n"
+        micRButton->setStyleSheet(QString::fromUtf8("QRadioButton::indicator  {\n"
 "    width: 32px;\n"
 "    height: 32px;\n"
 "}\n"
@@ -142,35 +143,35 @@ public:
 
         Settings = new QGridLayout();
         Settings->setSpacing(6);
-        Settings->setObjectName(QStringLiteral("Settings"));
+        Settings->setObjectName(QString::fromUtf8("Settings"));
         Settings->setSizeConstraint(QLayout::SetDefaultConstraint);
         select_URL_Btn = new QPushButton(centralWidget);
-        select_URL_Btn->setObjectName(QStringLiteral("select_URL_Btn"));
+        select_URL_Btn->setObjectName(QString::fromUtf8("select_URL_Btn"));
 
         Settings->addWidget(select_URL_Btn, 3, 2, 1, 1);
 
         connect_Btn = new QPushButton(centralWidget);
-        connect_Btn->setObjectName(QStringLiteral("connect_Btn"));
+        connect_Btn->setObjectName(QString::fromUtf8("connect_Btn"));
 
         Settings->addWidget(connect_Btn, 3, 0, 1, 1);
 
         play_Btn = new QPushButton(centralWidget);
-        play_Btn->setObjectName(QStringLiteral("play_Btn"));
+        play_Btn->setObjectName(QString::fromUtf8("play_Btn"));
 
         Settings->addWidget(play_Btn, 3, 1, 1, 1);
 
         download_Btn = new QPushButton(centralWidget);
-        download_Btn->setObjectName(QStringLiteral("download_Btn"));
+        download_Btn->setObjectName(QString::fromUtf8("download_Btn"));
 
         Settings->addWidget(download_Btn, 6, 2, 1, 1);
 
         pause_Btn = new QPushButton(centralWidget);
-        pause_Btn->setObjectName(QStringLiteral("pause_Btn"));
+        pause_Btn->setObjectName(QString::fromUtf8("pause_Btn"));
 
         Settings->addWidget(pause_Btn, 2, 1, 1, 1);
 
         volume = new QSlider(centralWidget);
-        volume->setObjectName(QStringLiteral("volume"));
+        volume->setObjectName(QString::fromUtf8("volume"));
         volume->setCursor(QCursor(Qt::SplitHCursor));
         volume->setValue(99);
         volume->setOrientation(Qt::Horizontal);
@@ -178,22 +179,22 @@ public:
         Settings->addWidget(volume, 6, 1, 1, 1);
 
         mute_Btn = new QPushButton(centralWidget);
-        mute_Btn->setObjectName(QStringLiteral("mute_Btn"));
+        mute_Btn->setObjectName(QString::fromUtf8("mute_Btn"));
 
         Settings->addWidget(mute_Btn, 2, 0, 1, 1);
 
         select_file_Btn = new QPushButton(centralWidget);
-        select_file_Btn->setObjectName(QStringLiteral("select_file_Btn"));
+        select_file_Btn->setObjectName(QString::fromUtf8("select_file_Btn"));
 
         Settings->addWidget(select_file_Btn, 2, 2, 1, 1);
 
         skip_for_Btn = new QPushButton(centralWidget);
-        skip_for_Btn->setObjectName(QStringLiteral("skip_for_Btn"));
+        skip_for_Btn->setObjectName(QString::fromUtf8("skip_for_Btn"));
 
         Settings->addWidget(skip_for_Btn, 6, 0, 1, 1);
 
         seek_Bar = new QSlider(centralWidget);
-        seek_Bar->setObjectName(QStringLiteral("seek_Bar"));
+        seek_Bar->setObjectName(QString::fromUtf8("seek_Bar"));
         seek_Bar->setMaximum(999);
         seek_Bar->setOrientation(Qt::Horizontal);
 
@@ -201,7 +202,7 @@ public:
 
         BarGraph = new QGridLayout();
         BarGraph->setSpacing(6);
-        BarGraph->setObjectName(QStringLiteral("BarGraph"));
+        BarGraph->setObjectName(QString::fromUtf8("BarGraph"));
 
         Settings->addLayout(BarGraph, 0, 0, 1, 3);
 
@@ -210,21 +211,21 @@ public:
         gridLayout->addLayout(Settings, 0, 2, 1, 1);
 
         TabArea = new QTabWidget(centralWidget);
-        TabArea->setObjectName(QStringLiteral("TabArea"));
+        TabArea->setObjectName(QString::fromUtf8("TabArea"));
         People = new QWidget();
-        People->setObjectName(QStringLiteral("People"));
+        People->setObjectName(QString::fromUtf8("People"));
         QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Preferred);
         sizePolicy2.setHorizontalStretch(1);
         sizePolicy2.setVerticalStretch(1);
         sizePolicy2.setHeightForWidth(People->sizePolicy().hasHeightForWidth());
         People->setSizePolicy(sizePolicy2);
-        People->setStyleSheet(QStringLiteral(""));
+        People->setStyleSheet(QString::fromUtf8(""));
         gridLayout_3 = new QGridLayout(People);
         gridLayout_3->setSpacing(6);
         gridLayout_3->setContentsMargins(2, 2, 2, 2);
-        gridLayout_3->setObjectName(QStringLiteral("gridLayout_3"));
+        gridLayout_3->setObjectName(QString::fromUtf8("gridLayout_3"));
         list_people = new QListView(People);
-        list_people->setObjectName(QStringLiteral("list_people"));
+        list_people->setObjectName(QString::fromUtf8("list_people"));
         QSizePolicy sizePolicy3(QSizePolicy::Expanding, QSizePolicy::Expanding);
         sizePolicy3.setHorizontalStretch(1);
         sizePolicy3.setVerticalStretch(0);
@@ -235,18 +236,18 @@ public:
 
         TabArea->addTab(People, QString());
         SongList = new QWidget();
-        SongList->setObjectName(QStringLiteral("SongList"));
+        SongList->setObjectName(QString::fromUtf8("SongList"));
         gridLayout_4 = new QGridLayout(SongList);
         gridLayout_4->setSpacing(6);
         gridLayout_4->setContentsMargins(2, 2, 2, 2);
-        gridLayout_4->setObjectName(QStringLiteral("gridLayout_4"));
+        gridLayout_4->setObjectName(QString::fromUtf8("gridLayout_4"));
         list_songs = new QListView(SongList);
-        list_songs->setObjectName(QStringLiteral("list_songs"));
+        list_songs->setObjectName(QString::fromUtf8("list_songs"));
 
         gridLayout_4->addWidget(list_songs, 0, 0, 1, 1);
 
         progressBar = new QProgressBar(SongList);
-        progressBar->setObjectName(QStringLiteral("progressBar"));
+        progressBar->setObjectName(QString::fromUtf8("progressBar"));
         progressBar->setEnabled(true);
         progressBar->setAutoFillBackground(false);
         progressBar->setValue(0);
@@ -265,11 +266,11 @@ public:
 
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
-        menuBar->setObjectName(QStringLiteral("menuBar"));
+        menuBar->setObjectName(QString::fromUtf8("menuBar"));
         menuBar->setGeometry(QRect(0, 0, 814, 21));
         MainWindow->setMenuBar(menuBar);
         statusBar = new QStatusBar(MainWindow);
-        statusBar->setObjectName(QStringLiteral("statusBar"));
+        statusBar->setObjectName(QString::fromUtf8("statusBar"));
         MainWindow->setStatusBar(statusBar);
 
         retranslateUi(MainWindow);
@@ -282,21 +283,21 @@ public:
 
     void retranslateUi(QMainWindow *MainWindow)
     {
-        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Comm Audio", 0));
-        sendButton->setText(QApplication::translate("MainWindow", "Send", 0));
+        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Comm Audio", 0, QApplication::UnicodeUTF8));
+        sendButton->setText(QApplication::translate("MainWindow", "Send", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_TOOLTIP
         micRButton->setToolTip(QString());
 #endif // QT_NO_TOOLTIP
-        select_URL_Btn->setText(QApplication::translate("MainWindow", "Queue URL", 0));
-        connect_Btn->setText(QApplication::translate("MainWindow", "Connect", 0));
-        play_Btn->setText(QApplication::translate("MainWindow", "Play", 0));
-        download_Btn->setText(QApplication::translate("MainWindow", "Download File", 0));
-        pause_Btn->setText(QApplication::translate("MainWindow", "Pause", 0));
-        mute_Btn->setText(QApplication::translate("MainWindow", "Mute User", 0));
-        select_file_Btn->setText(QApplication::translate("MainWindow", "Queue File", 0));
-        skip_for_Btn->setText(QApplication::translate("MainWindow", "Skip Song", 0));
-        TabArea->setTabText(TabArea->indexOf(People), QApplication::translate("MainWindow", "People", 0));
-        TabArea->setTabText(TabArea->indexOf(SongList), QApplication::translate("MainWindow", "Songs", 0));
+        select_URL_Btn->setText(QApplication::translate("MainWindow", "Queue URL", 0, QApplication::UnicodeUTF8));
+        connect_Btn->setText(QApplication::translate("MainWindow", "Connect", 0, QApplication::UnicodeUTF8));
+        play_Btn->setText(QApplication::translate("MainWindow", "Play", 0, QApplication::UnicodeUTF8));
+        download_Btn->setText(QApplication::translate("MainWindow", "Download File", 0, QApplication::UnicodeUTF8));
+        pause_Btn->setText(QApplication::translate("MainWindow", "Pause", 0, QApplication::UnicodeUTF8));
+        mute_Btn->setText(QApplication::translate("MainWindow", "Mute User", 0, QApplication::UnicodeUTF8));
+        select_file_Btn->setText(QApplication::translate("MainWindow", "Queue File", 0, QApplication::UnicodeUTF8));
+        skip_for_Btn->setText(QApplication::translate("MainWindow", "Skip Song", 0, QApplication::UnicodeUTF8));
+        TabArea->setTabText(TabArea->indexOf(People), QApplication::translate("MainWindow", "People", 0, QApplication::UnicodeUTF8));
+        TabArea->setTabText(TabArea->indexOf(SongList), QApplication::translate("MainWindow", "Songs", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

@@ -13,6 +13,8 @@
 #include <QtMultimedia/QAudioInput>
 #include <QtMultimedia/QAudioFormat>
 
+#include "customwidget.h"
+
 #define BUFF_SIZE 44100
 
 class PlayAudio : public QObject
@@ -22,6 +24,7 @@ class PlayAudio : public QObject
                                         QObject *parent = 0);
     signals:
         void bytesWritten();
+        void barsSet(QByteArray);
     public slots:
         void playData();
         void playMic();

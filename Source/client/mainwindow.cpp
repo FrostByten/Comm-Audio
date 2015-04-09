@@ -4,6 +4,7 @@
 #include "playaudio.h"
 #include "entercatch.h"
 #include "controlthread.h"
+#include "customwidget.h"
 
 ProcessMic mic;
 
@@ -19,6 +20,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     QAction * settingsAct = ui->menuBar->addAction("Settings");
 
+    widget = new CustomWidget();
+    ui->BarGraph->addWidget(widget);
+
 	filereceived = 0;
 
     connect(settingsAct, SIGNAL(triggered()), this, SLOT(on_open_settings()));
@@ -33,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->download_Btn, SIGNAL(clicked()), this, SLOT(file_download_control()));
 	connect(ui->volume, SIGNAL(sliderMoved(int)), this, SLOT(vol_control(int)));
     connect(ui->seek_Bar, SIGNAL(sliderReleased()), this, SLOT(on_seek_move()));
+    connect(ui->seek_Bar, SIGNAL(sliderPressed()), this, SLOT(on_seek_pressed()));
 
 	filesize = 1;
 
@@ -57,7 +62,10 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->lineEdit->installEventFilter((new EnterCatch(this)));
 }
 
-
+void MainWindow::on_seek_pressed()
+{
+    seeking = true;
+}
 
 void MainWindow::disconnect_server()
 {
@@ -174,7 +182,7 @@ void MainWindow::connect_control()
 
 		control = new Networking(control_ip.c_str(), control_port.c_str());
 		if(control->getConnected())
-		{
+        {
 			chatmodel->appendRow(new QStandardItem(QString("Connected!")));
 			ui->mute_Btn->setEnabled(true);
 			ui->pause_Btn->setEnabled(true);
@@ -194,11 +202,12 @@ void MainWindow::connect_control()
 
             message msg = {USER_LIST, 0, NULL};
             control->sendMessage(&msg);
-            msg = {FILE_LIST, 0, NULL};
-			control->sendMessage(&msg);
+            message msg2 = {FILE_LIST, 0, NULL};
+            control->sendMessage(&msg2);
 
             audio = new PlayAudio(settings_window->getAudioIp(), settings_window->getAudioPort(),
                                   settings_window->getMicRecvIp(), settings_window->getMicRecvPort());
+            connect(audio, SIGNAL(barsSet(QByteArray)), widget, SLOT(setBars(QByteArray)));
 		}
 		else
 		{
@@ -299,14 +308,18 @@ void MainWindow::on_seek_move()
     memcpy(currentVol, &value, sizeof(value));
     message msg = {SEEK, sizeof(float), currentVol };
     control->sendMessage(&msg);
+    seeking = false;
 }
 
 void MainWindow::seek_bar_chaged(message * msg)
 {
-    float value;
-    memcpy(&value, msg->data, sizeof(float));
+    if(!seeking)
+    {
+        float value;
+        memcpy(&value, msg->data, sizeof(float));
 
-    ui->seek_Bar->setValue(ui->seek_Bar->maximum() * value);
+        ui->seek_Bar->setValue(ui->seek_Bar->maximum() * value);
+    }
 }
 
 void MainWindow::URL_select_control()

@@ -22,6 +22,7 @@
 --      Handles the mic transmission from clients
 -------------------------------------------------------------------------*/
 #include "playaudio.h"
+#include <iostream>
 
 /*-------------------------------------------------------------------------
 -- CONSTRUCTOR: PlayAudio::PlayAudio
@@ -120,6 +121,8 @@ PlayAudio::PlayAudio(QString audio_ip, int audio_port,
 void PlayAudio::playData()
 {
     QByteArray data;
+    QByteArray barsData;
+    int pos = 0;
     if (socket->hasPendingDatagrams())
     {
 
@@ -139,6 +142,16 @@ void PlayAudio::playData()
             buff_pos=0;
         }
 
+        pos += data.size();
+        if (pos >= 32)
+        {
+            barsData = barsData.replace(0, pos, buffered->constData()-pos);
+            if (barsData.size() >= 32)
+            {
+                emit barsSet(barsData);
+            }
+            pos = 0;
+        }
     }
 }
 
@@ -165,6 +178,8 @@ void PlayAudio::playData()
 -------------------------------------------------------------------------*/
 void PlayAudio::playMic()
 {
+    /*QByteArray barsData;
+    int pos = 0;*/
     if (mic_socket->hasPendingDatagrams())
     {
         QByteArray data;
@@ -183,7 +198,16 @@ void PlayAudio::playMic()
             mic_buffered->clear();
             mic_buff_pos=0;
         }
-
+        /*pos += data.size();
+        if (pos >= 32)
+        {
+            barsData = barsData.replace(0, pos, buffered->constData()-pos);
+            if (barsData.size() >= 32)
+            {
+                emit barsSet(barsData);
+            }
+            pos = 0;
+        }*/
     }
 }
 
