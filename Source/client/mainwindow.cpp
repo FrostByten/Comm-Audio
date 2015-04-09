@@ -32,17 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->select_URL_Btn, SIGNAL(clicked()), this, SLOT(URL_select_control()));
     connect(ui->download_Btn, SIGNAL(clicked()), this, SLOT(file_download_control()));
 	connect(ui->volume, SIGNAL(sliderMoved(int)), this, SLOT(vol_control(int)));
-
-	//VlcMedia("http://incompetech.com/music/royalty-free/mp3-royaltyfree/Who%20Likes%20to%20Party.mp3");
-    /*QAudioFormat format;
-    audioInput = new QAudioInput();
-    format.setSampleRate(44100);
-    format.setChannelCount(2);
-    format.setSampleSize(16);
-    format.setCodec("audio/pcm");
-    format.setByteOrder(QAudioFormat::LittleEndian);
-    format.setSampleType(QAudioFormat::UnSignedInt);*/
-    //ui->pauseButton->setVisible(false);
+    connect(ui->seek_Bar, SIGNAL(sliderReleased()), this, SLOT(on_seek_move()));
 
 	filesize = 1;
 
@@ -66,6 +56,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	ui->lineEdit->installEventFilter((new EnterCatch(this)));
 }
+
+
 
 void MainWindow::disconnect_server()
 {
@@ -119,6 +111,11 @@ void MainWindow::handle_control(message * msg)
 			handle_file_size(msg);
 			break;
 		}
+        case SEEK:
+        {
+            seek_bar_chaged(msg);
+            break;
+        }
 	}
 }
 
@@ -151,7 +148,7 @@ void MainWindow::handle_setName(message *msg)
 	int j = 0;
 	for(;;++j)
 	{
-		if(msg->data[j] == '\0');
+        if(msg->data[j] == '\0')
 		{
 			break;
 		}
@@ -292,6 +289,24 @@ void MainWindow::file_select_control()
 	message mes = {FILE_SELECT, strlen(text.toStdString().c_str()) + 1, b};
     control->sendMessage(&mes);
 	free(b);
+}
+
+void MainWindow::on_seek_move()
+{
+    float value = (float) ui->seek_Bar->value() / (float) ui->seek_Bar->maximum();
+    char  currentVol[sizeof(float)];
+
+    memcpy(currentVol, &value, sizeof(value));
+    message msg = {SEEK, sizeof(float), currentVol };
+    control->sendMessage(&msg);
+}
+
+void MainWindow::seek_bar_chaged(message * msg)
+{
+    float value;
+    memcpy(&value, msg->data, sizeof(float));
+
+    ui->seek_Bar->setValue(ui->seek_Bar->maximum() * value);
 }
 
 void MainWindow::URL_select_control()

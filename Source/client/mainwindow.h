@@ -48,10 +48,14 @@ public slots:
 	void vol_control(int);
 	void handle_file_size(message *msg);
 
+    void on_seek_move();
+
+
 	void on_playButton_clicked();
 	void on_pauseButton_clicked();
 
 private:
+     void seek_bar_chaged(message *);
     Ui::MainWindow *ui;
     QAudioInput *audioInput;
 	Settings *settings_window;

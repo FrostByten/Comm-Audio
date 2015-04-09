@@ -179,6 +179,9 @@ QRadioButton::indicator:checked  {
         </item>
         <item row="2" column="0" colspan="4">
          <widget class="QSlider" name="seek_Bar">
+          <property name="maximum">
+           <number>999</number>
+          </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
