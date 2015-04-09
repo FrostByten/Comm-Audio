@@ -8,6 +8,26 @@
 
 ProcessMic mic;
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: MainWindow::MainWindow(QWidget *parent)
+--
+-- DATE: March 15th
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Vouve
+--
+-- PROGRAMMER: Marc Vouve
+--
+-- INTERFACE: MainWindow::MainWindow(QWidget *parent)
+--
+-- PARAMETERS: QWidget : parent widget.
+--
+-- RETURNS: void
+--
+-- NOTES:
+--     This function contructs the main window for the project.
+-------------------------------------------------------------------------*/
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -62,11 +82,51 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->lineEdit->installEventFilter((new EnterCatch(this)));
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: void MainWindow::on_seek_pressed()
+--
+-- DATE: April 8th
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Vouve
+--
+-- PROGRAMMER: Marc Vouve
+--
+-- INTERFACE: void MainWindow::on_seek_pressed()
+--
+-- PARAMETERS:
+--
+-- RETURNS: void
+--
+-- NOTES:
+--     This function contructs the main window for the project.
+-------------------------------------------------------------------------*/
 void MainWindow::on_seek_pressed()
 {
     seeking = true;
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: void MainWindow::disconnect_server()
+--
+-- DATE: April 8th
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Vouve
+--
+-- PROGRAMMER: Marc Vouve
+--
+-- INTERFACE: void MainWindow::disconnect_server()
+--
+-- PARAMETERS:
+--
+-- RETURNS: void
+--
+-- NOTES:
+--     This function contructs the main window for the project.
+-------------------------------------------------------------------------*/
 void MainWindow::disconnect_server()
 {
     // handle closing thread.
@@ -127,6 +187,26 @@ void MainWindow::handle_control(message * msg)
 	}
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: void MainWindow::on_seek_pressed()
+--
+-- DATE: April 8th
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Vouve
+--
+-- PROGRAMMER: Marc Vouve
+--
+-- INTERFACE: MainWindow::MainWindow(QWidget *parent)
+--
+-- PARAMETERS:
+--
+-- RETURNS: void
+--
+-- NOTES:
+--     This function contructs the main window for the project.
+-------------------------------------------------------------------------*/
 void MainWindow::handle_userList(message *msg)
 {
 	if(msg->data[0] == EXIST || msg->data[0] == CONNECT)
@@ -151,6 +231,26 @@ void MainWindow::handle_userList(message *msg)
 	}
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: void MainWindow::handle_setName(message *msg)
+--
+-- DATE: April 8th
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Vouve
+--
+-- PROGRAMMER: Marc Vouve
+--
+-- INTERFACE: MainWindow::MainWindow(QWidget *parent)
+--
+-- PARAMETERS: message * msg
+--
+-- RETURNS: void
+--
+-- NOTES:
+--     This function contructs the main window for the project.
+-------------------------------------------------------------------------*/
 void MainWindow::handle_setName(message *msg)
 {
 	int j = 0;
@@ -169,6 +269,26 @@ void MainWindow::handle_setName(message *msg)
 	}
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: void MainWindow::connect_control()
+--
+-- DATE: April 8th
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Vouve
+--
+-- PROGRAMMER: Marc Vouve
+--
+-- INTERFACE: void MainWindow::connect_control()
+--
+-- PARAMETERS: message * msg
+--
+-- RETURNS: void
+--
+-- NOTES:
+--     This function contructs the main window for the project.
+-------------------------------------------------------------------------*/
 void MainWindow::connect_control()
 {
 	static bool con = false;
@@ -236,6 +356,26 @@ void MainWindow::connect_control()
 	}
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: void MainWindow::pause_control()
+--
+-- DATE: April 8th
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Vouve
+--
+-- PROGRAMMER: Marc Vouve
+--
+-- INTERFACE: void MainWindow::pause_control()
+--
+-- PARAMETERS:
+--
+-- RETURNS: void
+--
+-- NOTES:
+--     this function is a slot called by the client to pause audio playback.
+-------------------------------------------------------------------------*/
 void MainWindow::pause_control()
 {
     char m = PAUSE;
@@ -243,6 +383,26 @@ void MainWindow::pause_control()
     control->sendMessage(&mes);
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: void MainWindow::play_control()
+--
+-- DATE: April 8th
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Vouve
+--
+-- PROGRAMMER: Marc Vouve
+--
+-- INTERFACE: void MainWindow::play_control()
+--
+-- PARAMETERS:
+--
+-- RETURNS: void
+--
+-- NOTES:
+--     This function is called on the client to resume playback on the server.
+-------------------------------------------------------------------------*/
 void MainWindow::play_control()
 {
     char m = PLAY;
@@ -250,6 +410,27 @@ void MainWindow::play_control()
     control->sendMessage(&mes);
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: void MainWindow::skip_for_control()
+--
+-- DATE: April 8th
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Vouve
+--
+-- PROGRAMMER: Marc Vouve
+--
+-- INTERFACE: void MainWindow::play_control()
+--
+-- PARAMETERS:
+--
+-- RETURNS: void
+--
+-- NOTES:
+--     This function is called on the client to resume playback on the
+--     server.
+-------------------------------------------------------------------------*/
 void MainWindow::skip_for_control()
 {
     char m = SKIP;
@@ -274,6 +455,28 @@ void MainWindow::send_control()
 	}
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: void MainWindow::mute_control()
+--
+-- DATE: April 8th
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Vouve
+--
+-- PROGRAMMER: Marc Vouve
+--
+-- INTERFACE: void MainWindow::mute_control()
+--
+-- PARAMETERS:
+--
+-- RETURNS: void
+--
+-- NOTES:
+--     This method is called when the mute command is called on the
+--     client. It will send a message to the server. If the user is
+--     an admin it will mute the person they currently have selected.
+-------------------------------------------------------------------------*/
 void MainWindow::mute_control()
 {
 	QString text = getSelected(ui->list_people);
@@ -285,6 +488,28 @@ void MainWindow::mute_control()
     control->sendMessage(&mes);
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: void MainWindow::file_select_control()
+--
+-- DATE: April 8th
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Vouve
+--
+-- PROGRAMMER: Marc Vouve
+--              Lewis Scott
+--
+-- INTERFACE: void MainWindow::file_select_control()
+--
+-- PARAMETERS:
+--
+-- RETURNS: void
+--
+-- NOTES:
+--     This function is called when the user tries to send files to the
+--     server. It will queue up a file to play in the current song queue
+-------------------------------------------------------------------------*/
 void MainWindow::file_select_control()
 {
 	QString text = getSelected(ui->list_songs);
@@ -300,6 +525,28 @@ void MainWindow::file_select_control()
 	free(b);
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: void MainWindow::file_select_control()
+--
+-- DATE: April 7th
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Vouve
+--
+-- PROGRAMMER: Marc Vouve
+--              Lewis Scott
+--
+-- INTERFACE: void MainWindow::file_select_control()
+--
+-- PARAMETERS:
+--
+-- RETURNS: void
+--
+-- NOTES:
+--     This function is called when the user tries to send files to the
+--     server. It will queue up a file to play in the current song queue
+-------------------------------------------------------------------------*/
 void MainWindow::on_seek_move()
 {
     float value = (float) ui->seek_Bar->value() / (float) ui->seek_Bar->maximum();
@@ -311,6 +558,27 @@ void MainWindow::on_seek_move()
     seeking = false;
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: void MainWindow::seek_bar_chaged(message * msg)
+--
+-- DATE: April 6th
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Vouve
+--
+-- PROGRAMMER: Marc Vouve
+--
+-- INTERFACE: void MainWindow::file_select_control()
+--
+-- PARAMETERS:
+--
+-- RETURNS: void
+--
+-- NOTES:
+--     This function is called when the user tries to send files to the
+--     server. It will queue up a file to play in the current song queue
+-------------------------------------------------------------------------*/
 void MainWindow::seek_bar_chaged(message * msg)
 {
     if(!seeking)
@@ -322,6 +590,26 @@ void MainWindow::seek_bar_chaged(message * msg)
     }
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: void MainWindow::URL_select_control()
+--
+-- DATE: April 6th
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Vouve
+--
+-- PROGRAMMER: Marc Vouve
+--
+-- INTERFACE: void MainWindow::URL_select_control()
+--
+-- PARAMETERS:
+--
+-- RETURNS: void
+--
+-- NOTES:
+--     This function requests a URL to be played streaming from the server.
+-------------------------------------------------------------------------*/
 void MainWindow::URL_select_control()
 {
 	QString text = ui->lineEdit->text();
@@ -338,6 +626,27 @@ void MainWindow::URL_select_control()
 	}
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: void MainWindow::file_download_control()
+--
+-- DATE: April 6th
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Vouve
+--
+-- PROGRAMMER: Marc Vouve
+--
+-- INTERFACE: void MainWindow::file_download_control()
+--
+-- PARAMETERS:
+--
+-- RETURNS: void
+--
+-- NOTES:
+--     This function downloads a file into your current folder, from the
+--     server based on what you've currently selected.
+-------------------------------------------------------------------------*/
 void MainWindow::file_download_control()
 {
 	ui->download_Btn->setEnabled(false);
@@ -372,6 +681,27 @@ void MainWindow::file_download_control()
 	}
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: void MainWindow::file_download_control()
+--
+-- DATE: April 6th
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Vouve
+--
+-- PROGRAMMER: Marc Vouve
+--
+-- INTERFACE: void MainWindow::file_download_control()
+--
+-- PARAMETERS:
+--
+-- RETURNS: void
+--
+-- NOTES:
+--     This function downloads a file into your current folder, from the
+--     server based on what you've currently selected.
+-------------------------------------------------------------------------*/
 void MainWindow::handle_download(message *msg)
 {
 	if(dlFile != INVALID_HANDLE_VALUE && dlFile != NULL)
@@ -387,6 +717,28 @@ void MainWindow::handle_download(message *msg)
 		std::cerr << "File is not open!" << std::endl;
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: void MainWindow::handle_eof()
+--
+-- DATE: April 6th
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Vouve
+--
+-- PROGRAMMER: Marc Vouve
+--
+-- INTERFACE: void MainWindow::handle_eof()
+--
+-- PARAMETERS:
+--
+-- RETURNS: void
+--
+-- NOTES:
+--     This file appends an EOF to the end of a file after writing it.
+--      and notifies the user that the file has finished downloading.
+--
+-------------------------------------------------------------------------*/
 void MainWindow::handle_eof()
 {
 	CloseHandle(dlFile);
@@ -395,6 +747,28 @@ void MainWindow::handle_eof()
 	ui->download_Btn->setEnabled(true);
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: void MainWindow::handle_eof()
+--
+-- DATE: April 6th
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Vouve
+--
+-- PROGRAMMER: Marc Vouve
+--
+-- INTERFACE: void MainWindow::handle_eof()
+--
+-- PARAMETERS:
+--
+-- RETURNS: void
+--
+-- NOTES:
+--     This file appends an EOF to the end of a file after writing it.
+--      and notifies the user that the file has finished downloading.
+--
+-------------------------------------------------------------------------*/
 QString MainWindow::getSelected(QListView *view)
 {
 	QModelIndexList list = view->selectionModel()->selectedIndexes();
@@ -403,11 +777,53 @@ QString MainWindow::getSelected(QListView *view)
 	return list.first().data().toString();
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: void MainWindow::handle_file_size(message *msg)
+--
+-- DATE: April 6th
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Vouve
+--
+-- PROGRAMMER: Marc Vouve
+--
+-- INTERFACE: void MainWindow::handle_file_size(message *msg)
+--
+-- PARAMETERS:
+--
+-- RETURNS: void
+--
+-- NOTES:
+--     This message copies the file size
+--
+-------------------------------------------------------------------------*/
 void MainWindow::handle_file_size(message *msg)
 {
 	memcpy(&filesize, msg->data, sizeof(int));
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: void MainWindow::on_open_settings()
+--
+-- DATE: April 5th
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Vouve
+--
+-- PROGRAMMER: Marc Vouve
+--
+-- INTERFACE: void MainWindow::on_open_settings()
+--
+-- PARAMETERS:
+--
+-- RETURNS: void
+--
+-- NOTES:
+--     This function opens the settings window for connecting to the server.
+--
+-------------------------------------------------------------------------*/
 void MainWindow::on_open_settings()
 {
     settings_window->exec();
@@ -421,11 +837,53 @@ void MainWindow::on_open_settings()
     control->sendMessage(&msg);*/
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: MainWindow::~MainWindow()
+--
+-- DATE: April 5th
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: QT Generated
+--
+-- PROGRAMMER: QT Generated.
+--
+-- INTERFACE: MainWindow::~MainWindow()
+--
+-- PARAMETERS:
+--
+-- RETURNS: void
+--
+-- NOTES:
+--     deletes the UI
+--
+-------------------------------------------------------------------------*/
 MainWindow::~MainWindow()
 {
     delete ui;
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: MainWindow::~MainWindow()
+--
+-- DATE: April 5th
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Rafanan
+--
+-- PROGRAMMER: Marc Rafanan
+--
+-- INTERFACE: void MainWindow::on_micRButton_toggled(bool checked)
+--
+-- PARAMETERS: bool checked: if the microphone should be on or not.
+--
+-- RETURNS: void
+--
+-- NOTES:
+--     this starts the microphone playback.
+--
+-------------------------------------------------------------------------*/
 void MainWindow::on_micRButton_toggled(bool checked)
 {
     if(checked)
@@ -434,18 +892,31 @@ void MainWindow::on_micRButton_toggled(bool checked)
         mic.stopMic();
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: MainWindow::~MainWindow()
+--
+-- DATE: April 5th
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Marc Vouve
+--
+-- PROGRAMMER: Marc Vouve
+--
+-- INTERFACE: void MainWindow::vol_control(int c)
+--
+-- PARAMETERS: int c the volume to play the sound back at.
+--
+-- RETURNS: void
+--
+-- NOTES:
+--     This function controls audio playback
+--
+-------------------------------------------------------------------------*/
 void MainWindow::vol_control(int c)
 {
 	if(audio != NULL)
 		audio->setVolume(c);
 }
 
-void MainWindow::on_pauseButton_clicked()
-{
 
-}
-
-void MainWindow::on_playButton_clicked()
-{
-
-}
