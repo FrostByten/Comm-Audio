@@ -77,7 +77,7 @@ public:
         sizePolicy.setHeightForWidth(MainWindow->sizePolicy().hasHeightForWidth());
         MainWindow->setSizePolicy(sizePolicy);
         MainWindow->setWindowOpacity(1);
-        MainWindow->setStyleSheet(QStringLiteral("background-color:#FF69B4;"));
+        MainWindow->setStyleSheet(QStringLiteral("background-color:#FF69B4; "));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         QSizePolicy sizePolicy1(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -294,7 +294,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        TabArea->setCurrentIndex(0);
+        TabArea->setCurrentIndex(1);
 
 
         QMetaObject::connectSlotsByName(MainWindow);
