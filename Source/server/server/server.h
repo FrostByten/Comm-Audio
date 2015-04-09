@@ -61,4 +61,6 @@ bool redraw_prog_bar = false;
 float seekby;
 const char *file_types[TYPES_LENGTH] = { "wav", "mp3", "ogg", "pcm", "aac", "flac", "m4a" };
 
+extern libvlc_media_player_t *mp;
+
 #endif

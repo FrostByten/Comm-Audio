@@ -70,7 +70,7 @@
 #define MIC_BUFFER_SIZE 1024
 #define TYPES_LENGTH 7
 #define PROG_BAR_WIDTH 60
-#define TICK_TIME 0.01
+#define TICK_TIME 0.05
 #define PROG_STRING "Progress: "
 #define PAUSE_STRING "Paused:   "
 #define UNAUTH_MESSAGE "You are not authorized to perform this function."
