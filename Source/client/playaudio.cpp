@@ -88,6 +88,17 @@ PlayAudio::PlayAudio(QString audio_ip, int audio_port,
     output->setBufferSize(BUFF_SIZE * 2);
     device = output->start();
 
+    // set format for mic
+    format.setSampleRate(44100);
+    format.setChannelCount(1);
+    format.setSampleSize(8);
+    format.setCodec("audio/pcm");
+    format.setByteOrder(QAudioFormat::LittleEndian);
+    format.setSampleType(QAudioFormat::UnSignedInt);
+
+    if (!info.isFormatSupported(format))
+            format = info.nearestFormat(format);
+
     mic_output = new QAudioOutput(format);
     mic_output->setBufferSize(BUFF_SIZE * 2);
     mic_device = mic_output->start();

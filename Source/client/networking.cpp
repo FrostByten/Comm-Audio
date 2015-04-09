@@ -76,7 +76,7 @@ Networking::~Networking()
  * ***************************************************************************************/
 int Networking::get_host_info(const char * address, const char * port, addrinfo ** addr_info)
 {
-    addrinfo hints, * res;
+    addrinfo hints;
     int err;
 
     std::cout << "Addr: " << address << " port: " << port << std::endl;

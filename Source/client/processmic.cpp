@@ -45,8 +45,8 @@ void ProcessMic::startMic(QString host, int port)
     // Set up sound format
     QAudioFormat format;
     format.setSampleRate(44100);
-    format.setChannelCount(2);
-    format.setSampleSize(16);
+    format.setChannelCount(1);
+    format.setSampleSize(8);
     format.setCodec("audio/pcm");
     format.setByteOrder(QAudioFormat::LittleEndian);
     format.setSampleType(QAudioFormat::UnSignedInt);

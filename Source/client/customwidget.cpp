@@ -3,6 +3,26 @@
 #include <QList>
 #include "fft.h"
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: CustomWidget::CustomWidget()
+--
+-- DATE: April 8, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Thomas Tallentire
+--
+-- PROGRAMMER: Thomas Tallentire
+--
+-- INTERFACE: CustomWidget::CustomWidget()
+--
+-- PARAMETERS:
+--
+-- RETURNS: void
+--
+-- NOTES:
+--      Constructor for the custom widget. It sets all of the pen colours.
+-------------------------------------------------------------------------*/
 CustomWidget::CustomWidget()
 {
     for (int i = 0; i < 10; i++)
@@ -26,9 +46,28 @@ CustomWidget::CustomWidget()
 
 CustomWidget::~CustomWidget()
 {
-
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: CustomWidget::setBars
+--
+-- DATE: April 8, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Thomas Tallentire
+--
+-- PROGRAMMER: Thomas Tallentire
+--
+-- INTERFACE: void CustomWidget::setBars(QByteArray data)
+--
+-- PARAMETERS:
+--
+-- RETURNS: void
+--
+-- NOTES:
+--      Slot to catch a new set of data for the graphical bars.
+-------------------------------------------------------------------------*/
 void CustomWidget::setBars(QByteArray data)
 {
     float _waveLeft[NUMCHANNELS];
@@ -42,6 +81,8 @@ void CustomWidget::setBars(QByteArray data)
     // Average
     for (int i = 0; i < data.size(); i += NUMCHANNELS)
     {
+        if (i >= data.size())
+            break;
         for (int j = 0; j < NUMCHANNELS && i+j < data.size(); j++)
         {
             avgData[j] += (float)*((short*)(data.data() + i+j));
@@ -82,23 +123,39 @@ void CustomWidget::setBars(QByteArray data)
     delete avgData;
 }
 
+/*-------------------------------------------------------------------------
+-- FUNCTION: CustomWidget::paintEvent
+--
+-- DATE: April 8, 2015
+--
+-- REVISIONS: (Date and Description)
+--
+-- DESIGNER: Thomas Tallentire
+--
+-- PROGRAMMER: Thomas Tallentire
+--
+-- INTERFACE: void CustomWidget::paintEvent(QPaintEvent *event)
+--
+-- PARAMETERS:
+--
+-- RETURNS: void
+--
+-- NOTES:
+--      Slot to catch a new set of data for the graphical bars.
+-------------------------------------------------------------------------*/
 void CustomWidget::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
 
-   /* for (int j = 0; j < 3; j++)
-    {*/
-        for (int i = 0; i < NUMCHANNELS; i++)
-        {
-            painter.setPen(pens[i]);
+    for (int i = 0; i < NUMCHANNELS; i++)
+    {
+        painter.setPen(pens[i]);
 
-            bars[i] = (newBars[i] + bars[i]) / 2;
+        bars[i] = (newBars[i] + bars[i]) / 2;
 
-            painter.drawLine(0, (12*i)+15, bars[i], (12*i)+15);
+        painter.drawLine(0, (12*i)+15, bars[i], (12*i)+15);
 
-            //bars[i] = newBars[i];
-        }
-        /*bars[j] = newBars[j];
-    }*/
+        bars[i] = newBars[i];
+    }
 }
 

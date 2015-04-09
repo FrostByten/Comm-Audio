@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>814</width>
-    <height>435</height>
+    <width>996</width>
+    <height>593</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -21,6 +21,9 @@
   </property>
   <property name="windowOpacity">
    <double>1.000000000000000</double>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color:#FF69B4;</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <property name="sizePolicy">
@@ -38,21 +41,43 @@
       <item row="0" column="3">
        <layout class="QVBoxLayout" name="ChatLayout" stretch="1,0">
         <item>
-         <widget class="QListView" name="chat"/>
+         <widget class="QListView" name="chat">
+          <property name="styleSheet">
+           <string notr="true">border-radius:10%;
+background-color:white;</string>
+          </property>
+         </widget>
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0">
           <property name="spacing">
            <number>5</number>
           </property>
-          <property name="margin">
+          <property name="leftMargin">
+           <number>2</number>
+          </property>
+          <property name="topMargin">
+           <number>2</number>
+          </property>
+          <property name="rightMargin">
+           <number>2</number>
+          </property>
+          <property name="bottomMargin">
            <number>2</number>
           </property>
           <item>
-           <widget class="QLineEdit" name="lineEdit"/>
+           <widget class="QLineEdit" name="lineEdit">
+            <property name="styleSheet">
+             <string notr="true">border-radius:10%;
+background-color:rgb(197, 197, 0)</string>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QPushButton" name="sendButton">
+            <property name="styleSheet">
+             <string notr="true">background-color:rgb(58, 232, 227)</string>
+            </property>
             <property name="text">
              <string>Send</string>
             </property>
@@ -96,6 +121,9 @@ QRadioButton::indicator:checked  {
         </property>
         <item row="3" column="2">
          <widget class="QPushButton" name="select_URL_Btn">
+          <property name="styleSheet">
+           <string notr="true">background-color:#7CFC00;</string>
+          </property>
           <property name="text">
            <string>Queue URL</string>
           </property>
@@ -103,6 +131,9 @@ QRadioButton::indicator:checked  {
         </item>
         <item row="3" column="0">
          <widget class="QPushButton" name="connect_Btn">
+          <property name="styleSheet">
+           <string notr="true">background-color:#7CFC00;</string>
+          </property>
           <property name="text">
            <string>Connect</string>
           </property>
@@ -110,6 +141,9 @@ QRadioButton::indicator:checked  {
         </item>
         <item row="3" column="1">
          <widget class="QPushButton" name="play_Btn">
+          <property name="styleSheet">
+           <string notr="true">background-color:#7CFC00;</string>
+          </property>
           <property name="text">
            <string>Play</string>
           </property>
@@ -117,6 +151,9 @@ QRadioButton::indicator:checked  {
         </item>
         <item row="6" column="2">
          <widget class="QPushButton" name="download_Btn">
+          <property name="styleSheet">
+           <string notr="true">background-color:#7CFC00;</string>
+          </property>
           <property name="text">
            <string>Download File</string>
           </property>
@@ -124,6 +161,9 @@ QRadioButton::indicator:checked  {
         </item>
         <item row="2" column="1">
          <widget class="QPushButton" name="pause_Btn">
+          <property name="styleSheet">
+           <string notr="true">background-color:#7CFC00;</string>
+          </property>
           <property name="text">
            <string>Pause</string>
           </property>
@@ -144,6 +184,9 @@ QRadioButton::indicator:checked  {
         </item>
         <item row="2" column="0">
          <widget class="QPushButton" name="mute_Btn">
+          <property name="styleSheet">
+           <string notr="true">background-color:#7CFC00;</string>
+          </property>
           <property name="text">
            <string>Mute User</string>
           </property>
@@ -151,6 +194,9 @@ QRadioButton::indicator:checked  {
         </item>
         <item row="2" column="2">
          <widget class="QPushButton" name="select_file_Btn">
+          <property name="styleSheet">
+           <string notr="true">background-color:#7CFC00;</string>
+          </property>
           <property name="text">
            <string>Queue File</string>
           </property>
@@ -158,6 +204,9 @@ QRadioButton::indicator:checked  {
         </item>
         <item row="6" column="0">
          <widget class="QPushButton" name="skip_for_Btn">
+          <property name="styleSheet">
+           <string notr="true">background-color:#7CFC00;</string>
+          </property>
           <property name="text">
            <string>Skip Song</string>
           </property>
@@ -181,7 +230,7 @@ QRadioButton::indicator:checked  {
       <item row="0" column="1">
        <widget class="QTabWidget" name="TabArea">
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="People">
          <property name="sizePolicy">
@@ -197,7 +246,16 @@ QRadioButton::indicator:checked  {
           <string>People</string>
          </attribute>
          <layout class="QGridLayout" name="gridLayout_3">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>2</number>
+          </property>
+          <property name="topMargin">
+           <number>2</number>
+          </property>
+          <property name="rightMargin">
+           <number>2</number>
+          </property>
+          <property name="bottomMargin">
            <number>2</number>
           </property>
           <item row="0" column="0">
@@ -208,6 +266,10 @@ QRadioButton::indicator:checked  {
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="styleSheet">
+             <string notr="true">border-radius:10%;
+background-color:white;</string>
+            </property>
            </widget>
           </item>
          </layout>
@@ -217,11 +279,25 @@ QRadioButton::indicator:checked  {
           <string>Songs</string>
          </attribute>
          <layout class="QGridLayout" name="gridLayout_4">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>2</number>
+          </property>
+          <property name="topMargin">
+           <number>2</number>
+          </property>
+          <property name="rightMargin">
+           <number>2</number>
+          </property>
+          <property name="bottomMargin">
            <number>2</number>
           </property>
           <item row="0" column="0">
-           <widget class="QListView" name="list_songs"/>
+           <widget class="QListView" name="list_songs">
+            <property name="styleSheet">
+             <string notr="true">border-radius:10%;
+background-color:white;</string>
+            </property>
+           </widget>
           </item>
           <item row="1" column="0">
            <widget class="QProgressBar" name="progressBar">
@@ -258,7 +334,7 @@ QRadioButton::indicator:checked  {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>814</width>
+     <width>996</width>
      <height>21</height>
     </rect>
    </property>
