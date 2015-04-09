@@ -257,11 +257,21 @@ DWORD WINAPI mediaRoutine(LPVOID lpArg)
 			}
 			if (seekby != -1.0)
 			{
+				printf("\nSeek changed, seeking to %d%%...", seekby * 100.f);
 				libvlc_media_player_set_position(mp, seekby);
 				seekby = -1.0;
 			}
 			printPercent(libvlc_media_player_get_position(mp));
 		}
+
+		float through = 0.0;
+		char *mes = (char*)malloc(5 + sizeof(float));
+		mes[0] = SEEK;
+		int s = sizeof(float);
+		memcpy(mes + 1, &s, sizeof(int));
+		memcpy(mes + 5, &through, sizeof(float));
+		sendMessageToAll(mes, 5 + s);
+		free(mes);
 
 		libvlc_media_player_release(mp);
 		std::cout << std::endl << (skip?"Skipped":"Finished") << " media, loading next" << std::endl;
@@ -359,7 +369,7 @@ void inline printPercent(float through)
 	static int bars = -1;
 	static float tk = 0;
 
-	if (through >= (tk + TICK_TIME) || through >= tk - TICK_TIME)
+	if (through >= (tk + TICK_TIME) || through >= tk)
 	{
 		char *mes = (char*)malloc(5 + sizeof(float));
 		mes[0] = SEEK;
@@ -368,9 +378,9 @@ void inline printPercent(float through)
 		memcpy(mes + 5, &through, sizeof(float));
 		sendMessageToAll(mes, 5 + s);
 		free(mes);
-
-		tk = through;
 	}
+
+	tk = through;
 
 	if (bars != (int)(through * PROG_BAR_WIDTH) || redraw_prog_bar)
 	{
@@ -725,12 +735,12 @@ void handleUserList(int c)
 		if (i != c)
 		{
 			int len = strlen(clients[i].name);
-			char *mes = (char*)malloc(len + 6);
-			mes[0] = SET_NAME;
+			char *mes = (char*)malloc(len + 7);
+			mes[0] = USER_LIST;
 			memcpy(mes + 1, &len, sizeof(int));
 			mes[5] = EXIST;
-			memcpy(mes + 5, clients[i].name, len);
-			sendMessage(c, mes, len + 5);
+			memcpy(mes + 6, clients[i].name, len);
+			sendMessage(c, mes, len + 6);
 			free(mes);
 		}
 }
@@ -760,14 +770,18 @@ void handleMessage(int c)
 {
 	if(!clients[c].muted)
 	{
-		int len = *((int*)&clients[c].buffer.buf[1]) + strlen(clients[c].name) + 2;
+		int k = 0;
+		memcpy(&k, clients[c].buffer.buf + 1, sizeof(int));
+		k++;
+
+		int len = k + strlen(clients[c].name) + 5;
 		char *mes = (char*)malloc(len + 5);
 		mes[0] = MESSAGE;
 		memcpy(mes + 1, &len, sizeof(int));
-		memcpy(mes + 4, clients[c].name, strlen(clients[c].name));
+		memcpy(mes + 5, clients[c].name, strlen(clients[c].name));
 		mes[strlen(clients[c].name) + 5] = ':';
 		mes[strlen(clients[c].name) + 6] = ' ';
-		memcpy(mes + strlen(clients[c].name) + 7, clients[c].buffer.buf + 5, *((int*)&clients[c].buffer.buf[1]));
+		memcpy(mes + strlen(clients[c].name) + 7, clients[c].buffer.buf + 5, k);
 		sendMessageToAll(mes, len + 5, c);
 		free(mes);
 	}
@@ -958,8 +972,15 @@ void handleFileRequest(int c)
 
 void handleSeek(int c)
 {
-	seekby = *((float*)clients[c].buffer.buf + 5);
-	printf("\nSeeking by amount: %%%d\n", seekby * 100);
+	int l = 0;
+	memcpy(&l, clients[c].buffer.buf + 1, sizeof(int));
+
+	printf("\nSize of message: %d\n", l);
+	if (l == sizeof(float))
+	{
+		memcpy(&seekby, clients[c].buffer.buf + 5, sizeof(float));
+		printf("\nSeeking by: %f\n", seekby);
+	}
 }
 
 /*-------------------------------------------------------------------------

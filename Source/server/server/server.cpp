@@ -79,6 +79,8 @@ int main(int argc, char* argv[])
 {
 	WSAStartup(0x0202, &stWSAData);
 
+	srand(time(NULL));
+
 	disable_cursor();
 
 	print("Initializing server...\n");
@@ -596,9 +598,9 @@ DWORD WINAPI acceptRoutine(LPVOID lpArg)
 			user client;
 			client.socket = client_sock;
 			client.address = client_addr;
-			client.name = (char*)malloc(strlen(inet_ntoa(client.address->sin_addr))+1);
+			client.name = (char*)malloc(strlen(inet_ntoa(client.address->sin_addr))+2);
 			memcpy(client.name, inet_ntoa(client.address->sin_addr), strlen(inet_ntoa(client.address->sin_addr)));
-			client.name[strlen(inet_ntoa(client.address->sin_addr))] = '\0';
+			client.name[strlen(inet_ntoa(client.address->sin_addr)) + 1] = '\0';
 			client.bytes_recvd = 0;
 			client.muted = false;
 			client.buffer.buf = (char*)malloc(CLIENT_BUFFER_SIZE);
@@ -608,15 +610,27 @@ DWORD WINAPI acceptRoutine(LPVOID lpArg)
 
 			int len = strlen(client.name);
 			char *mes = (char*)malloc(len + 6);
-			mes[0] = SET_NAME;
+			mes[0] = USER_LIST;
 			memcpy(mes + 1, &len, sizeof(int));
 			mes[5] = CONNECT;
-			memcpy(mes + 5, client.name, len);
-			sendMessageToAll(mes, len + 5);
+			memcpy(mes + 6, client.name, len);
+			sendMessageToAll(mes, len + 6);
 			free(mes);
 
 			/* Note the client in the client list */
 			clients.push_back(client);
+
+			//handleUserList(clients.size()-1);
+			//handleFileList(clients.size()-1);
+
+			float through = libvlc_media_player_get_position(mp);
+			char *l = (char*)malloc(5 + sizeof(float));
+			l[0] = SEEK;
+			int s = sizeof(float);
+			memcpy(l + 1, &s, sizeof(int));
+			memcpy(l + 5, &through, sizeof(float));
+			sendMessage(clients.size()-1, l, 5 + s);
+			free(l);
 
 			/* Setup the socket to receive */
 			if (WSARecv(client.socket, &client.buffer, 1, &client.bytes_recvd, &read_flags, client.wol, client_read) == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
@@ -641,11 +655,11 @@ DWORD WINAPI acceptRoutine(LPVOID lpArg)
 
 					int len = strlen(clients[i].name);
 					char *mes = (char*)malloc(len + 6);
-					mes[0] = SET_NAME;
+					mes[0] = USER_LIST;
 					memcpy(mes + 1, &len, sizeof(int));
 					mes[5] = DISCONNECT;
-					memcpy(mes + 5, clients[i].name, len);
-					sendMessageToAll(mes, len + 5);
+					memcpy(mes + 6, clients[i].name, len);
+					sendMessageToAll(mes, len + 6, i);
 					free(mes);
 
 					/* Remove the client from the list and de-allocate */
@@ -654,7 +668,7 @@ DWORD WINAPI acceptRoutine(LPVOID lpArg)
 					closesocket(clients[i].socket);
 					free(clients[i].buffer.buf);
 					free(clients[i].wol);
-					clients.erase(clients.begin() + (i * sizeof(user)));
+					clients.erase(clients.begin() + i);
 					break;
 				}
 			}
