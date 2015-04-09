@@ -499,7 +499,7 @@ void handleRequest(int c)
 			handleSelect(c);
 			break;
 		case USER_LIST:
-			//handleUserList(c);
+			handleUserList(c);
 			break;
 		case MESSAGE:
 			handleMessage(c);
@@ -508,7 +508,7 @@ void handleRequest(int c)
 			handleMute(c);
 			break;
 		case FILE_LIST:
-			//handleFileList(c);
+			handleFileList(c);
 			break;
 		case FILE_REQUEST:
 			handleFileRequest(c);

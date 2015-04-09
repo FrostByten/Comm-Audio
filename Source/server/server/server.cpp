@@ -620,8 +620,8 @@ DWORD WINAPI acceptRoutine(LPVOID lpArg)
 			/* Note the client in the client list */
 			clients.push_back(client);
 
-			handleUserList(clients.size()-1);
-			handleFileList(clients.size()-1);
+			//handleUserList(clients.size()-1);
+			//handleFileList(clients.size()-1);
 
 			float through = libvlc_media_player_get_position(mp);
 			char *l = (char*)malloc(5 + sizeof(float));
