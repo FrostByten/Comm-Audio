@@ -49,6 +49,8 @@ public slots:
 	void handle_file_size(message *msg);
 
     void on_seek_move();
+    void on_seek_pressed();
+
 
 
 	void on_playButton_clicked();
@@ -67,6 +69,7 @@ private:
 	PlayAudio *audio;
 	HANDLE dlFile;
 	int filesize, filereceived;
+    bool seeking;
 };
 
 #endif // MAINWINDOW_H

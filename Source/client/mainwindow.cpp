@@ -33,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->download_Btn, SIGNAL(clicked()), this, SLOT(file_download_control()));
 	connect(ui->volume, SIGNAL(sliderMoved(int)), this, SLOT(vol_control(int)));
     connect(ui->seek_Bar, SIGNAL(sliderReleased()), this, SLOT(on_seek_move()));
+    connect(ui->seek_Bar, SIGNAL(silderPressed()), this, SLOT(on_seek_pressed()));
 
 	filesize = 1;
 
@@ -57,7 +58,10 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->lineEdit->installEventFilter((new EnterCatch(this)));
 }
 
-
+void MainWindow::on_seek_pressed()
+{
+    seeking = true;
+}
 
 void MainWindow::disconnect_server()
 {
@@ -299,14 +303,18 @@ void MainWindow::on_seek_move()
     memcpy(currentVol, &value, sizeof(value));
     message msg = {SEEK, sizeof(float), currentVol };
     control->sendMessage(&msg);
+    seeking = false;
 }
 
 void MainWindow::seek_bar_chaged(message * msg)
 {
-    float value;
-    memcpy(&value, msg->data, sizeof(float));
+    if(!seeking)
+    {
+        float value;
+        memcpy(&value, msg->data, sizeof(float));
 
-    ui->seek_Bar->setValue(ui->seek_Bar->maximum() * value);
+        ui->seek_Bar->setValue(ui->seek_Bar->maximum() * value);
+    }
 }
 
 void MainWindow::URL_select_control()
