@@ -31,7 +31,7 @@ void AudioReceive::init()
 
     /* Open a waveout device */
     //mmr = waveOutOpen(&wo, WAVE_MAPPER, &wfx, (DWORD)WaveCallback, NULL, CALLBACK_FUNCTION);
-    if (wo == NULL || mmr != MMSYSERR_NOERROR)
+    if (wo == NULL/* || mmr != MMSYSERR_NOERROR*/)
         std::cout << "Error: Unable to open waveout device!" << std::endl;
     else
         std::cout << "Successfully opened waveout device!" << std::endl;

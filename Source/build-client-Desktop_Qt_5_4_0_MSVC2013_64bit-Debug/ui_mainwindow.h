@@ -70,13 +70,14 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(814, 435);
+        MainWindow->resize(996, 593);
         QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
         sizePolicy.setHorizontalStretch(1);
         sizePolicy.setVerticalStretch(1);
         sizePolicy.setHeightForWidth(MainWindow->sizePolicy().hasHeightForWidth());
         MainWindow->setSizePolicy(sizePolicy);
         MainWindow->setWindowOpacity(1);
+        MainWindow->setStyleSheet(QStringLiteral("background-color:#FF69B4;"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         QSizePolicy sizePolicy1(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -97,20 +98,25 @@ public:
         ChatLayout->setObjectName(QStringLiteral("ChatLayout"));
         chat = new QListView(centralWidget);
         chat->setObjectName(QStringLiteral("chat"));
+        chat->setStyleSheet(QLatin1String("border-radius:10%;\n"
+"background-color:white;"));
 
         ChatLayout->addWidget(chat);
 
         horizontalLayout = new QHBoxLayout();
         horizontalLayout->setSpacing(5);
-        horizontalLayout->setContentsMargins(2, 2, 2, 2);
         horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
+        horizontalLayout->setContentsMargins(2, 2, 2, 2);
         lineEdit = new QLineEdit(centralWidget);
         lineEdit->setObjectName(QStringLiteral("lineEdit"));
+        lineEdit->setStyleSheet(QLatin1String("border-radius:10%;\n"
+"background-color:rgb(197, 197, 0)"));
 
         horizontalLayout->addWidget(lineEdit);
 
         sendButton = new QPushButton(centralWidget);
         sendButton->setObjectName(QStringLiteral("sendButton"));
+        sendButton->setStyleSheet(QStringLiteral("background-color:rgb(58, 232, 227)"));
 
         horizontalLayout->addWidget(sendButton);
 
@@ -146,26 +152,31 @@ public:
         Settings->setSizeConstraint(QLayout::SetDefaultConstraint);
         select_URL_Btn = new QPushButton(centralWidget);
         select_URL_Btn->setObjectName(QStringLiteral("select_URL_Btn"));
+        select_URL_Btn->setStyleSheet(QStringLiteral("background-color:#7CFC00;"));
 
         Settings->addWidget(select_URL_Btn, 3, 2, 1, 1);
 
         connect_Btn = new QPushButton(centralWidget);
         connect_Btn->setObjectName(QStringLiteral("connect_Btn"));
+        connect_Btn->setStyleSheet(QStringLiteral("background-color:#7CFC00;"));
 
         Settings->addWidget(connect_Btn, 3, 0, 1, 1);
 
         play_Btn = new QPushButton(centralWidget);
         play_Btn->setObjectName(QStringLiteral("play_Btn"));
+        play_Btn->setStyleSheet(QStringLiteral("background-color:#7CFC00;"));
 
         Settings->addWidget(play_Btn, 3, 1, 1, 1);
 
         download_Btn = new QPushButton(centralWidget);
         download_Btn->setObjectName(QStringLiteral("download_Btn"));
+        download_Btn->setStyleSheet(QStringLiteral("background-color:#7CFC00;"));
 
         Settings->addWidget(download_Btn, 6, 2, 1, 1);
 
         pause_Btn = new QPushButton(centralWidget);
         pause_Btn->setObjectName(QStringLiteral("pause_Btn"));
+        pause_Btn->setStyleSheet(QStringLiteral("background-color:#7CFC00;"));
 
         Settings->addWidget(pause_Btn, 2, 1, 1, 1);
 
@@ -179,16 +190,19 @@ public:
 
         mute_Btn = new QPushButton(centralWidget);
         mute_Btn->setObjectName(QStringLiteral("mute_Btn"));
+        mute_Btn->setStyleSheet(QStringLiteral("background-color:#7CFC00;"));
 
         Settings->addWidget(mute_Btn, 2, 0, 1, 1);
 
         select_file_Btn = new QPushButton(centralWidget);
         select_file_Btn->setObjectName(QStringLiteral("select_file_Btn"));
+        select_file_Btn->setStyleSheet(QStringLiteral("background-color:#7CFC00;"));
 
         Settings->addWidget(select_file_Btn, 2, 2, 1, 1);
 
         skip_for_Btn = new QPushButton(centralWidget);
         skip_for_Btn->setObjectName(QStringLiteral("skip_for_Btn"));
+        skip_for_Btn->setStyleSheet(QStringLiteral("background-color:#7CFC00;"));
 
         Settings->addWidget(skip_for_Btn, 6, 0, 1, 1);
 
@@ -221,8 +235,9 @@ public:
         People->setStyleSheet(QStringLiteral(""));
         gridLayout_3 = new QGridLayout(People);
         gridLayout_3->setSpacing(6);
-        gridLayout_3->setContentsMargins(2, 2, 2, 2);
+        gridLayout_3->setContentsMargins(11, 11, 11, 11);
         gridLayout_3->setObjectName(QStringLiteral("gridLayout_3"));
+        gridLayout_3->setContentsMargins(2, 2, 2, 2);
         list_people = new QListView(People);
         list_people->setObjectName(QStringLiteral("list_people"));
         QSizePolicy sizePolicy3(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -230,6 +245,8 @@ public:
         sizePolicy3.setVerticalStretch(0);
         sizePolicy3.setHeightForWidth(list_people->sizePolicy().hasHeightForWidth());
         list_people->setSizePolicy(sizePolicy3);
+        list_people->setStyleSheet(QLatin1String("border-radius:10%;\n"
+"background-color:white;"));
 
         gridLayout_3->addWidget(list_people, 0, 0, 1, 1);
 
@@ -238,10 +255,13 @@ public:
         SongList->setObjectName(QStringLiteral("SongList"));
         gridLayout_4 = new QGridLayout(SongList);
         gridLayout_4->setSpacing(6);
-        gridLayout_4->setContentsMargins(2, 2, 2, 2);
+        gridLayout_4->setContentsMargins(11, 11, 11, 11);
         gridLayout_4->setObjectName(QStringLiteral("gridLayout_4"));
+        gridLayout_4->setContentsMargins(2, 2, 2, 2);
         list_songs = new QListView(SongList);
         list_songs->setObjectName(QStringLiteral("list_songs"));
+        list_songs->setStyleSheet(QLatin1String("border-radius:10%;\n"
+"background-color:white;"));
 
         gridLayout_4->addWidget(list_songs, 0, 0, 1, 1);
 
@@ -266,7 +286,7 @@ public:
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 814, 21));
+        menuBar->setGeometry(QRect(0, 0, 996, 21));
         MainWindow->setMenuBar(menuBar);
         statusBar = new QStatusBar(MainWindow);
         statusBar->setObjectName(QStringLiteral("statusBar"));
@@ -274,7 +294,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        TabArea->setCurrentIndex(1);
+        TabArea->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(MainWindow);
