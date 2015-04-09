@@ -367,9 +367,9 @@ DWORD WINAPI micRoutine(LPVOID lpArg)
 void inline printPercent(float through)
 {
 	static int bars = -1;
-	static float tk = 0;
+	static int tk = 0;
 
-	if (through >= (tk + TICK_TIME) || through >= tk)
+	if (tk == 350)
 	{
 		char *mes = (char*)malloc(5 + sizeof(float));
 		mes[0] = SEEK;
@@ -378,9 +378,11 @@ void inline printPercent(float through)
 		memcpy(mes + 5, &through, sizeof(float));
 		sendMessageToAll(mes, 5 + s);
 		free(mes);
-	}
 
-	tk = through;
+		tk = 0;
+	}
+	else
+		tk++;
 
 	if (bars != (int)(through * PROG_BAR_WIDTH) || redraw_prog_bar)
 	{
