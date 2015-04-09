@@ -111,6 +111,11 @@ void MainWindow::handle_control(message * msg)
 			handle_file_size(msg);
 			break;
 		}
+        case SEEK:
+        {
+            seek_bar_chaged(msg);
+            break;
+        }
 	}
 }
 
@@ -288,11 +293,20 @@ void MainWindow::file_select_control()
 
 void MainWindow::on_seek_move()
 {
-    float value = ui->seek_Bar->value() / ui->seek_Bar->maximum();
+    float value = (float) ui->seek_Bar->value() / (float) ui->seek_Bar->maximum();
     char  currentVol[sizeof(float)];
+
     memcpy(currentVol, &value, sizeof(value));
     message msg = {SEEK, sizeof(float), currentVol };
     control->sendMessage(&msg);
+}
+
+void MainWindow::seek_bar_chaged(message * msg)
+{
+    float value;
+    memcpy(&value, msg->data, sizeof(float));
+
+    ui->seek_Bar->setValue(ui->seek_Bar->maximum() * value);
 }
 
 void MainWindow::URL_select_control()
