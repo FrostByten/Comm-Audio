@@ -598,9 +598,9 @@ DWORD WINAPI acceptRoutine(LPVOID lpArg)
 			user client;
 			client.socket = client_sock;
 			client.address = client_addr;
-			client.name = (char*)malloc(strlen(inet_ntoa(client.address->sin_addr))+2);
+			client.name = (char*)malloc(strlen(inet_ntoa(client.address->sin_addr))+1);
 			memcpy(client.name, inet_ntoa(client.address->sin_addr), strlen(inet_ntoa(client.address->sin_addr)));
-			client.name[strlen(inet_ntoa(client.address->sin_addr)) + 1] = '\0';
+			client.name[strlen(inet_ntoa(client.address->sin_addr))] = '\0';
 			client.bytes_recvd = 0;
 			client.muted = false;
 			client.buffer.buf = (char*)malloc(CLIENT_BUFFER_SIZE);

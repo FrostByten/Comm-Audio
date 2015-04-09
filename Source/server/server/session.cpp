@@ -771,23 +771,21 @@ void handleUserList(int c)
 -------------------------------------------------------------------------*/
 void handleMessage(int c)
 {
-	if(!clients[c].muted)
-	{
-		int k = 0;
-		memcpy(&k, clients[c].buffer.buf + 1, sizeof(int));
-		k++;
+	printf("\nEchoing message from %s: %s\n", clients[c].name, clients[c].buffer.buf + 5);
+	int k = 0;
+	memcpy(&k, clients[c].buffer.buf + 1, sizeof(int));
+	k++;
 
-		int len = k + strlen(clients[c].name) + 5;
-		char *mes = (char*)malloc(len + 5);
-		mes[0] = MESSAGE;
-		memcpy(mes + 1, &len, sizeof(int));
-		memcpy(mes + 5, clients[c].name, strlen(clients[c].name));
-		mes[strlen(clients[c].name) + 5] = ':';
-		mes[strlen(clients[c].name) + 6] = ' ';
-		memcpy(mes + strlen(clients[c].name) + 7, clients[c].buffer.buf + 5, k);
-		sendMessageToAll(mes, len + 5, c);
-		free(mes);
-	}
+	int len = k + strlen(clients[c].name) + 5;
+	char *mes = (char*)malloc(len + 5);
+	mes[0] = MESSAGE;
+	memcpy(mes + 1, &len, sizeof(int));
+	memcpy(mes + 5, clients[c].name, strlen(clients[c].name));
+	mes[strlen(clients[c].name) + 5] = ':';
+	mes[strlen(clients[c].name) + 6] = ' ';
+	memcpy(mes + strlen(clients[c].name) + 7, clients[c].buffer.buf + 5, k);
+	sendMessageToAll(mes, len + 5, c);
+	free(mes);
 }
 
 /*-------------------------------------------------------------------------
