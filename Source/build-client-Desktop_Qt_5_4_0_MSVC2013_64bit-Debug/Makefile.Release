@@ -348,6 +348,23 @@ release\moc_mainwindow.cpp: C:\Qt\5.4\msvc2013_64\include\QtWidgets\QMainWindow 
 		..\client\controlthread.h \
 		C:\Qt\5.4\msvc2013_64\include\QtCore\QThread \
 		C:\Qt\5.4\msvc2013_64\include\QtCore\qthread.h \
+		..\client\playaudio.h \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\QObject \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\QBuffer \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\qbuffer.h \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\QDebug \
+		C:\Qt\5.4\msvc2013_64\include\QtNetwork\QUdpSocket \
+		C:\Qt\5.4\msvc2013_64\include\QtNetwork\qudpsocket.h \
+		C:\Qt\5.4\msvc2013_64\include\QtNetwork\qabstractsocket.h \
+		C:\Qt\5.4\msvc2013_64\include\QtNetwork\qhostaddress.h \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\QDataStream \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\QByteArray \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\QTimer \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\qtimer.h \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\qbasictimer.h \
+		C:\Qt\5.4\msvc2013_64\include\QtMultimedia\QAudioOutput \
+		C:\Qt\5.4\msvc2013_64\include\QtMultimedia\qaudiooutput.h \
+		C:\Qt\5.4\msvc2013_64\include\QtMultimedia\QAudioFormat \
 		..\client\mainwindow.h
 	C:\Qt\5.4\msvc2013_64\bin\moc.exe $(DEFINES) -D_MSC_VER=1800 -D_WIN32 -D_WIN64 -IC:/Qt/5.4/msvc2013_64/mkspecs/win32-msvc2013 -IC:/Users/Marc/Documents/GitHub/Comm-Audio/Source/client -IC:/Users/Marc/Documents/GitHub/Comm-Audio/Source/include -IC:/Users/Marc/Documents/GitHub/Comm-Audio/Source/include/vlc -IC:/Qt/5.4/msvc2013_64/include -IC:/Qt/5.4/msvc2013_64/include/QtMultimedia -IC:/Qt/5.4/msvc2013_64/include/QtOpenGL -IC:/Qt/5.4/msvc2013_64/include/QtWidgets -IC:/Qt/5.4/msvc2013_64/include/QtGui -IC:/Qt/5.4/msvc2013_64/include/QtANGLE -IC:/Qt/5.4/msvc2013_64/include/QtNetwork -IC:/Qt/5.4/msvc2013_64/include/QtCore -I. ..\client\mainwindow.h -o release\moc_mainwindow.cpp
 
@@ -870,6 +887,22 @@ release\moc_entercatch.cpp: C:\Qt\5.4\msvc2013_64\include\QtCore\QObject \
 		..\client\controlthread.h \
 		C:\Qt\5.4\msvc2013_64\include\QtCore\QThread \
 		C:\Qt\5.4\msvc2013_64\include\QtCore\qthread.h \
+		..\client\playaudio.h \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\QBuffer \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\qbuffer.h \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\QDebug \
+		C:\Qt\5.4\msvc2013_64\include\QtNetwork\QUdpSocket \
+		C:\Qt\5.4\msvc2013_64\include\QtNetwork\qudpsocket.h \
+		C:\Qt\5.4\msvc2013_64\include\QtNetwork\qabstractsocket.h \
+		C:\Qt\5.4\msvc2013_64\include\QtNetwork\qhostaddress.h \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\QDataStream \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\QByteArray \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\QTimer \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\qtimer.h \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\qbasictimer.h \
+		C:\Qt\5.4\msvc2013_64\include\QtMultimedia\QAudioOutput \
+		C:\Qt\5.4\msvc2013_64\include\QtMultimedia\qaudiooutput.h \
+		C:\Qt\5.4\msvc2013_64\include\QtMultimedia\QAudioFormat \
 		..\client\entercatch.h
 	C:\Qt\5.4\msvc2013_64\bin\moc.exe $(DEFINES) -D_MSC_VER=1800 -D_WIN32 -D_WIN64 -IC:/Qt/5.4/msvc2013_64/mkspecs/win32-msvc2013 -IC:/Users/Marc/Documents/GitHub/Comm-Audio/Source/client -IC:/Users/Marc/Documents/GitHub/Comm-Audio/Source/include -IC:/Users/Marc/Documents/GitHub/Comm-Audio/Source/include/vlc -IC:/Qt/5.4/msvc2013_64/include -IC:/Qt/5.4/msvc2013_64/include/QtMultimedia -IC:/Qt/5.4/msvc2013_64/include/QtOpenGL -IC:/Qt/5.4/msvc2013_64/include/QtWidgets -IC:/Qt/5.4/msvc2013_64/include/QtGui -IC:/Qt/5.4/msvc2013_64/include/QtANGLE -IC:/Qt/5.4/msvc2013_64/include/QtNetwork -IC:/Qt/5.4/msvc2013_64/include/QtCore -I. ..\client\entercatch.h -o release\moc_entercatch.cpp
 
@@ -1090,6 +1123,23 @@ release\main.obj: ..\client\main.cpp ..\client\mainwindow.h \
 		..\client\controlthread.h \
 		C:\Qt\5.4\msvc2013_64\include\QtCore\QThread \
 		C:\Qt\5.4\msvc2013_64\include\QtCore\qthread.h \
+		..\client\playaudio.h \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\QObject \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\QBuffer \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\qbuffer.h \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\QDebug \
+		C:\Qt\5.4\msvc2013_64\include\QtNetwork\QUdpSocket \
+		C:\Qt\5.4\msvc2013_64\include\QtNetwork\qudpsocket.h \
+		C:\Qt\5.4\msvc2013_64\include\QtNetwork\qabstractsocket.h \
+		C:\Qt\5.4\msvc2013_64\include\QtNetwork\qhostaddress.h \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\QDataStream \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\QByteArray \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\QTimer \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\qtimer.h \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\qbasictimer.h \
+		C:\Qt\5.4\msvc2013_64\include\QtMultimedia\QAudioOutput \
+		C:\Qt\5.4\msvc2013_64\include\QtMultimedia\qaudiooutput.h \
+		C:\Qt\5.4\msvc2013_64\include\QtMultimedia\QAudioFormat \
 		C:\Qt\5.4\msvc2013_64\include\QtWidgets\QApplication \
 		C:\Qt\5.4\msvc2013_64\include\QtWidgets\qapplication.h \
 		C:\Qt\5.4\msvc2013_64\include\QtCore\qcoreapplication.h \
@@ -1102,14 +1152,10 @@ release\main.obj: ..\client\main.cpp ..\client\mainwindow.h \
 		C:\Qt\5.4\msvc2013_64\include\QtCore\QStringList \
 		..\include\vlc-qt\SharedExportCore.h \
 		..\include\vlc-qt\Instance.h \
-		C:\Qt\5.4\msvc2013_64\include\QtCore\QObject \
 		..\include\vlc-qt\Media.h \
 		C:\Qt\5.4\msvc2013_64\include\QtCore\QUrl \
 		..\include\vlc-qt\Enums.h \
-		..\include\vlc-qt\MediaPlayer.h \
-		C:\Qt\5.4\msvc2013_64\include\QtCore\QTimer \
-		C:\Qt\5.4\msvc2013_64\include\QtCore\qtimer.h \
-		C:\Qt\5.4\msvc2013_64\include\QtCore\qbasictimer.h
+		..\include\vlc-qt\MediaPlayer.h
 
 release\mainwindow.obj: ..\client\mainwindow.cpp ..\client\mainwindow.h \
 		C:\Qt\5.4\msvc2013_64\include\QtWidgets\QMainWindow \
@@ -1250,6 +1296,23 @@ release\mainwindow.obj: ..\client\mainwindow.cpp ..\client\mainwindow.h \
 		..\client\controlthread.h \
 		C:\Qt\5.4\msvc2013_64\include\QtCore\QThread \
 		C:\Qt\5.4\msvc2013_64\include\QtCore\qthread.h \
+		..\client\playaudio.h \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\QObject \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\QBuffer \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\qbuffer.h \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\QDebug \
+		C:\Qt\5.4\msvc2013_64\include\QtNetwork\QUdpSocket \
+		C:\Qt\5.4\msvc2013_64\include\QtNetwork\qudpsocket.h \
+		C:\Qt\5.4\msvc2013_64\include\QtNetwork\qabstractsocket.h \
+		C:\Qt\5.4\msvc2013_64\include\QtNetwork\qhostaddress.h \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\QDataStream \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\QByteArray \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\QTimer \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\qtimer.h \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\qbasictimer.h \
+		C:\Qt\5.4\msvc2013_64\include\QtMultimedia\QAudioOutput \
+		C:\Qt\5.4\msvc2013_64\include\QtMultimedia\qaudiooutput.h \
+		C:\Qt\5.4\msvc2013_64\include\QtMultimedia\QAudioFormat \
 		ui_mainwindow.h \
 		C:\Qt\5.4\msvc2013_64\include\QtCore\QVariant \
 		C:\Qt\5.4\msvc2013_64\include\QtWidgets\QAction \
@@ -1281,6 +1344,8 @@ release\mainwindow.obj: ..\client\mainwindow.cpp ..\client\mainwindow.h \
 		C:\Qt\5.4\msvc2013_64\include\QtWidgets\QMenuBar \
 		C:\Qt\5.4\msvc2013_64\include\QtWidgets\qmenubar.h \
 		C:\Qt\5.4\msvc2013_64\include\QtWidgets\qmenu.h \
+		C:\Qt\5.4\msvc2013_64\include\QtWidgets\QProgressBar \
+		C:\Qt\5.4\msvc2013_64\include\QtWidgets\qprogressbar.h \
 		C:\Qt\5.4\msvc2013_64\include\QtWidgets\QPushButton \
 		C:\Qt\5.4\msvc2013_64\include\QtWidgets\qpushbutton.h \
 		C:\Qt\5.4\msvc2013_64\include\QtWidgets\qabstractbutton.h \
@@ -1293,24 +1358,7 @@ release\mainwindow.obj: ..\client\mainwindow.cpp ..\client\mainwindow.h \
 		C:\Qt\5.4\msvc2013_64\include\QtWidgets\QVBoxLayout \
 		C:\Qt\5.4\msvc2013_64\include\QtWidgets\QWidget \
 		..\client\processmic.h \
-		C:\Qt\5.4\msvc2013_64\include\QtNetwork\QUdpSocket \
-		C:\Qt\5.4\msvc2013_64\include\QtNetwork\qudpsocket.h \
-		C:\Qt\5.4\msvc2013_64\include\QtNetwork\qabstractsocket.h \
-		C:\Qt\5.4\msvc2013_64\include\QtNetwork\qhostaddress.h \
 		C:\Qt\5.4\msvc2013_64\include\QtCore\QFile \
-		C:\Qt\5.4\msvc2013_64\include\QtCore\QDebug \
-		C:\Qt\5.4\msvc2013_64\include\QtCore\QTimer \
-		C:\Qt\5.4\msvc2013_64\include\QtCore\qtimer.h \
-		C:\Qt\5.4\msvc2013_64\include\QtCore\qbasictimer.h \
-		C:\Qt\5.4\msvc2013_64\include\QtCore\QObject \
-		..\client\playaudio.h \
-		C:\Qt\5.4\msvc2013_64\include\QtCore\QBuffer \
-		C:\Qt\5.4\msvc2013_64\include\QtCore\qbuffer.h \
-		C:\Qt\5.4\msvc2013_64\include\QtCore\QDataStream \
-		C:\Qt\5.4\msvc2013_64\include\QtCore\QByteArray \
-		C:\Qt\5.4\msvc2013_64\include\QtMultimedia\QAudioOutput \
-		C:\Qt\5.4\msvc2013_64\include\QtMultimedia\qaudiooutput.h \
-		C:\Qt\5.4\msvc2013_64\include\QtMultimedia\QAudioFormat \
 		..\client\entercatch.h \
 		C:\Qt\5.4\msvc2013_64\include\QtGui\QKeyEvent
 
@@ -1899,7 +1947,23 @@ release\entercatch.obj: ..\client\entercatch.cpp ..\client\entercatch.h \
 		..\client\networking.h \
 		..\client\controlthread.h \
 		C:\Qt\5.4\msvc2013_64\include\QtCore\QThread \
-		C:\Qt\5.4\msvc2013_64\include\QtCore\qthread.h
+		C:\Qt\5.4\msvc2013_64\include\QtCore\qthread.h \
+		..\client\playaudio.h \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\QBuffer \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\qbuffer.h \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\QDebug \
+		C:\Qt\5.4\msvc2013_64\include\QtNetwork\QUdpSocket \
+		C:\Qt\5.4\msvc2013_64\include\QtNetwork\qudpsocket.h \
+		C:\Qt\5.4\msvc2013_64\include\QtNetwork\qabstractsocket.h \
+		C:\Qt\5.4\msvc2013_64\include\QtNetwork\qhostaddress.h \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\QDataStream \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\QByteArray \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\QTimer \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\qtimer.h \
+		C:\Qt\5.4\msvc2013_64\include\QtCore\qbasictimer.h \
+		C:\Qt\5.4\msvc2013_64\include\QtMultimedia\QAudioOutput \
+		C:\Qt\5.4\msvc2013_64\include\QtMultimedia\qaudiooutput.h \
+		C:\Qt\5.4\msvc2013_64\include\QtMultimedia\QAudioFormat
 
 release\controlthread.obj: ..\client\controlthread.cpp ..\client\controlthread.h \
 		C:\Qt\5.4\msvc2013_64\include\QtCore\QThread \

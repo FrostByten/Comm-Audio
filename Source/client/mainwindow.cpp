@@ -33,7 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->download_Btn, SIGNAL(clicked()), this, SLOT(file_download_control()));
 	connect(ui->volume, SIGNAL(sliderMoved(int)), this, SLOT(vol_control(int)));
     connect(ui->seek_Bar, SIGNAL(sliderReleased()), this, SLOT(on_seek_move()));
-    connect(ui->seek_Bar, SIGNAL(silderPressed()), this, SLOT(on_seek_pressed()));
+    connect(ui->seek_Bar, SIGNAL(sliderPressed()), this, SLOT(on_seek_pressed()));
 
 	filesize = 1;
 
