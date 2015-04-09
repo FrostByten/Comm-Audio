@@ -57,6 +57,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->lineEdit->installEventFilter((new EnterCatch(this)));
 }
 
+
+
 void MainWindow::disconnect_server()
 {
     // handle closing thread.
@@ -282,6 +284,15 @@ void MainWindow::file_select_control()
 	message mes = {FILE_SELECT, strlen(text.toStdString().c_str()) + 1, b};
     control->sendMessage(&mes);
 	free(b);
+}
+
+void MainWindow::on_seek_move()
+{
+    float value = ui->seek_Bar->value() / ui->seek_Bar->maximum();
+    char  currentVol[sizeof(float)];
+    memcpy(currentVol, &value, sizeof(value));
+    message msg = {SEEK, sizeof(float), currentVol };
+    control->sendMessage(&msg);
 }
 
 void MainWindow::URL_select_control()
