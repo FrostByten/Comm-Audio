@@ -134,9 +134,9 @@ void PlayAudio::playData()
     QByteArray data;
     QByteArray barsData;
     int pos = 0;
+
     if (socket->hasPendingDatagrams())
     {
-
         data.resize(socket->pendingDatagramSize());
         socket->readDatagram(data.data(), data.size());
 
@@ -156,7 +156,9 @@ void PlayAudio::playData()
         pos += data.size();
         if (pos >= 32)
         {
-            barsData = barsData.replace(0, pos, buffered->constData()-pos);
+            barsData.append( buffered->constData()-(((buff_pos-pos) >= 32)?(buff_pos-pos):(buff_pos)));
+            //std::cerr << pos << " " << buff_pos << " " << barsData.size() << " " << (buff_pos-pos) << " " << buffered->constData()+buff_pos-pos << std::endl;
+            //barsData.chop(pos - );
             if (barsData.size() >= 32)
             {
                 emit barsSet(barsData);

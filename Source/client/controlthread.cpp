@@ -18,6 +18,7 @@ void ControlThread::run()
     message * mes = new message;
     while(sock->recvMessage(mes) > 0)
     {
+        std::cout << '\0';
 		emit message_found(mes);
         mes = new message;  // make a new message so that we don't break stuff.
     }

@@ -70,6 +70,7 @@ CustomWidget::~CustomWidget()
 -------------------------------------------------------------------------*/
 void CustomWidget::setBars(QByteArray data)
 {
+    //std::cerr << data.size() << std::endl;
     float _waveLeft[NUMCHANNELS];
     float _waveRight[NUMCHANNELS];
     float _fftLeft[NUMCHANNELS];
@@ -147,15 +148,19 @@ void CustomWidget::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
 
-    for (int i = 0; i < NUMCHANNELS; i++)
+    for (int j = 0; j < 3; j++)
     {
-        painter.setPen(pens[i]);
+        for (int i = 0; i < NUMCHANNELS; i++)
+        {
+            painter.setPen(pens[i]);
 
-        bars[i] = (newBars[i] + bars[i]) / 2;
+            bars[i] = (newBars[i] + bars[i]) / 2;
 
-        painter.drawLine(0, (12*i)+15, bars[i], (12*i)+15);
+            painter.drawLine(0, (12*i)+15, bars[i], (12*i)+15);
 
-        bars[i] = newBars[i];
+            //bars[i] = newBars[i];
+        }
+        bars[j] = newBars[j];
     }
 }
 
